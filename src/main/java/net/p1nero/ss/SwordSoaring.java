@@ -13,6 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntityRenderer;
+import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
 
 @Mod(SwordSoaring.MOD_ID)
@@ -24,9 +25,9 @@ public class SwordSoaring {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         MinecraftForge.EVENT_BUS.register(this);
         ModEntities.REGISTRY.register(bus);
+        ModItems.REGISTRY.register(bus);
         bus.addListener(this::commonSetup);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, net.p1nero.ss.Config.SPEC);
-
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
