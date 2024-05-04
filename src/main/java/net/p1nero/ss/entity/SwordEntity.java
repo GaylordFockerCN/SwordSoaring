@@ -13,6 +13,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.p1nero.ss.util.ItemStackUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -65,8 +66,12 @@ public class SwordEntity extends Entity {
 
         setPos(new Vec3(rider.getX(),rider.getY(),rider.getZ()));
         setYRot(rider.getYRot());
-        //TODO 优化一下，统一到服务端
-        if(rider.getDeltaMovement().length() < 0.079){
+//        //TODO 优化一下，统一到服务端
+//        if(rider.getDeltaMovement().length() < 0.079){
+//            discard();
+//        }
+        List<ItemStack> swords = ItemStackUtil.searchSwordItem(rider, ItemStackUtil::isFlying);
+        if(swords.isEmpty()){
             discard();
         }
     }

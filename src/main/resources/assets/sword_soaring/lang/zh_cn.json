@@ -1,5 +1,7 @@
 {
   "item.sword_soaring.sword_soaring_secret": "御剑秘笈",
   "tip.sword_soaring.learn": "你已经掌握了某人的秘笈，现在你可以驾驭剑飞行了！",
-  "tip.sword_soaring.spirit_value": "灵气值 : %d"
+  "tip.sword_soaring.spirit_value": "灵气值 : %d",
+  "skill.sword_soaring.sword_soaring": "御剑飞行",
+  "skill.sword_soaring.sword_soaring.tooltip": "按下alt乘上剑飞行，再次按下alt停下。消耗耐力。"
 }

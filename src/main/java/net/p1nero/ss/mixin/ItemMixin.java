@@ -13,10 +13,10 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fml.ModList;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.StartFlyPacket;
 import net.p1nero.ss.network.packet.UpdateFlySpeedPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,6 +39,9 @@ public class ItemMixin {
      */
     @Inject(method = "use", at = @At("HEAD"))
     private void use(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir){
+        if(ModList.get().isLoaded("epicfight")){
+            return;
+        }
         if(player.getAbilities().flying || (!player.getPersistentData().getBoolean("canFlySword") && !player.isCreative())){
             return;
         }
@@ -75,7 +78,7 @@ public class ItemMixin {
         if((itemStack.getItem() instanceof SwordItem) && (entity instanceof Player)){
             if(entity instanceof LocalPlayer localPlayer){
                 double flySpeedScale = getFlySpeedScale(itemStack);
-                if(localPlayer.input.up){
+                if(localPlayer.input.up  && flySpeedScale < 1.5){
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new UpdateFlySpeedPacket(slotId, flySpeedScale+0.1));
                 }
                 if(localPlayer.input.down && flySpeedScale > 0.5){

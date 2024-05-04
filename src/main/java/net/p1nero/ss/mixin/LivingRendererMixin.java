@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.ModList;
 import net.p1nero.ss.util.ItemStackUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -42,8 +43,8 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
     @Redirect(method = "render*", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
     public void changePose(M model, PoseStack poseStack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha)
     {
-        if(entity instanceof Player player){
-            List<ItemStack> list = ItemStackUtil.searchSwordItem(player, (itemStack -> isFlying(itemStack) || getLeftTick(itemStack) > 0));
+        if(entity instanceof Player player && !ModList.get().isLoaded("epicfight")){
+            List<ItemStack> list = ItemStackUtil.searchSwordItem(player, (ItemStackUtil::isFlying));
             if(!list.isEmpty()){
                 PlayerModel playerModel = ((PlayerModel) model);
                 Consumer<ModelPart> setRot = (modelPart)->{
