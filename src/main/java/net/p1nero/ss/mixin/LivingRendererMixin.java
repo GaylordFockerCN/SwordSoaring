@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
+import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.util.ItemStackUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -44,7 +45,8 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
     public void changePose(M model, PoseStack poseStack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha)
     {
         if(entity instanceof Player player && !ModList.get().isLoaded("epicfight")){
-            List<ItemStack> list = ItemStackUtil.searchSwordItem(player, (ItemStackUtil::isFlying));
+
+            List<ItemStack> list = ItemStackUtil.searchSwordItem(player, ItemStackUtil::isFlying);
             if(!list.isEmpty()){
                 PlayerModel playerModel = ((PlayerModel) model);
                 Consumer<ModelPart> setRot = (modelPart)->{
@@ -64,9 +66,8 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
                     modelPart.z = (float) (modelPart.x * Math.sqrt(2) / 2);
                 };
                 swordSoaring$handleModelPart(setZtoX2, playerModel.leftLeg, playerModel.rightLeg, playerModel.leftPants, playerModel.rightPants);
-
-
             }
+
         }
         model.renderToBuffer(poseStack, consumer, light, overlay, red, green, blue, alpha);
     }

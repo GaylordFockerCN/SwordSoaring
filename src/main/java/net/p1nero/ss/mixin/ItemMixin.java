@@ -128,7 +128,7 @@ public class ItemMixin {
 
     @Inject(method = "appendHoverText", at = @At("HEAD"))
     private void injected(ItemStack itemStack, Level p_41422_, List<Component> components, TooltipFlag p_41424_, CallbackInfo ci){
-        if((itemStack.getItem() instanceof SwordItem)){
+        if((itemStack.getItem() instanceof SwordItem) && !ModList.get().isLoaded("epicfight")){
             components.add(Component.translatable("tip.sword_soaring.spirit_value", getSpiritValue(itemStack)));
         }
     }

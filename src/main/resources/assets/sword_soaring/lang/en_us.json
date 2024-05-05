@@ -3,5 +3,5 @@
   "tip.sword_soaring.learn": "You've learned someone's secrets, now you can fly with your sword!",
   "tip.sword_soaring.spirit_value": "Spirit Value : %d",
   "skill.sword_soaring.sword_soaring": "Sword Soaring",
-  "skill.sword_soaring.sword_soaring.tooltip": "Press alt to fly with the sword, then press alt again to stop. Consume stamina."
+  "skill.sword_soaring.sword_soaring.tooltip": "Press space to fly with the sword, then press space again to stop. Consume stamina. Protect the next falling damage."
 }

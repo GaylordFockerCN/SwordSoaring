@@ -14,7 +14,6 @@ public class ModSkills {
     public static Skill SWORD_SOARING;
     public static void registerSkills() {
         SkillManager.register(SwordSoaringSkill::new, Skill.createMoverBuilder().setResource(Skill.Resource.COOLDOWN), SwordSoaring.MOD_ID, "sword_soaring");
-
     }
     @SubscribeEvent
     public static void BuildSkills(SkillBuildEvent event){

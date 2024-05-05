@@ -2,6 +2,7 @@ package net.p1nero.ss.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -13,7 +14,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fml.ModList;
+import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.util.ItemStackUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,16 +50,19 @@ public class SwordEntity extends Entity {
     }
 
     @Override
-    public void tick() {
+    public boolean hurt(@NotNull DamageSource source, float p_19947_) {
+        return false;
+    }
 
+    @Override
+    public void tick() {
         super.tick();
         if(rider == null){
-            System.out.println(level());
             discard();
             return;
         }
 
-        if(!level().isClientSide){
+        if(!level().isClientSide && ModList.get().isLoaded("epicfight")){
             //根据速度造成伤害
             List<Entity> entities = level().getEntities(rider, rider.getBoundingBox());
             for (Entity entity : entities){
@@ -66,14 +73,14 @@ public class SwordEntity extends Entity {
 
         setPos(new Vec3(rider.getX(),rider.getY(),rider.getZ()));
         setYRot(rider.getYRot());
-//        //TODO 优化一下，统一到服务端
-//        if(rider.getDeltaMovement().length() < 0.079){
-//            discard();
-//        }
-        List<ItemStack> swords = ItemStackUtil.searchSwordItem(rider, ItemStackUtil::isFlying);
-        if(swords.isEmpty()){
-            discard();
-        }
+
+        rider.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+            if(!ssPlayer.isFlying()){
+                ssPlayer.setHasEntity(false);
+                discard();
+            }
+        });
+
     }
 
     @Override
