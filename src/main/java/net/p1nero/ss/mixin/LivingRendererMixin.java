@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
-import net.p1nero.ss.util.ItemStackUtil;
+import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.capability.SSPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -31,28 +30,27 @@ import java.util.function.Consumer;
 @Mixin(LivingEntityRenderer.class)
 public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T>>
 {
-    private T entity;
+    @Unique
+    private T swordSoaring$entity;
 
     @Inject(method = "render*", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"), locals = LocalCapture.CAPTURE_FAILHARD)
     public void capture(T entity, float entityYaw, float deltaTicks, PoseStack poseStack, MultiBufferSource source, int light, CallbackInfo ci, boolean shouldSit, float f, float f1, float f2, float f6, float f7, float f8, float f5)
     {
-        this.entity = entity;
+        this.swordSoaring$entity = entity;
     }
 
     @Redirect(method = "render*", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
     public void changePose(M model, PoseStack poseStack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha)
     {
-        if(entity instanceof Player player && !ModList.get().isLoaded("epicfight")){
-
-            List<ItemStack> list = ItemStackUtil.searchSwordItem(player, ItemStackUtil::isFlying);
-            if(!list.isEmpty()){
+        if(swordSoaring$entity instanceof Player player){
+            if(player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
                 PlayerModel playerModel = ((PlayerModel) model);
                 Consumer<ModelPart> setRot = (modelPart)->{
                     modelPart.xRot = 0;
                     modelPart.yRot = (float) Math.toRadians(-45);
                     modelPart.zRot = 0;
                 };
-                swordSoaring$handleModelPart(setRot, playerModel.body, playerModel.leftArm, playerModel.rightArm, playerModel.leftLeg, playerModel.rightLeg, playerModel.leftPants,playerModel.leftSleeve,playerModel.rightPants,playerModel.rightSleeve);
+                swordSoaring$handleModelPart(setRot, playerModel.jacket, playerModel.body, playerModel.leftArm, playerModel.rightArm, playerModel.leftLeg, playerModel.rightLeg, playerModel.leftPants,playerModel.leftSleeve,playerModel.rightPants,playerModel.rightSleeve);
                 Consumer<ModelPart> setZtoX = (modelPart)-> {
                     modelPart.z = (float) (modelPart.x * Math.sqrt(2) / 2);
                     modelPart.x = (float) (modelPart.x * Math.sqrt(2) / 2);
@@ -64,10 +62,12 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
                     modelPart.z = (float) (modelPart.x * Math.sqrt(2) / 2);
                 };
                 swordSoaring$handleModelPart(setZtoX2, playerModel.leftLeg, playerModel.rightLeg, playerModel.leftPants, playerModel.rightPants);
+                model.renderToBuffer(poseStack, consumer, light, overlay, red, green, blue, alpha);
             }
-
+        } else {
+            model.renderToBuffer(poseStack, consumer, light, overlay, red, green, blue, alpha);
         }
-        model.renderToBuffer(poseStack, consumer, light, overlay, red, green, blue, alpha);
+
     }
 
     /**

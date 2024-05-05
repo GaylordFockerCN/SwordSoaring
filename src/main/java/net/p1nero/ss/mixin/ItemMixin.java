@@ -14,6 +14,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
+import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
@@ -49,24 +51,28 @@ public class ItemMixin {
         if(!(sword.getItem() instanceof SwordItem)){
             return;
         }
-        boolean isFlying = isFlying(sword);
-        isFlying = !isFlying;
-        setFlying(sword, isFlying);
-        //重置初速度，防止太快起飞不了的bug。
-        setFlySpeedScale(sword,0.7);
-        if(isFlying){
-            SwordEntity swordEntity = new SwordEntity(sword, player);
-            swordEntity.setPos(player.getX(),player.getY(),player.getZ());
-            swordEntity.setItemStack(sword);
-            swordEntity.setRider(player);
-            player.level().addFreshEntity(swordEntity);
-            if(player.level() instanceof ClientLevel clientLevel){
-                clientLevel.putNonPlayerEntity(114514, swordEntity);
+
+        player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+            ssPlayer.setFlying(!ssPlayer.isFlying());
+            //重置初速度，防止太快起飞不了的bug。
+            setFlySpeedScale(sword,0.7);
+            if(ssPlayer.isFlying()){
+                SwordEntity swordEntity = new SwordEntity(sword, player);
+                swordEntity.setPos(player.getX(),player.getY(),player.getZ());
+                swordEntity.setYRot(player.getYRot());
+                swordEntity.setItemStack(sword);
+                swordEntity.setRider(player);
+                player.level().addFreshEntity(swordEntity);
+                if(player.level() instanceof ClientLevel clientLevel){
+                    clientLevel.putNonPlayerEntity(114514, swordEntity);
+                }
             }
-        }
-        if(!isFlying && getLeftTick(sword) == 0){
-            stopFly(sword);
-        }
+            if(!ssPlayer.isFlying() && getLeftTick(sword) == 0){
+                ssPlayer.setFlying(false);
+                stopFly(sword);
+            }
+        });
+
     }
 
     /**
@@ -75,7 +81,10 @@ public class ItemMixin {
      */
     @Inject(method = "inventoryTick", at = @At("HEAD"))
     private void injected(ItemStack itemStack, Level level, Entity entity, int slotId, boolean isSelected, CallbackInfo ci){
-        if((itemStack.getItem() instanceof SwordItem) && (entity instanceof Player)){
+        if(ModList.get().isLoaded("epicfight")){
+            return;
+        }
+        if((itemStack.getItem() instanceof SwordItem) && (entity instanceof Player player)){
             if(entity instanceof LocalPlayer localPlayer){
                 double flySpeedScale = getFlySpeedScale(itemStack);
                 if(localPlayer.input.up  && flySpeedScale < 1.5){
@@ -85,12 +94,12 @@ public class ItemMixin {
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new UpdateFlySpeedPacket(slotId, flySpeedScale-0.1));
                 }
             }
-            if(!isFlying(itemStack)){
+            if(!player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
                 setSpiritValue(itemStack, getSpiritValue(itemStack) + 10);
             }
 
             //往朝向加速
-            if(isFlying(itemStack)){
+            if(player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
                 //获取10tick前的速度并且根据按键对其缩放。
                 double flySpeedScale = getFlySpeedScale(itemStack);
                 Vec3 targetVec = getViewVec(itemStack, 10).scale(flySpeedScale);

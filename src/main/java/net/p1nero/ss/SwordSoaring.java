@@ -41,13 +41,14 @@ public class SwordSoaring {
 
     public SwordSoaring(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus fg_bus = MinecraftForge.EVENT_BUS;
         MinecraftForge.EVENT_BUS.register(this);
         ModEntities.REGISTRY.register(bus);
         ModItems.REGISTRY.register(bus);
         bus.addListener(this::commonSetup);
-//        if(ModList.get().isLoaded("epicfight")){
-//            bus.addListener(ModSkills::BuildSkills);
-//        }
+        if(ModList.get().isLoaded("epicfight")){
+            fg_bus.addListener(ModSkills::BuildSkills);
+        }
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, net.p1nero.ss.Config.SPEC);
     }

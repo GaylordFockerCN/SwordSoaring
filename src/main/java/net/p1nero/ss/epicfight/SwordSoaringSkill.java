@@ -40,7 +40,7 @@ public class SwordSoaringSkill extends Skill {
         PlayerEventListener listener = container.getExecuter().getEventListener();
 
         listener.addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event) -> {
-            if (event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying
+            if (event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
                     || event.getPlayerPatch().getEntityState().inaction()) {
                 return;
             }
