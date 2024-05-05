@@ -7,9 +7,15 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -30,7 +36,10 @@ import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.UpdateFlySpeedPacket;
 import net.p1nero.ss.util.ItemStackUtil;
+import yesman.epicfight.config.ConfigManager;
+import yesman.epicfight.data.loot.function.SetSkillFunction;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.item.EpicFightItems;
 
 import static net.p1nero.ss.util.ItemStackUtil.*;
 
@@ -78,6 +87,59 @@ public class SwordSoaring {
                     player.setDeltaMovement(player.getViewVector(0.5f).scale(0.6));
                 }
             });
+        }
+
+        @SubscribeEvent
+        public static void modifyVanillaLootPools(final LootTableLoadEvent event) {
+            if(!ModList.get().isLoaded("epicfight")){
+                return;
+            }
+
+            int modifier = ConfigManager.SKILL_BOOK_CHEST_LOOT_MODIFYER.get();
+            int dropChance = 100 + modifier;
+            int antiDropChance = 100 - modifier;
+            float dropChanceModifier = dropChance / (float) (antiDropChance + dropChance);
+
+            if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY)) {
+                event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
+                        .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
+                                "sword_soaring:sword_soaring"
+                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
+                        .build());
+            }
+
+            if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY_ICE_BOX)) {
+                event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
+                        .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
+                                "sword_soaring:sword_soaring"
+                        ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier))
+                        .build());
+            }
+
+            if (event.getName().equals(BuiltInLootTables.END_CITY_TREASURE)) {
+                event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
+                        .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
+                                "sword_soaring:sword_soaring"
+                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
+                        .build());
+            }
+
+            if (event.getName().equals(BuiltInLootTables.FISHING_TREASURE)) {
+                event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
+                        .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
+                                "sword_soaring:sword_soaring"
+                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
+                        .build());
+            }
+
+            if (event.getName().equals(BuiltInLootTables.STRONGHOLD_LIBRARY)) {
+                event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 5.0F))
+                        .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
+                                "sword_soaring:sword_soaring"
+                        ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier * 0.3F))
+                        .build());
+            }
+
         }
     }
 
