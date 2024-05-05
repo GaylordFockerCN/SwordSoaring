@@ -11,7 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
-import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.util.ItemStackUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,9 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static net.p1nero.ss.util.ItemStackUtil.*;
-
 /**
+ * FIXME 不知道为何史诗战斗持武器姿势会出问题
  * 调整御剑飞行的时候的姿势
  * Adjusting the posture of the Sword Soaring
  */
