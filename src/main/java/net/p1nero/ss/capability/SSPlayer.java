@@ -5,11 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 public class SSPlayer {
     private boolean isFlying;
     private boolean protectNextFall;
-    private boolean hasEntity;
-    private int lastJumpTick;
-    private int flyingTick;
-
-    public boolean isCoolDown;
+    private boolean hasSwordEntity;
+    private int anticipationTick;
 
     public boolean isFlying() {
         return isFlying;
@@ -27,55 +24,41 @@ public class SSPlayer {
         this.protectNextFall = protectNextFall;
     }
 
-    public boolean isHasEntity() {
-        return hasEntity;
+    public boolean hasSwordEntity() {
+        return hasSwordEntity;
     }
 
-    public void setHasEntity(boolean hasEntity) {
-        this.hasEntity = hasEntity;
+    public void setHasSwordEntity(boolean hasSwordEntity) {
+        this.hasSwordEntity = hasSwordEntity;
     }
 
-    public int getLastJumpTick() {
-        return lastJumpTick;
+    public int getAnticipationTick() {
+        return anticipationTick;
     }
 
-    public void setLastJumpTick(int lastJumpTick) {
-        this.lastJumpTick = lastJumpTick;
-    }
-
-    public int getFlyingTick() {
-        return flyingTick;
-    }
-
-    public void setFlyingTick(int flyingTick) {
-        this.flyingTick = flyingTick;
+    public void setAnticipationTick(int anticipationTick) {
+        this.anticipationTick = anticipationTick;
     }
 
     public void saveNBTData(CompoundTag tag){
         tag.putBoolean("isFlying", isFlying);
         tag.putBoolean("protectNextFall", protectNextFall);
-        tag.putBoolean("hasEntity", hasEntity);
-        tag.putBoolean("isCoolDown",isCoolDown);
-        tag.putInt("lastJumpTick", lastJumpTick);
-        tag.putInt("flyingTick", flyingTick);
+        tag.putBoolean("hasEntity", hasSwordEntity);
+        tag.putInt("anticipationTick", anticipationTick);
     }
 
     public void loadNBTData(CompoundTag tag){
         isFlying = tag.getBoolean("isFlying");
         protectNextFall = tag.getBoolean("protectNextFall");
-        hasEntity = tag.getBoolean("hasEntity");
-        isCoolDown = tag.getBoolean("isCoolDown");
-        lastJumpTick= tag.getInt("lastJumpTick");
-        flyingTick = tag.getInt("flyingTick");
+        hasSwordEntity = tag.getBoolean("hasEntity");
+        anticipationTick = tag.getInt("anticipationTick");
     }
 
     public void copyFrom(SSPlayer old){
         isFlying = old.isFlying;
         protectNextFall = old.protectNextFall;
-        hasEntity = old.hasEntity;
-        isCoolDown = old.isCoolDown;
-        lastJumpTick = old.lastJumpTick;
-        flyingTick = old.flyingTick;
+        hasSwordEntity = old.hasSwordEntity;
+        anticipationTick = old.anticipationTick;
     }
 
 }

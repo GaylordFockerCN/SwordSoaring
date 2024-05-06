@@ -7,6 +7,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.network.packet.BasePacket;
 import net.p1nero.ss.network.packet.StartFlyPacket;
+import net.p1nero.ss.network.packet.StopFlyPacket;
 import net.p1nero.ss.network.packet.UpdateFlySpeedPacket;
 
 import java.util.function.Function;
@@ -23,6 +24,7 @@ public class PacketHandler {
     public static synchronized void register() {
         register(UpdateFlySpeedPacket.class, UpdateFlySpeedPacket::decode);
         register(StartFlyPacket.class, StartFlyPacket::decode);
+        register(StopFlyPacket.class, StopFlyPacket::decode);
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {

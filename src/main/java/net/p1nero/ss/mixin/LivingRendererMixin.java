@@ -57,7 +57,7 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
                 };
                 swordSoaring$handleModelPart(setZtoX, playerModel.leftArm, playerModel.rightArm, playerModel.leftSleeve, playerModel.rightSleeve);
 
-                //FIXME 脚会有偏移，用上面那个会变单脚
+                //FIXME 脚会有一点点偏移，用上面那个会变单脚
                 Consumer<ModelPart> setZtoX2 = (modelPart)-> {
                     modelPart.z = (float) (modelPart.x * Math.sqrt(2) / 2);
                 };

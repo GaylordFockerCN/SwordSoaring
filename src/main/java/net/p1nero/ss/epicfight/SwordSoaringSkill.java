@@ -1,19 +1,19 @@
 package net.p1nero.ss.epicfight;
 
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
+import net.p1nero.ss.Config;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.StartFlyPacket;
+import net.p1nero.ss.network.packet.StopFlyPacket;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -40,57 +40,59 @@ public class SwordSoaringSkill extends Skill {
         PlayerEventListener listener = container.getExecuter().getEventListener();
 
         listener.addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event) -> {
-            if (event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
-                    || event.getPlayerPatch().getEntityState().inaction()) {
-                return;
-            }
+
 
             // Check directly from the keybind because event.getMovementInput().isJumping doesn't allow to be set as true while player's jumping
             boolean jumpPressed = Minecraft.getInstance().options.keyJump.isDown();
 
             Player player = container.getExecuter().getOriginal();
             ItemStack sword = player.getMainHandItem();
-            if (!(sword.getItem() instanceof SwordItem)) {
-                return;
-            }
 
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                if (jumpPressed && event.getPlayerPatch().getStamina() > 0.1f ) {
-                    if(!ssPlayer.isCoolDown){
-                        PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket());
-                        ssPlayer.setFlying(true);
-                        ssPlayer.setProtectNextFall(true);
-                        if(!ssPlayer.isHasEntity()){
-                            SwordEntity swordEntity = new SwordEntity(sword, player);
-                            swordEntity.setPos(player.getX(), player.getY(), player.getZ());
-                            swordEntity.setYRot(player.getYRot());
-                            swordEntity.setItemStack(sword);
-                            swordEntity.setRider(player);
-                            player.level().addFreshEntity(swordEntity);
 
-                            //不这么加渲染不了，很奇怪
-                            if (player.level() instanceof ClientLevel clientLevel) {
-                                clientLevel.putNonPlayerEntity(114514, swordEntity);
-                            }
-
-                            ssPlayer.setHasEntity(true);
-                        }
-                        event.getPlayerPatch().setStamina(event.getPlayerPatch().getStamina() - 0.1f);
-                        if(event.getPlayerPatch().getStamina() <= 0.1f){
-                            ssPlayer.isCoolDown = true;
-                        }
-                    }else if(event.getPlayerPatch().getStamina() == event.getPlayerPatch().getMaxStamina()){
-                        ssPlayer.isCoolDown = false;
-                    }
-
-                } else {
+                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落
+                if (event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
+                        || event.getPlayerPatch().getStamina() <= 0.1f || !(sword.getItem() instanceof SwordItem || ssPlayer.hasSwordEntity()) || !jumpPressed) {
+                    //停止飞行
+                    PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
                     ssPlayer.setFlying(false);
-                    event.getPlayerPatch().setStamina(event.getPlayerPatch().getStamina() + 0.05f);
+                    //重置飞行前摇时间
+                    ssPlayer.setAnticipationTick(0);
+                    return;
                 }
+
+                //进行前摇判断，按住空格0.5s后才起飞（不然就跳不了了..）
+                if(ssPlayer.getAnticipationTick() == 0){
+                    ssPlayer.setAnticipationTick(Config.MAX_ANTICIPATION_TICK.get().intValue());
+                    return;
+                }
+                if(ssPlayer.getAnticipationTick() > 1){
+                    ssPlayer.setAnticipationTick(ssPlayer.getAnticipationTick()-1);
+                    return;
+                }
+
+                //设置飞行状态并设置免疫下次摔落伤害
+                PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket());
+                ssPlayer.setFlying(true);
+
+                //向世界添加剑的实体
+                if(!ssPlayer.hasSwordEntity()){
+                    SwordEntity swordEntity = new SwordEntity(sword, player);
+                    swordEntity.setPos(player.getX(), player.getY(), player.getZ());
+                    swordEntity.setYRot(player.getYRot());
+                    player.level().addFreshEntity(swordEntity);
+                    //不这么加渲染不了，很奇怪 FIXME 在服务端加入实体
+                    if (player.level() instanceof ClientLevel clientLevel) {
+                        clientLevel.putNonPlayerEntity(114514, swordEntity);
+                    }
+                    ssPlayer.setHasSwordEntity(true);
+                }
+
             });
 
         });
 
+        //免疫摔落伤害
         listener.addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
             if (event.getDamageSource().is(DamageTypeTags.IS_FALL) ) {
                 Player player = event.getPlayerPatch().getOriginal();
@@ -109,12 +111,9 @@ public class SwordSoaringSkill extends Skill {
     @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
-
         PlayerEventListener listener = container.getExecuter().getEventListener();
-
         listener.removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
-
     }
 
 }

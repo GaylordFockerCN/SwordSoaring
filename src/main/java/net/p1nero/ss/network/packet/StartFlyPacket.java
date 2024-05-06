@@ -31,7 +31,9 @@ public record StartFlyPacket () implements BasePacket {
     public void execute(@Nullable Player player) {
         if (player != null && player.getServer() != null) {
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                ssPlayer.setProtectNextFall(true);//重点是这个，其他没用
+                ssPlayer.setProtectNextFall(true);
+//                ssPlayer.setFlying(!ssPlayer.isFlying());
+                ssPlayer.setFlying(true);
             });
         }
     }

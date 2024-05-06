@@ -60,8 +60,6 @@ public class ItemMixin {
                 SwordEntity swordEntity = new SwordEntity(sword, player);
                 swordEntity.setPos(player.getX(),player.getY(),player.getZ());
                 swordEntity.setYRot(player.getYRot());
-                swordEntity.setItemStack(sword);
-                swordEntity.setRider(player);
                 player.level().addFreshEntity(swordEntity);
                 if(player.level() instanceof ClientLevel clientLevel){
                     clientLevel.putNonPlayerEntity(114514, swordEntity);
