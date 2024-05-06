@@ -9,8 +9,14 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraftforge.fml.ModList;
+import net.p1nero.ss.SwordSoaring;
 import org.jetbrains.annotations.NotNull;
+import yesman.epicfight.world.item.LongswordItem;
+import yesman.epicfight.world.item.TachiItem;
+import yesman.epicfight.world.item.UchigatanaItem;
 
 public class SwordEntityRenderer extends EntityRenderer<SwordEntity> {
 
@@ -25,8 +31,16 @@ public class SwordEntityRenderer extends EntityRenderer<SwordEntity> {
     @Override
     public void render(SwordEntity swordEntity, float p_114486_, float p_114487_, PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int light) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.XP.rotationDegrees(90f));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(-45f + swordEntity.getYRot()));
+        if(SwordSoaring.epicFightLoad()){
+            Item sword = swordEntity.getItemStack().getItem();
+            if(sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem){
+                poseStack.mulPose(Axis.XP.rotationDegrees(90f));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(45f + swordEntity.getYRot()));
+            }
+        }else {
+            poseStack.mulPose(Axis.XP.rotationDegrees(90f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(-45f + swordEntity.getYRot()));
+        }
 //        poseStack.translate(0,0,0);
         BakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(swordEntity.getItemStack());
         Minecraft.getInstance().getItemRenderer().render(swordEntity.getItemStack(), ItemDisplayContext.FIXED,false,poseStack,multiBufferSource, light,1, model);

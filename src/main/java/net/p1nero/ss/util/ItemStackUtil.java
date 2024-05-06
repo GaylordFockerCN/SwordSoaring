@@ -57,16 +57,26 @@ public class ItemStackUtil {
         sword.getOrCreateTag().putInt("leftTick", Math.min(leftTick, maxRecordTick));
     }
 
-    //TODO 用复合nbt标签优化
+    /**
+     *用复合nbt标签优化，防止剑上下窜
+     */
     public static int getSpiritValue(ItemStack sword) {
-        return sword.getOrCreateTag().getInt("spiritValue");
+        return sword.getOrCreateTag().getList("spiritValue",Tag.TAG_COMPOUND).getCompound(0).getInt("spiritValue");
     }
 
+    /**
+     *用复合nbt标签优化，防止剑上下窜
+     */
     public static void setSpiritValue(ItemStack sword, int spiritValue) {
         if(spiritValue<0 || spiritValue > maxSpiritValue){
             return;
         }
-        sword.getOrCreateTag().putInt("spiritValue", spiritValue);
+        if (!sword.getOrCreateTag().contains("spiritValue")) {
+            ListTag tagsList = new ListTag();
+            tagsList.add(new CompoundTag());
+            sword.getOrCreateTag().put("spiritValue", tagsList);
+        }
+        sword.getOrCreateTag().getList("spiritValue", Tag.TAG_COMPOUND).getCompound(0).putInt("spiritValue", spiritValue);
     }
 
     public static Vec3 getEndVec(ItemStack sword) {
@@ -191,12 +201,16 @@ public class ItemStackUtil {
         return list;
     }
 
-    public static List<ItemStack> searchItem(Player player, Item item) {
+    /**
+     * 搜索所有剑所在的物品栈
+     * @return 返回物品栈
+     */
+    public static List<ItemStack> searchSwordItem(Player player, Item item) {
         return searchItem(player, item,(itemStack)->true);
     }
 
     /**
-     * 搜索所有剑所在的物品栈
+     * 搜索所有符合条件的剑所在的物品栈
      * @return 返回物品栈
      */
     public static List<ItemStack> searchSwordItem(Player player, Predicate<ItemStack> predicate) {

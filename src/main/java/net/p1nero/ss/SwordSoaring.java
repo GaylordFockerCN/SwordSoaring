@@ -60,7 +60,7 @@ public class SwordSoaring {
         ModEntities.REGISTRY.register(bus);
         ModItems.REGISTRY.register(bus);
         bus.addListener(this::commonSetup);
-        if(ModList.get().isLoaded("epicfight")){
+        if(epicFightLoad()){
             fg_bus.addListener(ModSkills::BuildSkills);
         }
 
@@ -69,7 +69,7 @@ public class SwordSoaring {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         PacketHandler.register();
-        if(ModList.get().isLoaded("epicfight")){
+        if(SwordSoaring.epicFightLoad()){
             ModSkills.registerSkills();
         }
     }
@@ -86,6 +86,10 @@ public class SwordSoaring {
                     .collect(Collectors.toSet());
         }
         return sword.getItem() instanceof SwordItem  || Config.swordItems.contains(sword.getItem());
+    }
+
+    public static boolean epicFightLoad(){
+        return ModList.get().isLoaded("epicfight");
     }
 
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -106,7 +110,7 @@ public class SwordSoaring {
         @SubscribeEvent
         public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
             Player player = event.player;
-            if(ModList.get().isLoaded("epicfight") && player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
+            if(SwordSoaring.epicFightLoad() && player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
                 player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
                     if(entityPatch instanceof PlayerPatch<?> playerPatch){
                         player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get()));
@@ -121,7 +125,7 @@ public class SwordSoaring {
          */
         @SubscribeEvent
         public static void modifyVanillaLootPools(final LootTableLoadEvent event) {
-            if(!ModList.get().isLoaded("epicfight")){
+            if(!SwordSoaring.epicFightLoad()){
                 return;
             }
 

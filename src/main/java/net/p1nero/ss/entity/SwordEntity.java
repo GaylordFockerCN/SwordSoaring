@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
+import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,7 +53,7 @@ public class SwordEntity extends Entity {
             return;
         }
 
-        if(!level().isClientSide && ModList.get().isLoaded("epicfight")){
+        if(!level().isClientSide && SwordSoaring.epicFightLoad()){
             //根据速度造成伤害
             List<Entity> entities = level().getEntities(rider, rider.getBoundingBox());
             for (Entity entity : entities){

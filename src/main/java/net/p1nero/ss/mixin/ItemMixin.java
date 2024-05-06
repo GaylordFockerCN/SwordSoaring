@@ -42,7 +42,7 @@ public class ItemMixin {
      */
     @Inject(method = "use", at = @At("HEAD"))
     private void use(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir){
-        if(ModList.get().isLoaded("epicfight")){
+        if(SwordSoaring.epicFightLoad()){
             return;
         }
         if(player.getAbilities().flying || (!player.getPersistentData().getBoolean("canFlySword") && !player.isCreative())){
@@ -80,7 +80,7 @@ public class ItemMixin {
      */
     @Inject(method = "inventoryTick", at = @At("HEAD"))
     private void injected(ItemStack itemStack, Level level, Entity entity, int slotId, boolean isSelected, CallbackInfo ci){
-        if(ModList.get().isLoaded("epicfight")){
+        if(SwordSoaring.epicFightLoad()){
             return;
         }
         if(SwordSoaring.isValidSword(itemStack) && (entity instanceof Player player)){
@@ -136,7 +136,7 @@ public class ItemMixin {
 
     @Inject(method = "appendHoverText", at = @At("HEAD"))
     private void injected(ItemStack itemStack, Level p_41422_, List<Component> components, TooltipFlag p_41424_, CallbackInfo ci){
-        if(SwordSoaring.isValidSword(itemStack) && !ModList.get().isLoaded("epicfight")){
+        if(SwordSoaring.isValidSword(itemStack) && !SwordSoaring.epicFightLoad()){
             components.add(Component.translatable("tip.sword_soaring.spirit_value", getSpiritValue(itemStack)));
         }
     }
