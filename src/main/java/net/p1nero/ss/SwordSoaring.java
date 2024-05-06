@@ -7,7 +7,10 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -25,9 +28,11 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.entity.ModEntities;
@@ -40,6 +45,8 @@ import yesman.epicfight.data.loot.function.SetSkillFunction;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.item.EpicFightItems;
+
+import java.util.stream.Collectors;
 
 @Mod(SwordSoaring.MOD_ID)
 public class SwordSoaring {
@@ -66,6 +73,21 @@ public class SwordSoaring {
             ModSkills.registerSkills();
         }
     }
+
+    /**
+     * 判断物品是否属于剑或者被视为剑。
+     * 无法监听事件，干脆直接在这里初始化剑物品表。
+     */
+    public static boolean isValidSword(ItemStack sword){
+        //不知为何无法监听
+        if(Config.swordItems.isEmpty()){
+            Config.swordItems = Config.ITEM_STRINGS.get().stream()
+                    .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                    .collect(Collectors.toSet());
+        }
+        return sword.getItem() instanceof SwordItem  || Config.swordItems.contains(sword.getItem());
+    }
+
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents{
         @SubscribeEvent

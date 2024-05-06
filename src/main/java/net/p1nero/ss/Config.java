@@ -1,16 +1,25 @@
 package net.p1nero.ss;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Config
@@ -19,7 +28,13 @@ public class Config
     public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
     public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per tick when flying" ,"stamina_consume_per_tick", 0.05);
     public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK = createDouble("ticks of pre taking off","max_anticipation_tick", 10);
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
+            .comment("A list of items considered as sword.")
+            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
+
+    public static Set<Item> swordItems = new HashSet<>();
 
     private static ForgeConfigSpec.BooleanValue createBool(String key, boolean defaultValue){
         return BUILDER
@@ -37,6 +52,10 @@ public class Config
                 .comment(comment)
                 .translation("config."+SwordSoaring.MOD_ID+"."+key)
                 .defineInRange(key, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE);
+    }
+
+    private static boolean validateItemName(final Object obj){
+        return obj instanceof final String itemName && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
     }
 
     @SubscribeEvent

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.p1nero.ss.Config;
+import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
@@ -50,9 +51,9 @@ public class SwordSoaringSkill extends Skill {
 
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 
-                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落
-                if (event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
-                        || event.getPlayerPatch().getStamina() <= 0.1f || !(sword.getItem() instanceof SwordItem || ssPlayer.hasSwordEntity()) || !jumpPressed) {
+                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”
+                if (!jumpPressed || event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
+                        || event.getPlayerPatch().getStamina() <= 0.1f || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity()) ) {
                     //停止飞行
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
                     ssPlayer.setFlying(false);

@@ -14,6 +14,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
+import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.entity.SwordEntity;
@@ -48,7 +49,7 @@ public class ItemMixin {
             return;
         }
         ItemStack sword = player.getItemInHand(hand);
-        if(!(sword.getItem() instanceof SwordItem)){
+        if(!SwordSoaring.isValidSword(sword)){
             return;
         }
 
@@ -82,7 +83,7 @@ public class ItemMixin {
         if(ModList.get().isLoaded("epicfight")){
             return;
         }
-        if((itemStack.getItem() instanceof SwordItem) && (entity instanceof Player player)){
+        if(SwordSoaring.isValidSword(itemStack) && (entity instanceof Player player)){
             if(entity instanceof LocalPlayer localPlayer){
                 double flySpeedScale = getFlySpeedScale(itemStack);
                 if(localPlayer.input.up  && flySpeedScale < 1.5){
@@ -135,7 +136,7 @@ public class ItemMixin {
 
     @Inject(method = "appendHoverText", at = @At("HEAD"))
     private void injected(ItemStack itemStack, Level p_41422_, List<Component> components, TooltipFlag p_41424_, CallbackInfo ci){
-        if((itemStack.getItem() instanceof SwordItem) && !ModList.get().isLoaded("epicfight")){
+        if(SwordSoaring.isValidSword(itemStack) && !ModList.get().isLoaded("epicfight")){
             components.add(Component.translatable("tip.sword_soaring.spirit_value", getSpiritValue(itemStack)));
         }
     }

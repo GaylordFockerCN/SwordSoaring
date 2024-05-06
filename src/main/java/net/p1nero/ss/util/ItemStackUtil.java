@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.phys.Vec3;
+import net.p1nero.ss.SwordSoaring;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -200,14 +201,14 @@ public class ItemStackUtil {
      */
     public static List<ItemStack> searchSwordItem(Player player, Predicate<ItemStack> predicate) {
         List<ItemStack> list = new ArrayList<>();
-        if (player.getMainHandItem().getItem() instanceof SwordItem && predicate.test(player.getMainHandItem())) {
+        if (SwordSoaring.isValidSword(player.getMainHandItem()) && predicate.test(player.getMainHandItem())) {
             list.add(player.getMainHandItem());
-        } else if (player.getOffhandItem().getItem() instanceof SwordItem && predicate.test(player.getOffhandItem())) {
+        } else if (SwordSoaring.isValidSword(player.getOffhandItem()) && predicate.test(player.getOffhandItem())) {
             list.add(player.getOffhandItem());
         } else {
             for (int i = 0; i < player.getInventory().items.size(); i++) {
                 ItemStack teststack = player.getInventory().items.get(i);
-                if (teststack.getItem() instanceof SwordItem && predicate.test(teststack)) {
+                if (SwordSoaring.isValidSword(teststack) && predicate.test(teststack)) {
                     list.add(teststack);
                 }
             }
