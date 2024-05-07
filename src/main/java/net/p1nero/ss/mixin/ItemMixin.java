@@ -84,7 +84,7 @@ public class ItemMixin {
             return;
         }
         if(SwordSoaring.isValidSword(itemStack) && (entity instanceof Player player)){
-            if(entity instanceof LocalPlayer localPlayer){
+            if(player instanceof LocalPlayer localPlayer){
                 double flySpeedScale = getFlySpeedScale(itemStack);
                 if(localPlayer.input.up  && flySpeedScale < 1.5){
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new UpdateFlySpeedPacket(slotId, flySpeedScale+0.1));
@@ -93,11 +93,7 @@ public class ItemMixin {
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new UpdateFlySpeedPacket(slotId, flySpeedScale-0.1));
                 }
             }
-            if(!player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
-                setSpiritValue(itemStack, getSpiritValue(itemStack) + 10);
-            }
 
-            //往朝向加速
             if(player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
                 //获取10tick前的速度并且根据按键对其缩放。
                 double flySpeedScale = getFlySpeedScale(itemStack);
@@ -106,15 +102,18 @@ public class ItemMixin {
                     //灵力够才能起飞
                     int spiritValue = getSpiritValue(itemStack) - (int) (targetVec.length() * 10);
                     if(spiritValue > 0){
-//                    if(!entity.isCreative()){
-                        setSpiritValue(itemStack, spiritValue);
-//                    }
-                        entity.setDeltaMovement(targetVec);
+                        if(!player.isCreative()){
+                            setSpiritValue(itemStack, spiritValue);
+                        }
+                        //往朝向加速
+                        player.setDeltaMovement(targetVec);
                     } else {
                         stopFly(itemStack);
                     }
                 }
             } else {
+                //恢复灵力
+                setSpiritValue(itemStack, getSpiritValue(itemStack) + 10);
                 //缓冲
                 if (getLeftTick(itemStack) > 0) {
                     int leftTick = getLeftTick(itemStack);
@@ -123,7 +122,7 @@ public class ItemMixin {
                     double endVecLength = getEndVec(itemStack).length();
                     if (endVecLength != 0) {
                         double max = endVecLength * maxRecordTick / 2;
-                        entity.setDeltaMovement(getEndVec(itemStack).lerp(Vec3.ZERO, (max - leftTick) / max));
+                        player.setDeltaMovement(getEndVec(itemStack).lerp(Vec3.ZERO, (max - leftTick) / max));
                     }
                 }
             }

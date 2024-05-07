@@ -3,7 +3,7 @@
   "tip.sword_soaring.learn": "You've learned someone's secrets, now you can fly with your sword!",
   "tip.sword_soaring.spirit_value": "Spirit Value : %d",
   "skill.sword_soaring.sword_soaring": "Sword Soaring",
-  "skill.sword_soaring.sword_soaring.tooltip": "Hold down the space for 0.5 second to fly on the sword, release the space to stop. Consume stamina. Protect the next falling damage.",
+  "skill.sword_soaring.sword_soaring.tooltip": "Hold down the space to fly on the sword, release the space to stop. Consume stamina. Protect the next falling damage.",
   "config.sword_soaring.fly_speed_scale": "the ratio of flying speed to view vector",
   "config.sword_soaring.stamina_consume_per_tick": "the stamina consumed per tick when flying",
   "config.sword_soaring.max_anticipation_tick": "ticks of pre taking off"

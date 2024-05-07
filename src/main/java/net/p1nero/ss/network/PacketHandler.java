@@ -5,10 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.p1nero.ss.SwordSoaring;
-import net.p1nero.ss.network.packet.BasePacket;
-import net.p1nero.ss.network.packet.StartFlyPacket;
-import net.p1nero.ss.network.packet.StopFlyPacket;
-import net.p1nero.ss.network.packet.UpdateFlySpeedPacket;
+import net.p1nero.ss.network.packet.*;
 
 import java.util.function.Function;
 
@@ -25,6 +22,7 @@ public class PacketHandler {
         register(UpdateFlySpeedPacket.class, UpdateFlySpeedPacket::decode);
         register(StartFlyPacket.class, StartFlyPacket::decode);
         register(StopFlyPacket.class, StopFlyPacket::decode);
+        register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {

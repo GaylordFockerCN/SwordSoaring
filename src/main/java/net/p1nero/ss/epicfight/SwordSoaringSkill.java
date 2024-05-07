@@ -13,6 +13,7 @@ import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
+import net.p1nero.ss.network.packet.AddSwordEntityPacket;
 import net.p1nero.ss.network.packet.StartFlyPacket;
 import net.p1nero.ss.network.packet.StopFlyPacket;
 import yesman.epicfight.skill.Skill;
@@ -81,10 +82,9 @@ public class SwordSoaringSkill extends Skill {
                     SwordEntity swordEntity = new SwordEntity(sword, player);
                     swordEntity.setPos(player.getX(), player.getY(), player.getZ());
                     swordEntity.setYRot(player.getYRot());
-                    player.level().addFreshEntity(swordEntity);
-                    //不这么加渲染不了，很奇怪 FIXME 在服务端加入实体
+                    //服务端加的话移动跟不上，所以在客户端加就好
                     if (player.level() instanceof ClientLevel clientLevel) {
-                        clientLevel.putNonPlayerEntity(114514, swordEntity);
+                        clientLevel.putNonPlayerEntity(114514 + player.getId(), swordEntity);
                     }
                     ssPlayer.setHasSwordEntity(true);
                 }

@@ -1,6 +1,7 @@
 package net.p1nero.ss;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA = createBool("enable_inertia", false);
     public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
     public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per tick when flying" ,"stamina_consume_per_tick", 0.05);
     public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK = createDouble("ticks of pre taking off","max_anticipation_tick", 10);
@@ -62,6 +64,11 @@ public class Config
     public static void registerCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(Commands.literal("sword_soaring").requires((commandSourceStack) -> commandSourceStack.hasPermission(2))
+                .then(Commands.literal("enable_inertia")
+                        .then(Commands.argument("value", BoolArgumentType.bool())
+                                .executes((context) -> setConfig(ENABLE_INERTIA, BoolArgumentType.getBool(context, "value"), context.getSource()))
+                        )
+                )
                 .then(Commands.literal("fly_speed_scale")
                         .then(Commands.argument("value", DoubleArgumentType.doubleArg())
                                 .executes((context) -> setConfig(FLY_SPEED_SCALE, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
@@ -87,6 +94,14 @@ public class Config
             if(value<=0){
                 stack.getPlayer().sendSystemMessage(Component.literal("Waring! It's a strange value :D"));
             }
+        }
+        return 0;
+    }
+
+    private static int setConfig(ForgeConfigSpec.BooleanValue config, boolean value, CommandSourceStack stack){
+        config.set(value);
+        if(stack.isPlayer()){
+            stack.getPlayer().sendSystemMessage(Component.literal("Successfully set to : "+value));
         }
         return 0;
     }

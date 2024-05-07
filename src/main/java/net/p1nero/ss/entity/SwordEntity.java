@@ -49,6 +49,7 @@ public class SwordEntity extends Entity {
     public void tick() {
         super.tick();
         if(rider == null){
+            SwordSoaring.LOGGER.info("sword entity "+ getId() + " doesn't have rider "+level());
             discard();
             return;
         }
@@ -68,6 +69,7 @@ public class SwordEntity extends Entity {
         rider.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(!ssPlayer.isFlying()){
                 ssPlayer.setHasSwordEntity(false);
+                SwordSoaring.LOGGER.info("sword entity "+ getId() + " rider no fly. "+level());
                 discard();
             }
         });

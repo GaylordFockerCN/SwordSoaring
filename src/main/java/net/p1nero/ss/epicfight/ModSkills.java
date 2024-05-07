@@ -12,6 +12,8 @@ import yesman.epicfight.skill.passive.PassiveSkill;
 public class ModSkills {
 
     public static Skill SWORD_SOARING;
+    public static Skill RainScreen;
+    public static Skill RainCutter;
     public static void registerSkills() {
         SkillManager.register(SwordSoaringSkill::new, Skill.createMoverBuilder().setResource(Skill.Resource.COOLDOWN), SwordSoaring.MOD_ID, "sword_soaring");
     }

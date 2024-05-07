@@ -3,6 +3,7 @@ package net.p1nero.ss;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -40,6 +41,7 @@ import net.p1nero.ss.entity.SwordEntityRenderer;
 import net.p1nero.ss.epicfight.ModSkills;
 import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
+import org.slf4j.Logger;
 import yesman.epicfight.config.ConfigManager;
 import yesman.epicfight.data.loot.function.SetSkillFunction;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -52,7 +54,7 @@ import java.util.stream.Collectors;
 public class SwordSoaring {
 
     public static final String MOD_ID = "sword_soaring";
-
+    public static final Logger LOGGER = LogUtils.getLogger();
     public SwordSoaring(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
