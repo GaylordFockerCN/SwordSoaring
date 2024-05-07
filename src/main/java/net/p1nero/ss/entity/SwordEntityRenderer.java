@@ -33,11 +33,9 @@ public class SwordEntityRenderer extends EntityRenderer<SwordEntity> {
     public void render(SwordEntity swordEntity, float p_114486_, float p_114487_, PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int light) {
         poseStack.pushPose();
         poseStack.mulPose(Axis.XP.rotationDegrees(90f));
-        if(SwordSoaring.epicFightLoad()){
-            Item sword = swordEntity.getItemStack().getItem();
-            if(sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem){
-                poseStack.mulPose(Axis.ZP.rotationDegrees(45f + swordEntity.getYRot()));
-            }
+        Item sword = swordEntity.getItemStack().getItem();
+        if(SwordSoaring.epicFightLoad() && (sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem)){
+            poseStack.mulPose(Axis.ZP.rotationDegrees(45f + swordEntity.getYRot()));
         }else {
             poseStack.mulPose(Axis.ZP.rotationDegrees(-45f + swordEntity.getYRot()));
         }

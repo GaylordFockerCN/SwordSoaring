@@ -64,9 +64,8 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
                 swordSoaring$handleModelPart(setZtoX2, playerModel.leftLeg, playerModel.rightLeg, playerModel.leftPants, playerModel.rightPants);
                 model.renderToBuffer(poseStack, consumer, light, overlay, red, green, blue, alpha);
             }
-        } else {
-            model.renderToBuffer(poseStack, consumer, light, overlay, red, green, blue, alpha);
         }
+        model.renderToBuffer(poseStack, consumer, light, overlay, red, green, blue, alpha);
 
     }
 
