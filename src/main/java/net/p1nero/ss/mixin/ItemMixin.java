@@ -119,7 +119,7 @@ public class ItemMixin {
                     //用末速度来计算
                     double endVecLength = getEndVec(itemStack).length();
                     if (endVecLength != 0) {
-                        double max = endVecLength * maxRecordTick / 2;
+                        double max = endVecLength * maxRecordTick * 2;
                         player.setDeltaMovement(getEndVec(itemStack).lerp(Vec3.ZERO, (max - leftTick) / max));
                     }
                 }

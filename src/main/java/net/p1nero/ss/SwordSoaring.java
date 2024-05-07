@@ -140,7 +140,7 @@ public class SwordSoaring {
                         int leftTick = getLeftTick(player.getPersistentData());
                         setLeftTick(player.getPersistentData(), leftTick - 1);
                         //用末速度来计算
-                        double max = endVecLength * maxRecordTick / 2;
+                        double max = endVecLength * maxRecordTick ;
                         player.setDeltaMovement(getEndVec(player.getPersistentData()).lerp(Vec3.ZERO, (max - leftTick) / max));
                     }
                 }
