@@ -13,19 +13,17 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec.BooleanValue ENABLE_SPIRIT_FLY_IN_EFM = createBool("enable_spirit_fly_in_efm", false);
     public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA = createBool("enable_inertia", false);
     public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
     public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per tick when flying" ,"stamina_consume_per_tick", 0.05);
@@ -40,13 +38,8 @@ public class Config
 
     private static ForgeConfigSpec.BooleanValue createBool(String key, boolean defaultValue){
         return BUILDER
-                .comment(I18n.get("config."+SwordSoaring.MOD_ID+"."+key))
                 .translation("config."+SwordSoaring.MOD_ID+"."+key)
                 .define(key, defaultValue);
-    }
-
-    private static ForgeConfigSpec.DoubleValue createDouble(String key, double defaultValue) {
-        return createDouble(I18n.get("config."+SwordSoaring.MOD_ID+"."+key), key, defaultValue);
     }
 
     private static ForgeConfigSpec.DoubleValue createDouble(String comment ,String key, double defaultValue) {

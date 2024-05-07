@@ -40,7 +40,6 @@ minecraft {
 
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
-            arg "-mixin.config=sword_soaring.mixins.json"
         }
 
         server {
