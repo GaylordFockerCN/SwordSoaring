@@ -23,8 +23,9 @@ import java.util.Set;
 public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec.BooleanValue ENABLE_SPIRIT_FLY_IN_EFM = createBool("enable_spirit_fly_in_efm", false);
+    public static final ForgeConfigSpec.BooleanValue ENABLE_SPIRIT_FLY_IN_EFM = createBool("this make you can use right click to fly when epic fight loaded. They use the same data, so it may cause bugs!","enable_spirit_fly_in_efm", false);
     public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA = createBool("enable_inertia", false);
+    public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE = createDouble("the inertia tick.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
     public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
     public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per tick when flying" ,"stamina_consume_per_tick", 0.05);
     public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK = createDouble("ticks of pre taking off","max_anticipation_tick", 10);
@@ -38,6 +39,12 @@ public class Config
 
     private static ForgeConfigSpec.BooleanValue createBool(String key, boolean defaultValue){
         return BUILDER
+                .translation("config."+SwordSoaring.MOD_ID+"."+key)
+                .define(key, defaultValue);
+    }
+    private static ForgeConfigSpec.BooleanValue createBool(String comment, String key, boolean defaultValue){
+        return BUILDER
+                .comment(comment)
                 .translation("config."+SwordSoaring.MOD_ID+"."+key)
                 .define(key, defaultValue);
     }
@@ -57,9 +64,19 @@ public class Config
     public static void registerCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(Commands.literal("sword_soaring").requires((commandSourceStack) -> commandSourceStack.hasPermission(2))
+                .then(Commands.literal("enable_spirit_fly_in_efm")
+                        .then(Commands.argument("value", BoolArgumentType.bool())
+                                .executes((context) -> setConfig(ENABLE_SPIRIT_FLY_IN_EFM, BoolArgumentType.getBool(context, "value"), context.getSource()))
+                        )
+                )
                 .then(Commands.literal("enable_inertia")
                         .then(Commands.argument("value", BoolArgumentType.bool())
                                 .executes((context) -> setConfig(ENABLE_INERTIA, BoolArgumentType.getBool(context, "value"), context.getSource()))
+                        )
+                )
+                .then(Commands.literal("inertia_tick_before")
+                        .then(Commands.argument("value", DoubleArgumentType.doubleArg())
+                                .executes((context) -> setConfig(INERTIA_TICK_BEFORE, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
                         )
                 )
                 .then(Commands.literal("fly_speed_scale")

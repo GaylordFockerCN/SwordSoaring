@@ -7,6 +7,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.phys.Vec3;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
@@ -21,6 +22,9 @@ import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.UUID;
+
+import static net.p1nero.ss.util.ItemStackUtil.*;
+import static net.p1nero.ss.util.ItemStackUtil.setLeftTick;
 
 public class SwordSoaringSkill extends Skill {
 
@@ -57,6 +61,13 @@ public class SwordSoaringSkill extends Skill {
                         || event.getPlayerPatch().getStamina() <= 0.1f || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity()) ) {
                     //停止飞行
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
+                    //飞行结束后再获取末向量。因为此时isFlying还没设为false
+                    if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
+                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get());
+                        setEndVec(player.getPersistentData(), endVec);
+                        double leftTick = endVec.length() * maxRecordTick / 2;
+                        setLeftTick(player.getPersistentData(), ((int) leftTick));
+                    }
                     ssPlayer.setFlying(false);
                     //重置飞行前摇时间
                     ssPlayer.setAnticipationTick(0);

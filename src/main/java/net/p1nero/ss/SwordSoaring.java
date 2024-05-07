@@ -11,6 +11,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
@@ -40,6 +41,9 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.item.EpicFightItems;
 
 import java.util.stream.Collectors;
+
+import static net.p1nero.ss.util.ItemStackUtil.*;
+import static net.p1nero.ss.util.ItemStackUtil.stopFly;
 
 @Mod(SwordSoaring.MOD_ID)
 public class SwordSoaring {
@@ -99,18 +103,52 @@ public class SwordSoaring {
 
         /**
          * 控制飞行和耐力消耗
+         * 并进行惯性判断。飞行结束时如果有缓冲时间则缓冲。
+         * 缓冲时间设置请看：{@link net.p1nero.ss.network.packet.StopFlyPacket#execute(Player)}
          */
         @SubscribeEvent
         public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
             Player player = event.player;
-            if(SwordSoaring.epicFightLoad() && player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
-                player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
-                    if(entityPatch instanceof PlayerPatch<?> playerPatch){
-                        player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get()));
-                        playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue());
-                    }
-                });
+            if(!SwordSoaring.epicFightLoad()){
+                return;
             }
+
+            player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+                if(ssPlayer.isFlying()){
+                    //惯性控制。懒得重写就直接用getPersistentData了
+                    if(Config.ENABLE_INERTIA.get()){
+                        Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get());
+                        if(targetVec.length() != 0) {
+                            player.setDeltaMovement(targetVec);
+                        }
+                    } else {
+                        player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get()));
+                    }
+
+                    //消耗耐力
+                    player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
+                        if(entityPatch instanceof PlayerPatch<?> playerPatch){
+                            if(!player.isCreative()){
+                                playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue());
+                            }
+                        }
+                    });
+                } else if(Config.ENABLE_INERTIA.get()){
+                    double endVecLength = getEndVec(player.getPersistentData()).length();
+                    //惯性缓冲
+                    if (getLeftTick(player.getPersistentData()) > 0 && endVecLength != 0) {
+                        int leftTick = getLeftTick(player.getPersistentData());
+                        setLeftTick(player.getPersistentData(), leftTick - 1);
+                        //用末速度来计算
+                        double max = endVecLength * maxRecordTick / 2;
+                        player.setDeltaMovement(getEndVec(player.getPersistentData()).lerp(Vec3.ZERO, (max - leftTick) / max));
+                    }
+                }
+            });
+
+            //更新方向向量队列
+            updateViewVec(player.getPersistentData(), player.getViewVector(0));
+
         }
 
         /**

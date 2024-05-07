@@ -60,7 +60,7 @@ public class ClientItemMixin {
                     clientLevel.putNonPlayerEntity(114514, swordEntity);
                 }
             }
-            if(!ssPlayer.isFlying() && getLeftTick(sword) == 0){
+            if(!ssPlayer.isFlying() && getLeftTick(sword.getOrCreateTag()) == 0){
                 ssPlayer.setFlying(false);
                 stopFly(sword);
             }

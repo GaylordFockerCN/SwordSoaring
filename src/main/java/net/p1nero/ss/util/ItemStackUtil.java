@@ -46,15 +46,24 @@ public class ItemStackUtil {
         sword.getOrCreateTag().putDouble("flySpeedScale", flySpeedScale);
     }
 
+    public static int getLeftTick(CompoundTag sword) {
+        return sword.getInt("leftTick");
+    }
+
+
     public static int getLeftTick(ItemStack sword) {
         return sword.getOrCreateTag().getInt("leftTick");
     }
 
-    public static void setLeftTick(ItemStack sword, int leftTick) {
+    public static void setLeftTick(CompoundTag sword, int leftTick) {
         if(leftTick<0){
             return;
         }
-        sword.getOrCreateTag().putInt("leftTick", Math.min(leftTick, maxRecordTick));
+        sword.putInt("leftTick", Math.min(leftTick, maxRecordTick));
+    }
+
+    public static void setLeftTick(ItemStack sword, int leftTick) {
+        setLeftTick(sword.getOrCreateTag(), leftTick);
     }
 
     /**
@@ -79,20 +88,26 @@ public class ItemStackUtil {
         sword.getOrCreateTag().getList("spiritValue", Tag.TAG_COMPOUND).getCompound(0).putInt("spiritValue", spiritValue);
     }
 
-    public static Vec3 getEndVec(ItemStack sword) {
-        CompoundTag tag = sword.getOrCreateTag();
+    public static Vec3 getEndVec(CompoundTag tag) {
         return new Vec3(tag.getDouble("endX"),tag.getDouble("endY"),tag.getDouble("endZ"));
     }
 
-    public static void setEndVec(ItemStack sword, Vec3 endVec) {
-        CompoundTag tag = sword.getOrCreateTag();
+    public static Vec3 getEndVec(ItemStack sword) {
+        return getEndVec(sword.getOrCreateTag());
+    }
+
+    public static void setEndVec(CompoundTag tag, Vec3 endVec) {
         tag.putDouble("endX", endVec.x);
         tag.putDouble("endY", endVec.y);
         tag.putDouble("endZ", endVec.z);
     }
+    public static void setEndVec(ItemStack sword, Vec3 endVec) {
+        setEndVec(sword.getOrCreateTag(), endVec);
+    }
 
     /**
      * 进行停止飞行的一系列操作，设置飞行状态为false，设置末速度，设置结束飞行缓冲时间。
+     * TODO 向下倾斜模拟重力
      */
     public static void stopFly(ItemStack sword){
         setFlying(sword,false);
@@ -104,8 +119,9 @@ public class ItemStackUtil {
 
     /**
      * 获取前n个tick前的方向向量
+     * 懒得重写了，直接用Player的persistentData吧
      */
-    public static Vec3 getViewVec(ItemStack sword, int tickBefore){
+    public static Vec3 getViewVec(CompoundTag sword, int tickBefore){
         if(tickBefore > maxRecordTick){
             return Vec3.ZERO;
         }
@@ -113,11 +129,18 @@ public class ItemStackUtil {
         return getQueue(sword).toArray(new Vec3[maxRecordTick])[maxRecordTick -tickBefore];
     }
 
+    public static Vec3 getViewVec(ItemStack sword, int tickBefore){
+        return getViewVec(sword.getOrCreateTag(),tickBefore);
+    }
+
     /**
      * 获取有记录的最初向量
      */
-    public static Vec3 getViewVec(ItemStack sword){
+    public static Vec3 getViewVec(CompoundTag sword){
         return getQueue(sword).peek();
+    }
+    public static Vec3 getViewVec(ItemStack sword){
+        return getQueue(sword.getOrCreateTag()).peek();
     }
 
     /**
@@ -125,7 +148,7 @@ public class ItemStackUtil {
      * 通过队列来保存。
      * 并作插值，实现惯性漂移（太妙了）
      */
-    public static void updateViewVec(ItemStack sword, Vec3 viewVec){
+    public static void updateViewVec(CompoundTag sword, Vec3 viewVec){
         checkOrCreateTag(sword);
         Queue<Vec3> tickValues = getQueue(sword);
         tickValues.add(viewVec);
@@ -138,10 +161,14 @@ public class ItemStackUtil {
         saveQueue(sword, newTickValues);
     }
 
+    public static void updateViewVec(ItemStack sword, Vec3 viewVec){
+        updateViewVec(sword.getOrCreateTag(), viewVec);
+    }
+
     /**
      * 获取前几个tick内的方向向量队列
      */
-    public static Queue<Vec3> getQueue(ItemStack sword){
+    public static Queue<Vec3> getQueue(CompoundTag sword){
         CompoundTag tag = checkOrCreateTag(sword);
         Queue<Vec3> tickValues = new ArrayDeque<>();
         for(int i = 0; i < maxRecordTick; i++){
@@ -154,7 +181,7 @@ public class ItemStackUtil {
     /**
      * 保存前几个tick内的方向向量队列
      */
-    public static void saveQueue(ItemStack sword, Queue<Vec3> tickValues){
+    public static void saveQueue(CompoundTag sword, Queue<Vec3> tickValues){
         CompoundTag tag = checkOrCreateTag(sword);
         for(int i = 0; i < maxRecordTick; i++){
             CompoundTag tickVecTag = tag.getList("view_vec_queue", Tag.TAG_COMPOUND).getCompound(i);
@@ -168,8 +195,7 @@ public class ItemStackUtil {
     /**
      * 检查是否为空标签，是则创建一个完备的给它。防止异常。
      */
-    public static CompoundTag checkOrCreateTag(ItemStack sword){
-        CompoundTag tag = sword.getOrCreateTag();
+    public static CompoundTag checkOrCreateTag(CompoundTag tag){
         if (!tag.contains("view_vec_queue")) {
             ListTag tickTagsList = new ListTag();
             for (int i = 0; i < maxRecordTick; i++) {

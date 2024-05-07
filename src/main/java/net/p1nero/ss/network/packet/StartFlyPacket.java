@@ -35,6 +35,7 @@ public record StartFlyPacket () implements BasePacket {
 
                 //下面注释掉的代码是尝试在服务端加剑的实体，实测速度会跟不上，于是改成向所有人发包。
                 //让所有人都看到我的剑！
+                //FIXME 理论上存在bug，别人的客户端的玩家是否是飞行状态无法判断。。
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new AddSwordEntityPacket(player.getId()));
 
 //                if(!ssPlayer.hasSwordEntity() && player instanceof ServerPlayer serverPlayer){

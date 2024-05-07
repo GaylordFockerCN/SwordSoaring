@@ -1,5 +1,6 @@
 package net.p1nero.ss.mixin;
 
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -69,6 +70,9 @@ public class ItemMixin {
                 swordEntity.setYRot(player.getYRot());
                 player.level().addFreshEntity(swordEntity);
                 PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddSwordEntityPacket(player.getId()));
+                if (player.level() instanceof ClientLevel clientLevel) {
+                    clientLevel.putNonPlayerEntity(114514+player.getId(), swordEntity);
+                }
             }
             if(!ssPlayer.isFlying() && getLeftTick(sword) == 0){
                 ssPlayer.setFlying(false);
@@ -91,7 +95,7 @@ public class ItemMixin {
             if(player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).isFlying()){
                 //获取10tick前的速度并且根据按键对其缩放。
                 double flySpeedScale = getFlySpeedScale(itemStack);
-                Vec3 targetVec = getViewVec(itemStack, 10).scale(flySpeedScale);
+                Vec3 targetVec = getViewVec(itemStack, Config.INERTIA_TICK_BEFORE.get().intValue()).scale(flySpeedScale);
                 if(targetVec.length() != 0){
                     //灵力够才能起飞
                     int spiritValue = getSpiritValue(itemStack) - (int) (targetVec.length() * 10);
@@ -129,7 +133,7 @@ public class ItemMixin {
 
     @Inject(method = "appendHoverText", at = @At("HEAD"))
     private void injected(ItemStack itemStack, Level p_41422_, List<Component> components, TooltipFlag p_41424_, CallbackInfo ci){
-        if(SwordSoaring.isValidSword(itemStack) && !SwordSoaring.epicFightLoad()){
+        if(SwordSoaring.isValidSword(itemStack) && (!SwordSoaring.epicFightLoad() || Config.ENABLE_SPIRIT_FLY_IN_EFM.get())){
             components.add(Component.translatable("tip.sword_soaring.spirit_value", getSpiritValue(itemStack)));
         }
     }
