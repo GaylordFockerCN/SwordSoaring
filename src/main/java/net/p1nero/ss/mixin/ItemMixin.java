@@ -104,7 +104,11 @@ public class ItemMixin {
                             setSpiritValue(itemStack, spiritValue);
                         }
                         //往朝向加速
-                        player.setDeltaMovement(targetVec);
+                        if(Config.ENABLE_INERTIA.get()){
+                            player.setDeltaMovement(targetVec);
+                        }else {
+                            player.setDeltaMovement(player.getViewVector(0).scale(Config.FLY_SPEED_SCALE.get().intValue()));
+                        }
                     } else {
                         stopFly(itemStack);
                     }
@@ -113,7 +117,7 @@ public class ItemMixin {
                 //恢复灵力
                 setSpiritValue(itemStack, getSpiritValue(itemStack) + 10);
                 //缓冲
-                if (getLeftTick(itemStack) > 0) {
+                if (getLeftTick(itemStack) > 0 && Config.ENABLE_INERTIA.get()) {
                     int leftTick = getLeftTick(itemStack);
                     setLeftTick(itemStack, leftTick - 1);
                     //用末速度来计算
