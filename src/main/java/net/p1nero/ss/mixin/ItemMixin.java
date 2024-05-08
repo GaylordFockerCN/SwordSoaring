@@ -17,6 +17,8 @@ import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
+import net.p1nero.ss.enchantment.ModEnchantments;
+import net.p1nero.ss.enchantment.SwordSoaringEnchantment;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
@@ -130,7 +132,7 @@ public class ItemMixin {
                     //用末速度来计算
                     double endVecLength = getEndVec(itemStack).length();
                     if (endVecLength != 0) {
-                        double max = endVecLength * maxRecordTick * 2;
+                        double max = endVecLength * maxRecordTick;
                         player.setDeltaMovement(getEndVec(itemStack).lerp(Vec3.ZERO, (max - leftTick) / max));
                     }
                 }
@@ -145,9 +147,16 @@ public class ItemMixin {
 
     @Inject(method = "appendHoverText", at = @At("HEAD"))
     private void injected(ItemStack itemStack, Level p_41422_, List<Component> components, TooltipFlag p_41424_, CallbackInfo ci){
-        if(SwordSoaring.isValidSword(itemStack) && (!SwordSoaring.epicFightLoad() || Config.ENABLE_SPIRIT_FLY_IN_EFM.get())){
-            components.add(Component.translatable("tip.sword_soaring.spirit_value", getSpiritValue(itemStack)));
+        if(SwordSoaring.isValidSword(itemStack) ){
+            if( (!SwordSoaring.epicFightLoad() || Config.ENABLE_SPIRIT_FLY_IN_EFM.get())){
+                components.add(Component.translatable("tip.sword_soaring.spirit_value", getSpiritValue(itemStack)));
+            }
+            if(SwordSoaring.epicFightLoad()){
+                float scale = SwordSoaringEnchantment.getScale(itemStack.getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get()));
+                components.add(Component.translatable("tip.sword_soaring.stamina_consume", Config.STAMINA_CONSUME_PER_TICK.get() + " × " + scale));
+            }
         }
+
     }
 
 }

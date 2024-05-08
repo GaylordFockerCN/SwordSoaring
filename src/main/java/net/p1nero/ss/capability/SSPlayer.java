@@ -54,8 +54,10 @@ public class SSPlayer {
     }
 
     public void putAwaySword(ServerPlayer player){
-        if(Config.HIDE_SWORD_WHEN_FLY.get() && getSword().isEmpty()){
+        if(getSword().isEmpty()){
             setSword(player.getMainHandItem());
+        }
+        if(Config.HIDE_SWORD_WHEN_FLY.get()){
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
     }
@@ -65,8 +67,8 @@ public class SSPlayer {
             if(!player.addItem(getSword())){
                 player.drop(getSword(),true);
             }
-            setSword(ItemStack.EMPTY);
         }
+        setSword(ItemStack.EMPTY);
     }
 
     public void saveNBTData(CompoundTag tag){
@@ -74,7 +76,11 @@ public class SSPlayer {
         tag.putBoolean("protectNextFall", protectNextFall);
         tag.putBoolean("hasEntity", hasSwordEntity);
         tag.putInt("anticipationTick", anticipationTick);
-        tag.put("sword", sword.serializeNBT());
+        if(sword != null){
+            tag.put("sword", sword.serializeNBT());
+        }else {
+            tag.put("sword", new CompoundTag());
+        }
     }
 
     public void loadNBTData(CompoundTag tag){

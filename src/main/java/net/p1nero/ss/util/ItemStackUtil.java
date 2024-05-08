@@ -113,7 +113,7 @@ public class ItemStackUtil {
         setFlying(sword,false);
         Vec3 endVec = getViewVec(sword,1).scale(getFlySpeedScale(sword));
         setEndVec(sword, endVec);
-        double leftTick = endVec.length() * maxRecordTick * 2;
+        double leftTick = endVec.length() * maxRecordTick;
         setLeftTick(sword, ((int) leftTick));
     }
 

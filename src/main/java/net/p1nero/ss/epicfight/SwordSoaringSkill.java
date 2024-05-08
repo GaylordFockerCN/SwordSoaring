@@ -65,7 +65,7 @@ public class SwordSoaringSkill extends Skill {
                     if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
                         Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get());
                         setEndVec(player.getPersistentData(), endVec);
-                        double leftTick = endVec.length() * maxRecordTick * 2;
+                        double leftTick = endVec.length() * maxRecordTick;
                         setLeftTick(player.getPersistentData(), ((int) leftTick));
                     }
                     ssPlayer.setFlying(false);

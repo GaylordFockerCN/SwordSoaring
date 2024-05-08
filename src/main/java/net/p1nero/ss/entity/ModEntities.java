@@ -10,11 +10,11 @@ import net.minecraftforge.registries.RegistryObject;
 import net.p1nero.ss.SwordSoaring;
 
 public class ModEntities {
-    public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, SwordSoaring.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, SwordSoaring.MOD_ID);
     public static final RegistryObject<EntityType<SwordEntity>> SWORD = register("sword",
             EntityType.Builder.of(SwordEntity::new,  MobCategory.CREATURE));
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String registryname, EntityType.Builder<T> entityTypeBuilder) {
-        return REGISTRY.register(registryname, () -> entityTypeBuilder.build(new ResourceLocation(SwordSoaring.MOD_ID, registryname).toString()));
+        return ENTITIES.register(registryname, () -> entityTypeBuilder.build(new ResourceLocation(SwordSoaring.MOD_ID, registryname).toString()));
     }
 
 }

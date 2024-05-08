@@ -27,12 +27,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.p1nero.ss.capability.SSCapabilityProvider;
-import net.p1nero.ss.capability.SSPlayer;
+import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntityRenderer;
 import net.p1nero.ss.epicfight.ModSkills;
 import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
+import net.p1nero.ss.network.packet.StopFlyPacket;
 import org.slf4j.Logger;
 import yesman.epicfight.config.ConfigManager;
 import yesman.epicfight.data.loot.function.SetSkillFunction;
@@ -43,7 +44,6 @@ import yesman.epicfight.world.item.EpicFightItems;
 import java.util.stream.Collectors;
 
 import static net.p1nero.ss.util.ItemStackUtil.*;
-import static net.p1nero.ss.util.ItemStackUtil.stopFly;
 
 @Mod(SwordSoaring.MOD_ID)
 public class SwordSoaring {
@@ -54,14 +54,15 @@ public class SwordSoaring {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
         MinecraftForge.EVENT_BUS.register(this);
-        ModEntities.REGISTRY.register(bus);
-        ModItems.REGISTRY.register(bus);
+        ModEntities.ENTITIES.register(bus);
+        ModItems.ITEMS.register(bus);
+        ModEnchantments.ENCHANTMENTS.register(bus);
         bus.addListener(this::commonSetup);
         if(epicFightLoad()){
             fg_bus.addListener(ModSkills::BuildSkills);
         }
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, net.p1nero.ss.Config.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -104,7 +105,7 @@ public class SwordSoaring {
         /**
          * 控制飞行和耐力消耗
          * 并进行惯性判断。飞行结束时如果有缓冲时间则缓冲。
-         * 缓冲时间设置请看：{@link net.p1nero.ss.network.packet.StopFlyPacket#execute(Player)}
+         * 缓冲时间设置请看：{@link StopFlyPacket#execute(Player)}
          */
         @SubscribeEvent
         public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -129,7 +130,16 @@ public class SwordSoaring {
                     player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
                         if(entityPatch instanceof PlayerPatch<?> playerPatch){
                             if(!player.isCreative()){
-                                playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue());
+                                float scale = 1;
+                                if(ssPlayer.getSword() != null){
+                                    int enchantmentLevel = ssPlayer.getSword().getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get());
+                                    scale = switch (enchantmentLevel) {
+                                        case 1 -> 0.75f;
+                                        case 2 -> 0.5f;
+                                        default -> 1;
+                                    };
+                                }
+                                playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale);
                             }
                         }
                     });
@@ -140,7 +150,7 @@ public class SwordSoaring {
                         int leftTick = getLeftTick(player.getPersistentData());
                         setLeftTick(player.getPersistentData(), leftTick - 1);
                         //用末速度来计算
-                        double max = endVecLength * maxRecordTick ;
+                        double max = endVecLength * maxRecordTick;
                         player.setDeltaMovement(getEndVec(player.getPersistentData()).lerp(Vec3.ZERO, (max - leftTick) / max));
                     }
                 }

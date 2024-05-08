@@ -2,9 +2,13 @@
   "item.sword_soaring.sword_soaring_secret": "Swordsmanship Secrets",
   "tip.sword_soaring.learn": "You've learned someone's secrets, now you can fly with your sword!",
   "tip.sword_soaring.spirit_value": "Spirit Value : %d",
+  "tip.sword_soaring.stamina_consume": "Stamina consume : %s / tick",
   "skill.sword_soaring.sword_soaring": "Sword Soaring",
   "skill.sword_soaring.sword_soaring.tooltip": "Hold down the space to fly on the sword, release the space to stop. Consume stamina. Protect the next falling damage.",
+  "skill.sword_soaring.rain_screen": "Rain Screen",
+  "skill.sword_soaring.rain_screen.tooltip": "",
   "config.sword_soaring.fly_speed_scale": "the ratio of flying speed to view vector",
   "config.sword_soaring.stamina_consume_per_tick": "the stamina consumed per tick when flying",
-  "config.sword_soaring.max_anticipation_tick": "ticks of pre taking off"
+  "config.sword_soaring.max_anticipation_tick": "ticks of pre taking off",
+  "enchantment.sword_soaring.sword_soaring": "Enhance Sword Soaring Stamina"
 }
