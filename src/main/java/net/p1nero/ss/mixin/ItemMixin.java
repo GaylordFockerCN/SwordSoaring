@@ -2,6 +2,7 @@ package net.p1nero.ss.mixin;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -64,6 +65,7 @@ public class ItemMixin {
             ssPlayer.setFlying(!ssPlayer.isFlying());
             //重置初速度，防止太快起飞不了的bug。
             setFlySpeedScale(sword,0.7);
+            //在use中只执行一次，不用判断是否已有sword entity
             if(ssPlayer.isFlying()){
                 SwordEntity swordEntity = new SwordEntity(sword, player);
                 swordEntity.setPos(player.getX(),player.getY(),player.getZ());
@@ -73,10 +75,14 @@ public class ItemMixin {
                 if (player.level() instanceof ClientLevel clientLevel) {
                     clientLevel.putNonPlayerEntity(114514+player.getId(), swordEntity);
                 }
+                ssPlayer.putAwaySword(((ServerPlayer) player));
             }
             if(!ssPlayer.isFlying() && getLeftTick(sword) == 0){
                 ssPlayer.setFlying(false);
                 stopFly(sword);
+                //还剑
+                ssPlayer.returnSword(((ServerPlayer) player));
+
             }
         });
 
@@ -111,6 +117,7 @@ public class ItemMixin {
                         }
                     } else {
                         stopFly(itemStack);
+                        player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).returnSword(((ServerPlayer) player));
                     }
                 }
             } else {
@@ -127,6 +134,7 @@ public class ItemMixin {
                         player.setDeltaMovement(getEndVec(itemStack).lerp(Vec3.ZERO, (max - leftTick) / max));
                     }
                 }
+
             }
 
             //更新前几个刻的方向队列

@@ -2,8 +2,11 @@ package net.p1nero.ss.network.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.entity.ModEntities;
@@ -32,6 +35,8 @@ public record StartFlyPacket () implements BasePacket {
                 ssPlayer.setProtectNextFall(true);
 //                ssPlayer.setFlying(!ssPlayer.isFlying());
                 ssPlayer.setFlying(true);
+                //剑放脚下就不拿出来了
+                ssPlayer.putAwaySword(((ServerPlayer) player));
 
                 //下面注释掉的代码是尝试在服务端加剑的实体，实测速度会跟不上，于是改成向所有人发包。
                 //让所有人都看到我的剑！

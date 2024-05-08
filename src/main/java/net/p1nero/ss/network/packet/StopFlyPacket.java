@@ -1,7 +1,9 @@
 package net.p1nero.ss.network.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.capability.SSCapabilityProvider;
@@ -35,6 +37,7 @@ public record StopFlyPacket() implements BasePacket {
                     setLeftTick(player.getPersistentData(), ((int) leftTick));
                 }
                 ssPlayer.setFlying(false);
+                ssPlayer.returnSword(((ServerPlayer) player));
             });
 
         }
