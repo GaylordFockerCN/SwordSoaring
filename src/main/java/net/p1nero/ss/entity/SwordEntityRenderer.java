@@ -32,13 +32,8 @@ public class SwordEntityRenderer extends EntityRenderer<SwordEntity> {
     @Override
     public void render(SwordEntity swordEntity, float p_114486_, float p_114487_, PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int light) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.XP.rotationDegrees(90f));
-        Item sword = swordEntity.getItemStack().getItem();
-        if(SwordSoaring.epicFightLoad() && (sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem)){
-            poseStack.mulPose(Axis.ZP.rotationDegrees(45f + swordEntity.getYRot()));
-        }else {
-            poseStack.mulPose(Axis.ZP.rotationDegrees(-45f + swordEntity.getYRot()));
-        }
+
+        swordEntity.setPose(poseStack);
 //        poseStack.translate(0,0,1);
         BakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(swordEntity.getItemStack());//能找到这个方法我也是天才
         Minecraft.getInstance().getItemRenderer().render(swordEntity.getItemStack(), ItemDisplayContext.FIXED,false,poseStack,multiBufferSource, light,1, model);

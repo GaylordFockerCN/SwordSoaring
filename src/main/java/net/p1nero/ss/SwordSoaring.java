@@ -95,6 +95,7 @@ public class SwordSoaring {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event){
             EntityRenderers.register(ModEntities.SWORD.get(), SwordEntityRenderer::new);
+            EntityRenderers.register(ModEntities.RAIN_SCREEN_SWORD.get(), SwordEntityRenderer::new);
         }
 
     }

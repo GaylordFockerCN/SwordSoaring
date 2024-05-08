@@ -34,11 +34,18 @@ public class SwordSoaringSkill extends Skill {
         super(builder);
     }
 
+    /**
+     * 以后可能有用
+     * @param parameters
+     */
     @Override
     public void setParams(CompoundTag parameters) {
         super.setParams(parameters);
     }
 
+    /**
+     * 注册监听器
+     */
     @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);

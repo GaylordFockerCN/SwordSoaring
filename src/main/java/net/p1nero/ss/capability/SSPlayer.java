@@ -10,6 +10,7 @@ public class SSPlayer {
     private boolean isFlying;
     private boolean protectNextFall;
     private boolean hasSwordEntity;
+    private int swordScreenEntityCount;
     private int anticipationTick;
     private ItemStack sword;
 
@@ -37,6 +38,17 @@ public class SSPlayer {
         this.hasSwordEntity = hasSwordEntity;
     }
 
+    public int getSwordScreenEntityCount() {
+        return swordScreenEntityCount;
+    }
+
+    public void setSwordScreenEntityCount(int swordScreenEntityCount) {
+        if(swordScreenEntityCount < 0){
+            return;
+        }
+        this.swordScreenEntityCount = swordScreenEntityCount;
+    }
+
     public int getAnticipationTick() {
         return anticipationTick;
     }
@@ -56,10 +68,11 @@ public class SSPlayer {
     public void putAwaySword(ServerPlayer player){
         if(getSword().isEmpty()){
             setSword(player.getMainHandItem());
+            if(Config.HIDE_SWORD_WHEN_FLY.get()){
+                player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            }
         }
-        if(Config.HIDE_SWORD_WHEN_FLY.get()){
-            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-        }
+
     }
 
     public void returnSword(ServerPlayer player){
@@ -75,6 +88,7 @@ public class SSPlayer {
         tag.putBoolean("isFlying", isFlying);
         tag.putBoolean("protectNextFall", protectNextFall);
         tag.putBoolean("hasEntity", hasSwordEntity);
+//        tag.putInt("hasSwordScreenEntity", swordScreenEntityCount);
         tag.putInt("anticipationTick", anticipationTick);
         if(sword != null){
             tag.put("sword", sword.serializeNBT());
@@ -87,6 +101,7 @@ public class SSPlayer {
         isFlying = tag.getBoolean("isFlying");
         protectNextFall = tag.getBoolean("protectNextFall");
         hasSwordEntity = tag.getBoolean("hasEntity");
+//        swordScreenEntityCount = tag.getInt("hasSwordScreenEntity");
         anticipationTick = tag.getInt("anticipationTick");
         sword = ItemStack.of(tag.getCompound("sword"));
     }
@@ -95,7 +110,9 @@ public class SSPlayer {
         isFlying = old.isFlying;
         protectNextFall = old.protectNextFall;
         hasSwordEntity = old.hasSwordEntity;
+//        swordScreenEntityCount = old.swordScreenEntityCount;
         anticipationTick = old.anticipationTick;
+        sword = old.sword;
     }
 
 }
