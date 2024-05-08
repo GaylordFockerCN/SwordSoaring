@@ -6,11 +6,16 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.p1nero.ss.Config;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class SSPlayer {
     private boolean isFlying;
     private boolean protectNextFall;
     private boolean hasSwordEntity;
     private int swordScreenEntityCount;
+    private Set<Integer> swordID;
     private int anticipationTick;
     private ItemStack sword;
 
@@ -47,6 +52,17 @@ public class SSPlayer {
             return;
         }
         this.swordScreenEntityCount = swordScreenEntityCount;
+    }
+
+    public void setSwordID(Set<Integer> swordID) {
+        this.swordID = swordID;
+    }
+
+    public Set<Integer> getSwordID() {
+        if(swordID == null){
+            swordID = new HashSet<>();
+        }
+        return swordID;
     }
 
     public int getAnticipationTick() {

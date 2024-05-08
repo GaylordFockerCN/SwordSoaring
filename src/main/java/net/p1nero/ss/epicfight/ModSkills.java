@@ -14,7 +14,7 @@ public class ModSkills {
     public static Skill RAIN_SCREEN;
     public static Skill RAIN_CUTTER;
     public static void registerSkills() {
-        SkillManager.register(RainScreen::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.IDENTITY), SwordSoaring.MOD_ID, "rain_screen");
+        SkillManager.register(RainScreen::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.GUARD), SwordSoaring.MOD_ID, "rain_screen");
         SkillManager.register(SwordSoaringSkill::new, Skill.createMoverBuilder(), SwordSoaring.MOD_ID, "sword_soaring");
     }
 //    @SubscribeEvent

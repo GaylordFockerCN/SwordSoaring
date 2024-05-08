@@ -114,7 +114,7 @@ public class RainScreenSwordEntity extends SwordEntity{
         double radians = tickCount * 0.1;
         double rotatedX = center.x + (float) (Math.cos(radians) * (now.x - center.x) - Math.sin(radians) * (now.z - center.z));
         double rotatedZ = center.z + (float) (Math.sin(radians) * (now.x - center.x) + Math.cos(radians) * (now.z - center.z));
-        setPos(new Vec3(rotatedX, now.y+Math.sin(radians)*0.1, rotatedZ));
+        setPos(new Vec3(rotatedX, now.y+Math.sin(radians)*0.3, rotatedZ));
 
         SSPlayer ssPlayer = rider.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
         if(this.tickCount > 200){

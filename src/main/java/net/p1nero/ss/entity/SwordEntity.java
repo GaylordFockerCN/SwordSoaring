@@ -94,7 +94,7 @@ public class SwordEntity extends Entity {
         }
 
         setPos(new Vec3(rider.getX(),rider.getY(),rider.getZ()));
-//        setYRot(rider.getYRot());
+        setYRot(rider.getYRot());
 
         rider.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(!ssPlayer.isFlying()){
