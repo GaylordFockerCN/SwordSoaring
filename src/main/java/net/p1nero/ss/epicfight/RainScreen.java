@@ -7,11 +7,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.phys.AABB;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.RainScreenSwordEntity;
+import net.p1nero.ss.network.PacketHandler;
+import net.p1nero.ss.network.PacketRelay;
+import net.p1nero.ss.network.packet.SyncSwordOwnerPacket;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
@@ -25,6 +29,7 @@ import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -99,12 +104,25 @@ public class RainScreen extends Skill {
         }
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(ssPlayer.getSwordScreenEntityCount() == 0){
-//                playerPatch.playAnimationSynchronized(Animations.DUMMY_ANIMATION, 0);
+
+                //播放动画，对周围实体造成伤害
+                playerPatch.playAnimationSynchronized(Animations.BIPED_PHANTOM_ASCENT_BACKWARD, 0);
                 playerPatch.consumeStamina(4);
+                double r = 3;
+                List<Entity> entities = player.serverLevel().getEntities(player,new AABB(player.getPosition(0).add(-r,-r,-r), player.getPosition(0).add(r,r,r)));
+                for (Entity entity : entities){
+                    if(entity.getId() == player.getId()){
+                        continue;
+                    }
+                    entity.hurt(player.damageSources().playerAttack(player), 2f);
+                }
+
+                //添加四把剑帘
                 for(int i = 0; i < 4; i++){
                     RainScreenSwordEntity sword = ModEntities.RAIN_SCREEN_SWORD.get().spawn(player.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
                     sword.setRider(player);
                     sword.setItemStack(player.getMainHandItem());
+                    PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
                     sword.setSwordID(i);
                     sword.setPos(player.getPosition(0.5f).add(sword.getOffset()));
                     ssPlayer.getSwordID().add(sword.getId());

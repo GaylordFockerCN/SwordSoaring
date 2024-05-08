@@ -88,10 +88,6 @@ public class RainScreenSwordEntity extends SwordEntity{
 
         //想办法不让rider为null
         if(rider == null){
-            //呃呃呃简单粗暴
-            if(level().isClientSide){
-                rider = Minecraft.getInstance().player;
-            }
             if(this.getEntityData().get(RIDER_UUID).isPresent()){
                 rider = level().getPlayerByUUID(this.getEntityData().get(RIDER_UUID).get());
             }else {
@@ -101,7 +97,6 @@ public class RainScreenSwordEntity extends SwordEntity{
             }
         }
 
-        //无能为力，那就紫砂吧
         if(rider == null){
             SwordSoaring.LOGGER.info("sword entity "+ getId() + " doesn't have rider "+level());
             discard();

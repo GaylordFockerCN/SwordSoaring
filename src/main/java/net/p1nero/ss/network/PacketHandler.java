@@ -23,6 +23,7 @@ public class PacketHandler {
         register(StartFlyPacket.class, StartFlyPacket::decode);
         register(StopFlyPacket.class, StopFlyPacket::decode);
         register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);
+        register(SyncSwordOwnerPacket.class, SyncSwordOwnerPacket::decode);
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {
