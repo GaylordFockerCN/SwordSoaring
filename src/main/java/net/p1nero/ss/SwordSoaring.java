@@ -31,6 +31,8 @@ import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntityRenderer;
 import net.p1nero.ss.epicfight.ModSkills;
+import net.p1nero.ss.epicfight.RainCutter;
+import net.p1nero.ss.epicfight.SwordSoaringSkill;
 import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.packet.StopFlyPacket;
@@ -60,6 +62,8 @@ public class SwordSoaring {
         bus.addListener(this::commonSetup);
         if(epicFightLoad()){
             fg_bus.addListener(ModSkills::BuildSkills);
+            fg_bus.addListener(RainCutter::onPlayerTick);
+            fg_bus.addListener(SwordSoaringSkill::onPlayerTick);
         }
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -95,8 +99,10 @@ public class SwordSoaring {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event){
             EntityRenderers.register(ModEntities.SWORD.get(), SwordEntityRenderer::new);
-            EntityRenderers.register(ModEntities.RAIN_SCREEN_SWORD.get(), SwordEntityRenderer::new);
-            EntityRenderers.register(ModEntities.RAIN_CUTTER_SWORD.get(), SwordEntityRenderer::new);
+            if(epicFightLoad()){
+                EntityRenderers.register(ModEntities.RAIN_SCREEN_SWORD.get(), SwordEntityRenderer::new);
+                EntityRenderers.register(ModEntities.RAIN_CUTTER_SWORD.get(), SwordEntityRenderer::new);
+            }
         }
 
     }

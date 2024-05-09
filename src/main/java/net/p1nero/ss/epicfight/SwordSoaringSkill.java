@@ -32,8 +32,6 @@ import java.util.UUID;
 import static net.p1nero.ss.util.ItemStackUtil.*;
 import static net.p1nero.ss.util.ItemStackUtil.setLeftTick;
 
-
-@Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SwordSoaringSkill extends Skill {
 
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114514");
@@ -140,7 +138,6 @@ public class SwordSoaringSkill extends Skill {
      * 并进行惯性判断。飞行结束时如果有缓冲时间则缓冲。
      * 缓冲时间设置请看：{@link StopFlyPacket#execute(Player)}
      */
-    @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
         if(!SwordSoaring.epicFightLoad()){

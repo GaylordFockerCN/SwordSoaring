@@ -1,7 +1,6 @@
 package net.p1nero.ss.epicfight;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
@@ -9,7 +8,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
-import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.RainCutterSwordEntity;
 import net.p1nero.ss.network.PacketHandler;
@@ -22,13 +20,10 @@ import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.UUID;
 
-import static net.p1nero.ss.util.ItemStackUtil.updateViewVec;
-
 /**
  * 裁雨留虹
  */
 
-@Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RainCutter extends Skill {
 
 
@@ -85,7 +80,6 @@ public class RainCutter extends Skill {
     /**
      * 控制技能持续时间和冷却
      */
-    @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if(!SwordSoaring.epicFightLoad()){
             return;

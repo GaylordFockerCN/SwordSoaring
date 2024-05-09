@@ -1,6 +1,5 @@
 package net.p1nero.ss.epicfight;
 
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +32,6 @@ import java.util.UUID;
 /**
  * 画雨笼山
  * 所有带Data的都得重写。。。
- * TODO 补动画
  */
 public class RainScreen extends Skill {
 

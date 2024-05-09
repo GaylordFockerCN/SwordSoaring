@@ -55,15 +55,23 @@ public class ItemMixin {
             return;
         }
         ItemStack sword = player.getItemInHand(hand);
-        if(!SwordSoaring.isValidSword(sword)){
-            return;
-        }
+
 
         if(level.isClientSide){
             return;
         }
 
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+
+            //非剑直接还剑
+            if(!SwordSoaring.isValidSword(sword)){
+                ssPlayer.setFlying(false);
+                stopFly(sword);
+                //还剑
+                ssPlayer.returnSword(((ServerPlayer) player));
+                return;
+            }
+
             ssPlayer.setFlying(!ssPlayer.isFlying());
             //重置初速度，防止太快起飞不了的bug。
             setFlySpeedScale(sword,0.7);
@@ -151,7 +159,7 @@ public class ItemMixin {
             if( (!SwordSoaring.epicFightLoad() || Config.ENABLE_SPIRIT_FLY_IN_EFM.get())){
                 components.add(Component.translatable("tip.sword_soaring.spirit_value", getSpiritValue(itemStack)));
             }
-            if(SwordSoaring.epicFightLoad()){
+            if(SwordSoaring.epicFightLoad() && itemStack.getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get()) > 0){
                 float scale = SwordSoaringEnchantment.getScale(itemStack.getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get()));
                 components.add(Component.translatable("tip.sword_soaring.stamina_consume", Config.STAMINA_CONSUME_PER_TICK.get() + " × " + scale));
             }
