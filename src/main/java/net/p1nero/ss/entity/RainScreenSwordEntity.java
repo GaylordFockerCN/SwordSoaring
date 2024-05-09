@@ -75,11 +75,11 @@ public class RainScreenSwordEntity extends SwordEntity{
     public Vec3 getOffset(){
         double dis = 1.3;
         return switch (getRainScreenSwordId()){
-            case 0 -> new Vec3(-dis,1,0);
-            case 1 -> new Vec3(0,1,-dis);
-            case 2 -> new Vec3(dis,1,0);
-            case 3 -> new Vec3(0,1,dis);
-            default -> new Vec3(0,1,0);
+            case 0 -> new Vec3(-dis,0,0);
+            case 1 -> new Vec3(0,0,-dis);
+            case 2 -> new Vec3(dis,0,0);
+            case 3 -> new Vec3(0,0,dis);
+            default -> new Vec3(0,0,0);
         };
     }
 
@@ -118,8 +118,7 @@ public class RainScreenSwordEntity extends SwordEntity{
         }
 
         //触发技能，撞到实体造成伤害，自身回血
-        List<Entity> entities = level().getEntities(this, new AABB(getPosition(0).add(-5,-5,-5), getPosition(0).add(5,5,5))
-                , entity -> entity.getBoundingBox().contains(getPosition(0.5f)));
+        List<Entity> entities = getHitEntities();
         for (Entity entity : entities){
             if(entity.getId() == rider.getId()){
                 continue;
@@ -133,8 +132,6 @@ public class RainScreenSwordEntity extends SwordEntity{
 
     }
 
-
-
     @Override
     public void setPose(PoseStack poseStack) {
         Item sword = getItemStack().getItem();
@@ -143,5 +140,7 @@ public class RainScreenSwordEntity extends SwordEntity{
         }else {
             poseStack.mulPose(Axis.ZP.rotationDegrees(-225));
         }
+        //碰撞箱偏高（调这个太折磨人了，xyz轴都不知道转成什么样了只能一个个试）
+        poseStack.translate(0.8,-0.8,0);
     }
 }

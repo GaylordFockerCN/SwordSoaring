@@ -15,6 +15,8 @@ public class SSPlayer {
     private boolean protectNextFall;
     private boolean hasSwordEntity;
     private int swordScreenEntityCount;
+    private int rainCutterTimer;
+    private boolean rainCutterCoolDown;
     private Set<Integer> swordID;
     private int anticipationTick;
     private ItemStack sword;
@@ -52,6 +54,22 @@ public class SSPlayer {
             return;
         }
         this.swordScreenEntityCount = swordScreenEntityCount;
+    }
+
+    public int getRainCutterTimer() {
+        return rainCutterTimer;
+    }
+
+    public void setRainCutterTimer(int rainCutterTimer) {
+        this.rainCutterTimer = rainCutterTimer;
+    }
+
+    public boolean isRainCutterCoolDown() {
+        return rainCutterCoolDown;
+    }
+
+    public void setRainCutterCoolDown(boolean rainCutterCoolDown) {
+        this.rainCutterCoolDown = rainCutterCoolDown;
     }
 
     public void setSwordID(Set<Integer> swordID) {
@@ -104,7 +122,9 @@ public class SSPlayer {
         tag.putBoolean("isFlying", isFlying);
         tag.putBoolean("protectNextFall", protectNextFall);
         tag.putBoolean("hasEntity", hasSwordEntity);
-//        tag.putInt("hasSwordScreenEntity", swordScreenEntityCount);
+        tag.putInt("hasSwordScreenEntity", swordScreenEntityCount);
+        tag.putInt("rainCutterTimer", rainCutterTimer);
+        tag.putBoolean("rainCutterCoolDown", rainCutterCoolDown);
         tag.putInt("anticipationTick", anticipationTick);
         if(sword != null){
             tag.put("sword", sword.serializeNBT());
@@ -117,7 +137,9 @@ public class SSPlayer {
         isFlying = tag.getBoolean("isFlying");
         protectNextFall = tag.getBoolean("protectNextFall");
         hasSwordEntity = tag.getBoolean("hasEntity");
-//        swordScreenEntityCount = tag.getInt("hasSwordScreenEntity");
+        swordScreenEntityCount = tag.getInt("hasSwordScreenEntity");
+        rainCutterTimer = tag.getInt("rainCutterTimer");
+        rainCutterCoolDown = tag.getBoolean("rainCutterCoolDown");
         anticipationTick = tag.getInt("anticipationTick");
         sword = ItemStack.of(tag.getCompound("sword"));
     }
@@ -126,7 +148,9 @@ public class SSPlayer {
         isFlying = old.isFlying;
         protectNextFall = old.protectNextFall;
         hasSwordEntity = old.hasSwordEntity;
-//        swordScreenEntityCount = old.swordScreenEntityCount;
+        swordScreenEntityCount = old.swordScreenEntityCount;
+        rainCutterTimer = old.rainCutterTimer;
+        rainCutterCoolDown = old.rainCutterCoolDown;
         anticipationTick = old.anticipationTick;
         sword = old.sword;
     }

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
 import net.p1nero.ss.SwordSoaring;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SwordEntity extends Entity {
+public class SwordEntity extends Entity{
     protected Player rider;
 
     private static final EntityDataAccessor<Optional<UUID>> RIDER_UUID = SynchedEntityData.defineId(SwordEntity.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -107,6 +108,16 @@ public class SwordEntity extends Entity {
     }
 
     /**
+     * 判断范围内和自己有交叉的实体
+     */
+    public List<Entity> getHitEntities(){
+//        return level().getEntities(this, new AABB(getPosition(0).add(-5,-5,-5), getPosition(0).add(5,5,5))
+//                , entity -> entity.getBoundingBox().contains(getPosition(0.5f)));
+        return level().getEntities(this, new AABB(getPosition(0).add(-5,-5,-5), getPosition(0).add(5,5,5))
+                , entity -> entity.getBoundingBox().intersects(getBoundingBox()));
+    }
+
+    /**
      * 调整姿势
      * @param poseStack
      */
@@ -139,7 +150,9 @@ public class SwordEntity extends Entity {
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putUUID("rider_uuid", this.getEntityData().get(RIDER_UUID).orElse(rider.getUUID()));
+        if(rider != null){
+            tag.putUUID("rider_uuid", this.getEntityData().get(RIDER_UUID).orElse(rider.getUUID()));
+        }
         tag.put("item_stack", this.getEntityData().get(ITEM_STACK).serializeNBT());
     }
 

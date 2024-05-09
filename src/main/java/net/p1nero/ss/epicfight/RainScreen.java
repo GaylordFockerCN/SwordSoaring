@@ -23,17 +23,12 @@ import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.skill.SkillDataKeys;
-import yesman.epicfight.skill.SkillSlots;
-import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import static net.p1nero.ss.util.ItemStackUtil.setLeftTick;
 
 /**
  * 画雨笼山
@@ -58,7 +53,9 @@ public class RainScreen extends Skill {
         PlayerEventListener listener = container.getExecuter().getEventListener();
 
         listener.addEventListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID, (event) -> {
-            summonRainScreen(event.getPlayerPatch().getOriginal(), event.getPlayerPatch());
+            if(event.getPlayerPatch().hasStamina(4)){
+                summonRainScreen(event.getPlayerPatch().getOriginal(), event.getPlayerPatch());
+            }
         });
 
         listener.addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
@@ -74,20 +71,24 @@ public class RainScreen extends Skill {
 
                 if (damageSource.getDirectEntity() instanceof LivingEntity livingEntity) {
                     knockback += EnchantmentHelper.getKnockbackBonus(livingEntity) * 0.1F;
+                    event.getPlayerPatch().knockBackEntity(damageSource.getDirectEntity().position(), knockback);
                 }
 
-                event.getPlayerPatch().knockBackEntity(damageSource.getDirectEntity().position(), knockback);
                 event.getPlayerPatch().consumeStaminaAlways(1);
 
                 Set<Integer> swordID = ssPlayer.getSwordID();
+                //多个保险
+                if(swordID.isEmpty()){
+                    ssPlayer.setSwordScreenEntityCount(0);
+                }
                 //剑挡伤害
                 for(int i : swordID){
                     Entity sword = serverPlayer.serverLevel().getEntity(i);
                     if(sword != null){
+                        ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()-1);
                         sword.discard();
                         swordID.remove(i);
                         ssPlayer.setSwordID(swordID);
-                        ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()-1);
                         event.setCanceled(true);
                         event.setResult(AttackResult.ResultType.BLOCKED);
                         break;
@@ -98,7 +99,7 @@ public class RainScreen extends Skill {
 
     }
 
-    private void summonRainScreen(ServerPlayer player, ServerPlayerPatch playerPatch){
+    public void summonRainScreen(ServerPlayer player, ServerPlayerPatch playerPatch){
         if(!SwordSoaring.isValidSword(player.getMainHandItem())){
             return;
         }
@@ -136,15 +137,8 @@ public class RainScreen extends Skill {
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
         PlayerEventListener listener = container.getExecuter().getEventListener();
-        listener.removeListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID);
     }
 
-    /**
-     * 先领悟剑意，能御剑才能召唤雨帘
-     * 哎呀前置能不能多放几个啊awa
-     */
-    @Override
-    public Skill getPriorSkill() {
-        return ModSkills.SWORD_SOARING;
-    }
 }

@@ -7,6 +7,8 @@
   "skill.sword_soaring.sword_soaring.tooltip": "Hold down the space to fly on the sword, release the space to stop. Consume stamina. Protect the next falling damage.",
   "skill.sword_soaring.rain_screen": "Rain Screen",
   "skill.sword_soaring.rain_screen.tooltip": "Right-click to Kick away the surrounding enemies and summon 4 swords around for 10 seconds. Sword screen can guard against all attacks. Each attack consumes one sword. If the sword touches an entity, it will cause damage and heal owner.",
+  "skill.sword_soaring.rain_cutter": "Rain Cutter",
+  "skill.sword_soaring.rain_cutter.tooltip": "Within 10 seconds after executing weapon innate, basic attack will summon three swords to track and hurt target.",
   "config.sword_soaring.fly_speed_scale": "the ratio of flying speed to view vector",
   "config.sword_soaring.stamina_consume_per_tick": "the stamina consumed per tick when flying",
   "config.sword_soaring.max_anticipation_tick": "ticks of pre taking off",

@@ -8,9 +8,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
@@ -19,6 +23,8 @@ import net.p1nero.ss.network.packet.StartFlyPacket;
 import net.p1nero.ss.network.packet.StopFlyPacket;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.UUID;
@@ -26,6 +32,8 @@ import java.util.UUID;
 import static net.p1nero.ss.util.ItemStackUtil.*;
 import static net.p1nero.ss.util.ItemStackUtil.setLeftTick;
 
+
+@Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SwordSoaringSkill extends Skill {
 
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114514");
@@ -124,6 +132,65 @@ public class SwordSoaringSkill extends Skill {
                 });
             }
         });
+
+    }
+
+    /**
+     * 控制飞行和耐力消耗
+     * 并进行惯性判断。飞行结束时如果有缓冲时间则缓冲。
+     * 缓冲时间设置请看：{@link StopFlyPacket#execute(Player)}
+     */
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        Player player = event.player;
+        if(!SwordSoaring.epicFightLoad()){
+            return;
+        }
+
+        player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+            if(ssPlayer.isFlying()){
+                //惯性控制。懒得重写就直接用getPersistentData了
+                if(Config.ENABLE_INERTIA.get()){
+                    Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get());
+                    if(targetVec.length() != 0) {
+                        player.setDeltaMovement(targetVec);
+                    }
+                } else {
+                    player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get()));
+                }
+
+                //消耗耐力
+                player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
+                    if(entityPatch instanceof PlayerPatch<?> playerPatch){
+                        if(!player.isCreative()){
+                            float scale = 1;
+                            if(ssPlayer.getSword() != null){
+                                int enchantmentLevel = ssPlayer.getSword().getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get());
+                                scale = switch (enchantmentLevel) {
+                                    case 1 -> 0.75f;
+                                    case 2 -> 0.5f;
+                                    default -> 1;
+                                };
+                            }
+                            playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale);
+                        }
+                    }
+                });
+            } else if(Config.ENABLE_INERTIA.get()){
+                double endVecLength = getEndVec(player.getPersistentData()).length();
+                //惯性缓冲
+                if (getLeftTick(player.getPersistentData()) > 0 && endVecLength != 0) {
+                    int leftTick = getLeftTick(player.getPersistentData());
+                    setLeftTick(player.getPersistentData(), leftTick - 1);
+                    //用末速度来计算
+                    double max = endVecLength * maxRecordTick;
+                    player.setDeltaMovement(getEndVec(player.getPersistentData()).lerp(Vec3.ZERO, (max - leftTick) / max));
+                }
+            }
+        });
+
+        //更新方向向量队列
+        updateViewVec(player.getPersistentData(), player.getViewVector(0));
 
     }
 

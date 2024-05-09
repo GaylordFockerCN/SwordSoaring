@@ -15,8 +15,14 @@ public class ModEntities {
             EntityType.Builder.of(SwordEntity::new, MobCategory.CREATURE));
     public static final RegistryObject<EntityType<RainScreenSwordEntity>> RAIN_SCREEN_SWORD = register("rain_screen_sword",
             EntityType.Builder.of(RainScreenSwordEntity::new, MobCategory.CREATURE));
+    public static final RegistryObject<EntityType<RainCutterSwordEntity>> RAIN_CUTTER_SWORD = register("rain_cutter_sword",
+            EntityType.Builder.of(RainCutterSwordEntity::new, MobCategory.CREATURE), 1, 0.5f);
+
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String registryname, EntityType.Builder<T> entityTypeBuilder) {
         return ENTITIES.register(registryname, () -> entityTypeBuilder.build(new ResourceLocation(SwordSoaring.MOD_ID, registryname).toString()));
+    }
+    private static <T extends Entity> RegistryObject<EntityType<T>> register(String registryname, EntityType.Builder<T> entityTypeBuilder, float xz, float y) {
+        return ENTITIES.register(registryname, () -> entityTypeBuilder.sized(xz,y).build(new ResourceLocation(SwordSoaring.MOD_ID, registryname).toString()));
     }
 
 }

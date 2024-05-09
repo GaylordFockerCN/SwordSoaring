@@ -96,71 +96,13 @@ public class SwordSoaring {
         public static void onClientSetup(FMLClientSetupEvent event){
             EntityRenderers.register(ModEntities.SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.RAIN_SCREEN_SWORD.get(), SwordEntityRenderer::new);
+            EntityRenderers.register(ModEntities.RAIN_CUTTER_SWORD.get(), SwordEntityRenderer::new);
         }
 
     }
 
     @Mod.EventBusSubscriber(modid = MOD_ID)
     public static class ModEvents{
-
-        /**
-         * 控制飞行和耐力消耗
-         * 并进行惯性判断。飞行结束时如果有缓冲时间则缓冲。
-         * 缓冲时间设置请看：{@link StopFlyPacket#execute(Player)}
-         */
-        @SubscribeEvent
-        public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-            Player player = event.player;
-            if(!SwordSoaring.epicFightLoad()){
-                return;
-            }
-
-            player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                if(ssPlayer.isFlying()){
-                    //惯性控制。懒得重写就直接用getPersistentData了
-                    if(Config.ENABLE_INERTIA.get()){
-                        Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get());
-                        if(targetVec.length() != 0) {
-                            player.setDeltaMovement(targetVec);
-                        }
-                    } else {
-                        player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get()));
-                    }
-
-                    //消耗耐力
-                    player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
-                        if(entityPatch instanceof PlayerPatch<?> playerPatch){
-                            if(!player.isCreative()){
-                                float scale = 1;
-                                if(ssPlayer.getSword() != null){
-                                    int enchantmentLevel = ssPlayer.getSword().getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get());
-                                    scale = switch (enchantmentLevel) {
-                                        case 1 -> 0.75f;
-                                        case 2 -> 0.5f;
-                                        default -> 1;
-                                    };
-                                }
-                                playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale);
-                            }
-                        }
-                    });
-                } else if(Config.ENABLE_INERTIA.get()){
-                    double endVecLength = getEndVec(player.getPersistentData()).length();
-                    //惯性缓冲
-                    if (getLeftTick(player.getPersistentData()) > 0 && endVecLength != 0) {
-                        int leftTick = getLeftTick(player.getPersistentData());
-                        setLeftTick(player.getPersistentData(), leftTick - 1);
-                        //用末速度来计算
-                        double max = endVecLength * maxRecordTick;
-                        player.setDeltaMovement(getEndVec(player.getPersistentData()).lerp(Vec3.ZERO, (max - leftTick) / max));
-                    }
-                }
-            });
-
-            //更新方向向量队列
-            updateViewVec(player.getPersistentData(), player.getViewVector(0));
-
-        }
 
         /**
          * 把技能书加到箱子里
@@ -179,7 +121,9 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring"
+                                "sword_soaring:sword_soaring",
+                                "sword_soaring:rain_cutter",
+                                "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
             }
@@ -187,7 +131,9 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY_ICE_BOX)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring"
+                                "sword_soaring:sword_soaring",
+                                "sword_soaring:rain_cutter",
+                                "sword_soaring:rain_screen"
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier))
                         .build());
             }
@@ -195,7 +141,9 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.END_CITY_TREASURE)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring"
+                                "sword_soaring:sword_soaring",
+                                "sword_soaring:rain_cutter",
+                                "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
             }
@@ -203,7 +151,9 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.FISHING_TREASURE)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring"
+                                "sword_soaring:sword_soaring",
+                                "sword_soaring:rain_cutter",
+                                "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
             }
@@ -211,7 +161,9 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.STRONGHOLD_LIBRARY)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 5.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring"
+                                "sword_soaring:sword_soaring",
+                                "sword_soaring:rain_cutter",
+                                "sword_soaring:rain_screen"
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier * 0.3F))
                         .build());
             }
