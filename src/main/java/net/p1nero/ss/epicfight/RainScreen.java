@@ -41,7 +41,6 @@ import java.util.UUID;
  */
 public class RainScreen extends Skill {
 
-
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114515");
 
     public RainScreen(Builder<? extends Skill> builder) {
@@ -68,18 +67,9 @@ public class RainScreen extends Skill {
             SSPlayer ssPlayer = event.getPlayerPatch().getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
             ServerPlayer serverPlayer = event.getPlayerPatch().getOriginal();
             if(ssPlayer.getSwordScreenEntityCount() > 0){
-                event.getPlayerPatch().playSound(EpicFightSounds.CLASH.get(), -0.05F, 0.1F);
-                EpicFightParticles.HIT_BLUNT.get().spawnParticleWithArgument(serverPlayer.serverLevel(), HitParticleType.FRONT_OF_EYES, HitParticleType.ZERO, serverPlayer, damageSource.getDirectEntity());
-                event.getPlayerPatch().playSound(EpicFightSounds.CLASH.get(), -0.05F, 0.1F);
-                EpicFightParticles.HIT_BLUNT.get().spawnParticleWithArgument(serverPlayer.serverLevel(), HitParticleType.FRONT_OF_EYES, HitParticleType.ZERO, serverPlayer, damageSource.getDirectEntity());
-
-                if (damageSource.getDirectEntity() instanceof LivingEntity livingEntity) {
-                    knockback += EnchantmentHelper.getKnockbackBonus(livingEntity) * 0.1F;
-                    event.getPlayerPatch().knockBackEntity(damageSource.getDirectEntity().position(), knockback);
-                }
 
                 Set<Integer> swordID = ssPlayer.getSwordID();
-                //剑挡伤害并回血
+                //剑挡伤害并回血（顺序很重要，需要先销毁剑再反弹，省得获取SourceEntity为null的时候被打断）
                 for(int i : swordID){
                     Entity sword = serverPlayer.serverLevel().getEntity(i);
                     if(sword != null){
@@ -96,6 +86,15 @@ public class RainScreen extends Skill {
                         break;
                     }
                 }
+
+                event.getPlayerPatch().playSound(EpicFightSounds.CLASH.get(), -0.05F, 0.1F);
+                EpicFightParticles.HIT_BLUNT.get().spawnParticleWithArgument(serverPlayer.serverLevel(), HitParticleType.FRONT_OF_EYES, HitParticleType.ZERO, serverPlayer, damageSource.getDirectEntity());
+
+                if (damageSource.getDirectEntity() instanceof LivingEntity livingEntity) {
+                    knockback += EnchantmentHelper.getKnockbackBonus(livingEntity) * 0.1F;
+                    event.getPlayerPatch().knockBackEntity(damageSource.getDirectEntity().position(), knockback);
+                }
+
             }
         });
 

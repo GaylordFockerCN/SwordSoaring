@@ -60,7 +60,6 @@ public class SwordSoaringSkill extends Skill {
 
         listener.addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event) -> {
 
-
             // Check directly from the keybind because event.getMovementInput().isJumping doesn't allow to be set as true while player's jumping
             boolean jumpPressed = Minecraft.getInstance().options.keyJump.isDown();
 
@@ -140,9 +139,6 @@ public class SwordSoaringSkill extends Skill {
      */
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
-        if(!SwordSoaring.epicFightLoad()){
-            return;
-        }
 
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(ssPlayer.isFlying()){

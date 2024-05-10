@@ -30,6 +30,7 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 import net.p1nero.ss.SwordSoaring;
 import org.jetbrains.annotations.NotNull;
+import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.item.LongswordItem;
@@ -226,6 +227,17 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
         }
 //-----------------------------------------------------以上是原版剑的修改-------------------------------------------------
 
+        //copy from AbstractArrow
+        if(firstTick){
+            vec3 = this.getDeltaMovement();
+            double d5 = vec3.x;
+            double d6 = vec3.y;
+            double d1 = vec3.z;
+            int i = 1;
+            this.level().addParticle(EpicFightParticles.AIR_BURST.get(), this.getX() + d5 * (double)i / 4.0, this.getY() + d6 * (double)i / 4.0, this.getZ() + d1 * (double)i / 4.0, -d5, -d6 + 0.2, -d1);
+            firstTick = false;
+        }
+
         updateDir();
         setDeltaMovement(dir.normalize().scale(speed));
 //        setYRot(-(float) Math.toDegrees(Math.atan2(dir.x, dir.z)));
@@ -272,6 +284,13 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
                 if(entity instanceof LivingEntity livingEntity){
                     livingEntity.setHealth(livingEntity.getHealth() - 1);//强制扣血，防止霸体
                 }
+
+                Vec3 vec3 = this.getDeltaMovement();
+                double d5 = vec3.x;
+                double d6 = vec3.y;
+                double d1 = vec3.z;
+                int i = 1;
+                this.level().addParticle(EpicFightParticles.HIT_BLADE.get(), this.getX() + d5 * (double)i / 4.0, this.getY() + d6 * (double)i / 4.0, this.getZ() + d1 * (double)i / 4.0, -d5, -d6 + 0.2, -d1);
                 discard();
             }
         }

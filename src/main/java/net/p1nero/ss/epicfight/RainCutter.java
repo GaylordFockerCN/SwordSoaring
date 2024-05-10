@@ -40,11 +40,11 @@ public class RainCutter extends Skill {
             Player player = event.getPlayerPatch().getOriginal();
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                 if(skill.getCategory() == SkillCategories.WEAPON_INNATE){
-                    ssPlayer.setTimer(400);//很奇怪200tick不是10s吗怎么实测5s？？被迫加长时间
-                    ssPlayer.setCoolDown(false);
+                    ssPlayer.setRainCutterTimer(400);//很奇怪200tick不是10s吗怎么实测5s？？被迫加长时间
+                    ssPlayer.setScreenCutterCoolDown(false);
                 }else if(skill.getCategory() == SkillCategories.BASIC_ATTACK || skill.getCategory() == SkillCategories.AIR_ATTACK){
-                    if(ssPlayer.getTimer() > 0 && !ssPlayer.isCoolDown() /*&& event.getPlayerPatch().getTarget() != null*/){
-                        ssPlayer.setCoolDown(true);
+                    if(ssPlayer.getRainCutterTimer() > 0 && !ssPlayer.isScreenCutterCoolDown() /*&& event.getPlayerPatch().getTarget() != null*/){
+                        ssPlayer.setScreenCutterCoolDown(true);
                         if(player instanceof ServerPlayer serverPlayer){
                             summonSword(serverPlayer);
                         }
@@ -78,18 +78,15 @@ public class RainCutter extends Skill {
      * 控制技能持续时间和冷却
      */
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if(!SwordSoaring.epicFightLoad()){
-            return;
-        }
 
         event.player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-            int rainCutterTimer = ssPlayer.getTimer();
+            int rainCutterTimer = ssPlayer.getRainCutterTimer();
             if(rainCutterTimer > 0){
-                ssPlayer.setTimer(rainCutterTimer-1);
+                ssPlayer.setRainCutterTimer(rainCutterTimer-1);
             }
             //每秒刷新一次，一秒只能A出一次技能 (很奇怪20tick不是1s吗怎么实测5s？？被迫加长时间
             if(rainCutterTimer % 40 == 0 && rainCutterTimer != 0){
-                ssPlayer.setCoolDown(false);
+                ssPlayer.setScreenCutterCoolDown(false);
             }
         });
 

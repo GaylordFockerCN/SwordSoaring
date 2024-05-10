@@ -11,7 +11,7 @@ import net.p1nero.ss.entity.SwordEntity;
 import javax.annotation.Nullable;
 
 /**
- * 同步客户端的剑
+ * 同步客户端的剑，让所有人都看到我的剑！但是还没测试过。
  */
 public record AddSwordEntityPacket(int ownerId) implements BasePacket {
     @Override

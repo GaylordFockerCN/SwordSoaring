@@ -33,6 +33,7 @@ import net.p1nero.ss.entity.SwordEntityRenderer;
 import net.p1nero.ss.epicfight.ModSkills;
 import net.p1nero.ss.epicfight.RainCutter;
 import net.p1nero.ss.epicfight.SwordSoaringSkill;
+import net.p1nero.ss.epicfight.YakshaMask;
 import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.packet.StopFlyPacket;
@@ -60,10 +61,12 @@ public class SwordSoaring {
         ModItems.ITEMS.register(bus);
         ModEnchantments.ENCHANTMENTS.register(bus);
         bus.addListener(this::commonSetup);
+        //虽然出了那么多史诗战斗技能了，但是还是留了一条路给不用史诗战斗的人
         if(epicFightLoad()){
             fg_bus.addListener(ModSkills::BuildSkills);
             fg_bus.addListener(RainCutter::onPlayerTick);
             fg_bus.addListener(SwordSoaringSkill::onPlayerTick);
+            fg_bus.addListener(YakshaMask::onPlayerTick);
         }
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -129,6 +132,7 @@ public class SwordSoaring {
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
+                                "sword_soaring:yaksha_mask",
                                 "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
@@ -139,6 +143,7 @@ public class SwordSoaring {
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
+                                "sword_soaring:yaksha_mask",
                                 "sword_soaring:rain_screen"
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier))
                         .build());
@@ -149,6 +154,7 @@ public class SwordSoaring {
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
+                                "sword_soaring:yaksha_mask",
                                 "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
@@ -159,6 +165,7 @@ public class SwordSoaring {
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
+                                "sword_soaring:yaksha_mask",
                                 "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
@@ -169,6 +176,7 @@ public class SwordSoaring {
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
+                                "sword_soaring:yaksha_mask",
                                 "sword_soaring:rain_screen"
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier * 0.3F))
                         .build());

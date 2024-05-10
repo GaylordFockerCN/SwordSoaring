@@ -6,6 +6,9 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
+/**
+ * 更新速度，仅限无史诗战斗
+ */
 public record UpdateFlySpeedPacket (int slotID, double newSpeed) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buf) {

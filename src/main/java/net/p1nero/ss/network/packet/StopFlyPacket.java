@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import static net.p1nero.ss.util.ItemStackUtil.*;
 
 /**
- * 实现飞行开关
+ * 实现飞行结束
  */
 public record StopFlyPacket() implements BasePacket {
     @Override

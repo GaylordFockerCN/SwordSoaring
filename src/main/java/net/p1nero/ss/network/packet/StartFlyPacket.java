@@ -17,7 +17,7 @@ import net.p1nero.ss.network.PacketRelay;
 import javax.annotation.Nullable;
 
 /**
- * 实现飞行开关
+ * 实现开始飞行的服务端操作
  */
 public record StartFlyPacket () implements BasePacket {
     @Override

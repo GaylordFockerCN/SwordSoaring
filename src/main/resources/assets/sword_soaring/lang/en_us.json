@@ -9,6 +9,8 @@
   "skill.sword_soaring.rain_screen.tooltip": "Right-click to kick away the surrounding enemies and summon 4 swords around for 10 seconds. The sword screen can guard against all attacks. Each attack break one sword and heal owner. The sword screen can only be summoned when there is no sword around and have 4 stamina.",
   "skill.sword_soaring.rain_cutter": "Rain Cutter",
   "skill.sword_soaring.rain_cutter.tooltip": "Within 10 seconds after executing weapon innate, basic attack will summon three swords to track and hurt target. If target is null, the sword will fly straight ahead.",
+  "skill.sword_soaring.yaksha_mask": "Yaksha Mask",
+  "skill.sword_soaring.yaksha_mask.tooltip": "Within 10 seconds after executing weapon innate, you can jump to a height where you can use Meteor Slam. \n\n(From author: Sorry I've already launched you to this height but I don't know why you can't Meteor Slam sometimes (T⌓T)\n\nI made sure that both the client and server player had already left the ground, but even after flipping through the MeteorSlamSkill's source code, I couldn't find the reason)",
   "config.sword_soaring.fly_speed_scale": "the ratio of flying speed to view vector",
   "config.sword_soaring.stamina_consume_per_tick": "the stamina consumed per tick when flying",
   "config.sword_soaring.max_anticipation_tick": "ticks of pre taking off",

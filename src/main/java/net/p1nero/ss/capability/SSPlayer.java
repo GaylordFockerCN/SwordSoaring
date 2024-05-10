@@ -14,8 +14,10 @@ public class SSPlayer {
     private boolean protectNextFall;
     private boolean hasSwordEntity;
     private int swordScreenEntityCount;
-    private int timer;
-    private boolean isCoolDown;
+    private int rainCutterTimer;
+    private boolean isScreenCutterCoolDown;
+    private int yakshaMaskTimer;
+    public boolean canYakshaMask;
     private Set<Integer> swordID;
     private int anticipationTick;
     private ItemStack sword;
@@ -55,20 +57,28 @@ public class SSPlayer {
         this.swordScreenEntityCount = swordScreenEntityCount;
     }
 
-    public int getTimer() {
-        return timer;
+    public int getRainCutterTimer() {
+        return rainCutterTimer;
     }
 
-    public void setTimer(int timer) {
-        this.timer = timer;
+    public void setRainCutterTimer(int rainCutterTimer) {
+        this.rainCutterTimer = rainCutterTimer;
     }
 
-    public boolean isCoolDown() {
-        return isCoolDown;
+    public boolean isScreenCutterCoolDown() {
+        return isScreenCutterCoolDown;
     }
 
-    public void setCoolDown(boolean coolDown) {
-        this.isCoolDown = coolDown;
+    public int getYakshaMaskTimer() {
+        return yakshaMaskTimer;
+    }
+
+    public void setYakshaMaskTimer(int yakshaMaskTimer) {
+        this.yakshaMaskTimer = yakshaMaskTimer;
+    }
+
+    public void setScreenCutterCoolDown(boolean screenCutterCoolDown) {
+        this.isScreenCutterCoolDown = screenCutterCoolDown;
     }
 
     public void setSwordID(Set<Integer> swordID) {
@@ -122,8 +132,9 @@ public class SSPlayer {
         tag.putBoolean("protectNextFall", protectNextFall);
         tag.putBoolean("hasEntity", hasSwordEntity);
         tag.putInt("hasSwordScreenEntity", swordScreenEntityCount);
-        tag.putInt("rainCutterTimer", timer);
-        tag.putBoolean("rainCutterCoolDown", isCoolDown);
+        tag.putInt("rainCutterTimer", rainCutterTimer);
+        tag.putBoolean("rainCutterCoolDown", isScreenCutterCoolDown);
+        tag.putInt("yakshaMaskTimer", yakshaMaskTimer);
         tag.putInt("anticipationTick", anticipationTick);
         if(sword != null){
             tag.put("sword", sword.serializeNBT());
@@ -137,8 +148,9 @@ public class SSPlayer {
         protectNextFall = tag.getBoolean("protectNextFall");
         hasSwordEntity = tag.getBoolean("hasEntity");
         swordScreenEntityCount = tag.getInt("hasSwordScreenEntity");
-        timer = tag.getInt("rainCutterTimer");
-        isCoolDown = tag.getBoolean("rainCutterCoolDown");
+        rainCutterTimer = tag.getInt("rainCutterTimer");
+        isScreenCutterCoolDown = tag.getBoolean("rainCutterCoolDown");
+        yakshaMaskTimer = tag.getInt("yakshaMaskTimer");
         anticipationTick = tag.getInt("anticipationTick");
         sword = ItemStack.of(tag.getCompound("sword"));
     }
@@ -148,8 +160,9 @@ public class SSPlayer {
         protectNextFall = old.protectNextFall;
         hasSwordEntity = old.hasSwordEntity;
         swordScreenEntityCount = old.swordScreenEntityCount;
-        timer = old.timer;
-        isCoolDown = old.isCoolDown;
+        rainCutterTimer = old.rainCutterTimer;
+        isScreenCutterCoolDown = old.isScreenCutterCoolDown;
+        yakshaMaskTimer = old.yakshaMaskTimer;
         anticipationTick = old.anticipationTick;
         sword = old.sword;
     }
