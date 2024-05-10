@@ -6,7 +6,7 @@
   "skill.sword_soaring.sword_soaring": "御剑飞行",
   "skill.sword_soaring.sword_soaring.tooltip": "按住空格乘上剑飞行，松开空格则停下。消耗耐力。免疫下一次衰落伤害。",
   "skill.sword_soaring.rain_screen": "画雨笼山",
-  "skill.sword_soaring.rain_screen.tooltip": "右键振开周围敌人，并召唤四把剑在身边，持续10s。剑帘可以以耐力抵挡伤害，每次受击消耗一把剑。若剑触碰到敌人，将造成伤害并回血。",
+  "skill.sword_soaring.rain_screen.tooltip": "右键振开周围敌人，并召唤四把剑在身边，持续10s。剑帘可以抵御伤害，每次受击将破坏一把雨帘剑，消耗2点耐力并回血。仅当场上不存在剑帘且拥有四点耐力时才可召唤",
   "skill.sword_soaring.rain_cutter": "裁雨留虹",
   "skill.sword_soaring.rain_cutter.tooltip": "释放武器技能后10s内，普通攻击会召唤三把剑，追踪锁定的目标并造成伤害。",
   "config.sword_soaring.fly_speed_scale": "飞行速度和朝向向量的比例",

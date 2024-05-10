@@ -83,7 +83,6 @@ public class RainScreenSwordEntity extends SwordEntity{
 
     @Override
     public void tick() {
-
         //想办法不让rider为null
         if(rider == null){
             if(this.getEntityData().get(RIDER_UUID).isPresent()){
@@ -115,30 +114,34 @@ public class RainScreenSwordEntity extends SwordEntity{
             discard();
         }
 
+        //↓太无敌了，取消了
         //触发技能，撞到实体造成伤害，自身回血
-        List<Entity> entities = getHitEntities();
-        for (Entity entity : entities){
-            if(entity.getId() == rider.getId()){
-                continue;
-            }
-            entity.hurt(damageSources().playerAttack(rider), 1f);
-            rider.heal(1f);
-            ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()-1);
-            discard();
-            return;
-        }
+//        List<Entity> entities = getHitEntities();
+//        for (Entity entity : entities){
+//            if(entity.getId() == rider.getId()){
+//                continue;
+//            }
+//            entity.hurt(damageSources().playerAttack(rider), 1f);
+//            return;
+//        }
 
     }
 
+    /**
+     * 痛苦地调位置
+     * 雨帘剑的位置又他妈不一样...
+     * @param poseStack 来自Renderer的render
+     */
     @Override
     public void setPose(PoseStack poseStack) {
         Item sword = getItemStack().getItem();
         if(SwordSoaring.epicFightLoad() && (sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem)){
-            poseStack.mulPose(Axis.ZP.rotationDegrees(135));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(225));
+            poseStack.translate(-0.8,-0.8,0);
         }else {
             poseStack.mulPose(Axis.ZP.rotationDegrees(-225));
+            //碰撞箱偏高（调这个太折磨人了，xyz轴都不知道转成什么样了只能一个个试）
+            poseStack.translate(0.8,-0.8,0);
         }
-        //碰撞箱偏高（调这个太折磨人了，xyz轴都不知道转成什么样了只能一个个试）
-        poseStack.translate(0.8,-0.8,0);
     }
 }

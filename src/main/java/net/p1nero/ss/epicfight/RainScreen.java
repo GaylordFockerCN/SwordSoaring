@@ -1,6 +1,10 @@
 package net.p1nero.ss.epicfight;
 
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,6 +16,7 @@ import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.RainScreenSwordEntity;
+import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.SyncSwordOwnerPacket;
@@ -25,6 +30,7 @@ import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -72,17 +78,15 @@ public class RainScreen extends Skill {
                     event.getPlayerPatch().knockBackEntity(damageSource.getDirectEntity().position(), knockback);
                 }
 
-                event.getPlayerPatch().consumeStaminaAlways(1);
-
                 Set<Integer> swordID = ssPlayer.getSwordID();
-                //多个保险
-                if(swordID.isEmpty()){
-                    ssPlayer.setSwordScreenEntityCount(0);
-                }
-                //剑挡伤害
+                //剑挡伤害并回血
                 for(int i : swordID){
                     Entity sword = serverPlayer.serverLevel().getEntity(i);
                     if(sword != null){
+                        event.getPlayerPatch().consumeStaminaAlways(2);
+                        serverPlayer.heal(2f);
+//                        serverPlayer.serverLevel().addParticle(ParticleTypes.HAPPY_VILLAGER, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),0,0,0);
+//                        serverPlayer.serverLevel().playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1, 1);
                         ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()-1);
                         sword.discard();
                         swordID.remove(i);
@@ -102,11 +106,21 @@ public class RainScreen extends Skill {
             return;
         }
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+
+            //多个保险，以防重启的时候剑帘不存在
+            Set<Integer> swordID = ssPlayer.getSwordID();
+            for(Integer entityID : swordID){
+                if(!((player.serverLevel().getEntity(entityID) instanceof RainScreenSwordEntity))){
+                    ssPlayer.setSwordScreenEntityCount(0);
+                    ssPlayer.setSwordID(new HashSet<>());
+                    break;
+                }
+            }
+
             if(ssPlayer.getSwordScreenEntityCount() == 0){
 
                 //播放动画，对周围实体造成伤害
                 playerPatch.playAnimationSynchronized(Animations.BIPED_PHANTOM_ASCENT_BACKWARD, 0);
-                playerPatch.consumeStamina(4);
                 double r = 3;
                 List<Entity> entities = player.serverLevel().getEntities(player,new AABB(player.getPosition(0).add(-r,-r,-r), player.getPosition(0).add(r,r,r)));
                 for (Entity entity : entities){
@@ -128,6 +142,7 @@ public class RainScreen extends Skill {
                     ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()+1);
                 }
             }
+
         });
     }
 

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraftforge.fml.ModList;
@@ -18,7 +19,7 @@ import yesman.epicfight.world.item.LongswordItem;
 import yesman.epicfight.world.item.TachiItem;
 import yesman.epicfight.world.item.UchigatanaItem;
 
-public class SwordEntityRenderer extends EntityRenderer<SwordEntity> {
+public class SwordEntityRenderer extends EntityRenderer<Entity> {
 
     public SwordEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -30,22 +31,26 @@ public class SwordEntityRenderer extends EntityRenderer<SwordEntity> {
      * 调整姿势和找参数调了好久awa
      */
     @Override
-    public void render(SwordEntity swordEntity, float p_114486_, float p_114487_, PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int light) {
-        poseStack.pushPose();
-
-        swordEntity.setPose(poseStack);
+    public void render(Entity entity, float p_114486_, float p_114487_, PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int light) {
+        if(entity instanceof AbstractSwordEntity swordEntity){
+            poseStack.pushPose();
+            swordEntity.setPose(poseStack);
 //        poseStack.translate(0,0,1);
-        BakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(swordEntity.getItemStack());//能找到这个方法我也是天才
-        Minecraft.getInstance().getItemRenderer().render(swordEntity.getItemStack(), ItemDisplayContext.FIXED,false,poseStack,multiBufferSource, light,1, model);
-        poseStack.popPose();
-        super.render(swordEntity, p_114486_, p_114487_, poseStack, multiBufferSource, light);
+            BakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(swordEntity.getItemStack());//能找到这个方法我也是天才
+            Minecraft.getInstance().getItemRenderer().render(swordEntity.getItemStack(), ItemDisplayContext.FIXED,false,poseStack,multiBufferSource, light,1, model);
+            poseStack.popPose();
+        }
+        super.render(entity, p_114486_, p_114487_, poseStack, multiBufferSource, light);
     }
 
     /**
      * 好像没什么用但是Renderer不能没有
      */
     @Override
-    public ResourceLocation getTextureLocation(SwordEntity swordEntity) {
-        return TextureMapping.getItemTexture(swordEntity.getItemStack().getItem());
+    public ResourceLocation getTextureLocation(Entity swordEntity) {
+        if (swordEntity instanceof AbstractSwordEntity sword){
+            return TextureMapping.getItemTexture(sword.getItemStack().getItem());
+        }
+        return null;
     }
 }

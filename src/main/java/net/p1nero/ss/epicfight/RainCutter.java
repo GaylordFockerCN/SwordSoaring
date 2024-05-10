@@ -1,18 +1,12 @@
 package net.p1nero.ss.epicfight;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
-import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.RainCutterSwordEntity;
-import net.p1nero.ss.network.PacketHandler;
-import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.SyncSwordOwnerPacket;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.SkillContainer;
@@ -46,11 +40,11 @@ public class RainCutter extends Skill {
             Player player = event.getPlayerPatch().getOriginal();
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                 if(skill.getCategory() == SkillCategories.WEAPON_INNATE){
-                    ssPlayer.setRainCutterTimer(400);//很奇怪200tick不是10s吗怎么实测5s？？被迫加长时间
-                    ssPlayer.setRainCutterCoolDown(false);
-                }else if(skill.getCategory() == SkillCategories.BASIC_ATTACK){
-                    if(ssPlayer.getRainCutterTimer() > 0 && !ssPlayer.isRainCutterCoolDown() && event.getPlayerPatch().getTarget() != null){
-                        ssPlayer.setRainCutterCoolDown(true);
+                    ssPlayer.setTimer(400);//很奇怪200tick不是10s吗怎么实测5s？？被迫加长时间
+                    ssPlayer.setCoolDown(false);
+                }else if(skill.getCategory() == SkillCategories.BASIC_ATTACK || skill.getCategory() == SkillCategories.AIR_ATTACK){
+                    if(ssPlayer.getTimer() > 0 && !ssPlayer.isCoolDown() /*&& event.getPlayerPatch().getTarget() != null*/){
+                        ssPlayer.setCoolDown(true);
                         if(player instanceof ServerPlayer serverPlayer){
                             summonSword(serverPlayer);
                         }
@@ -66,14 +60,17 @@ public class RainCutter extends Skill {
             return;
         }
         for(int i = 0; i < 3; i++){
-            RainCutterSwordEntity sword = ModEntities.RAIN_CUTTER_SWORD.get().spawn(player.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
-            sword.setRider(player);
-            sword.setItemStack(player.getMainHandItem());
-            sword.setSwordID(i);
-            PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
+            RainCutterSwordEntity sword = new RainCutterSwordEntity(player.getMainHandItem(), player.level(), i);
+            sword.setOwner(player);
+            sword.setNoGravity(true);
+            sword.setBaseDamage(0.01);
+            sword.setSilent(true);
+            sword.pickup =AbstractArrow.Pickup.DISALLOWED;
+            sword.setKnockback(1);//击退
+            sword.setPierceLevel((byte) 5);//穿透
             sword.setPos(player.getPosition(1.0f).add(sword.getOffset()));
-            sword.setYRot(player.getYRot());
-            sword.startChase();
+            sword.setYRot(sword.getDirYRot());
+            player.serverLevel().addFreshEntity(sword);
         }
     }
 
@@ -86,13 +83,13 @@ public class RainCutter extends Skill {
         }
 
         event.player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-            int rainCutterTimer = ssPlayer.getRainCutterTimer();
+            int rainCutterTimer = ssPlayer.getTimer();
             if(rainCutterTimer > 0){
-                ssPlayer.setRainCutterTimer(rainCutterTimer-1);
+                ssPlayer.setTimer(rainCutterTimer-1);
             }
             //每秒刷新一次，一秒只能A出一次技能 (很奇怪20tick不是1s吗怎么实测5s？？被迫加长时间
             if(rainCutterTimer % 40 == 0 && rainCutterTimer != 0){
-                ssPlayer.setRainCutterCoolDown(false);
+                ssPlayer.setCoolDown(false);
             }
         });
 

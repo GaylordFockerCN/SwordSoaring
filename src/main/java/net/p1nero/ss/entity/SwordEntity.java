@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SwordEntity extends Entity{
+public class SwordEntity extends Entity implements AbstractSwordEntity{
     protected Player rider;
 
     private static final EntityDataAccessor<Optional<UUID>> RIDER_UUID = SynchedEntityData.defineId(SwordEntity.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -46,6 +46,7 @@ public class SwordEntity extends Entity{
         this.getEntityData().define(RIDER_UUID, Optional.of(rider.getUUID()));
     }
 
+    @Override
     public ItemStack getItemStack() {
         return this.getEntityData().get(ITEM_STACK);
     }
@@ -119,8 +120,9 @@ public class SwordEntity extends Entity{
 
     /**
      * 调整姿势
-     * @param poseStack
+     * @param poseStack 来自Renderer的render
      */
+    @Override
     public void setPose(PoseStack poseStack){
         poseStack.mulPose(Axis.XP.rotationDegrees(90f));
         Item sword = getItemStack().getItem();

@@ -6,6 +6,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.entity.AbstractSwordEntity;
 import net.p1nero.ss.entity.RainCutterSwordEntity;
 import net.p1nero.ss.entity.SwordEntity;
 
