@@ -109,6 +109,9 @@ public class RainScreen extends Skill {
 
             //多个保险，以防重启的时候剑帘不存在
             Set<Integer> swordID = ssPlayer.getSwordID();
+            if(swordID.isEmpty()){
+                ssPlayer.setSwordScreenEntityCount(0);
+            }
             for(Integer entityID : swordID){
                 if(!((player.serverLevel().getEntity(entityID) instanceof RainScreenSwordEntity))){
                     ssPlayer.setSwordScreenEntityCount(0);
@@ -118,7 +121,6 @@ public class RainScreen extends Skill {
             }
 
             if(ssPlayer.getSwordScreenEntityCount() == 0){
-
                 //播放动画，对周围实体造成伤害
                 playerPatch.playAnimationSynchronized(Animations.BIPED_PHANTOM_ASCENT_BACKWARD, 0);
                 double r = 3;
@@ -138,7 +140,7 @@ public class RainScreen extends Skill {
                     PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
                     sword.setSwordID(i);
                     sword.setPos(player.getPosition(0.5f).add(sword.getOffset()));
-                    ssPlayer.getSwordID().add(sword.getId());
+                    swordID.add(sword.getId());
                     ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()+1);
                 }
             }

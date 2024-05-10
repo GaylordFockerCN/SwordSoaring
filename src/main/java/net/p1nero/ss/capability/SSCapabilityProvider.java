@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 @Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class SSCapabilityProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-    public static Capability<SSPlayer> SS_PLAYER = CapabilityManager.get(new CapabilityToken<SSPlayer>() {});
+    public static Capability<SSPlayer> SS_PLAYER = CapabilityManager.get(new CapabilityToken<>() {});
 
     private SSPlayer ssPlayer = null;
     
