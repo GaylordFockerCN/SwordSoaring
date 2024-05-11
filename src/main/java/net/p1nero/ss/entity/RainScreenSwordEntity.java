@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.PlayMessages;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
@@ -37,6 +38,10 @@ public class RainScreenSwordEntity extends SwordEntity{
         this.getEntityData().define(ITEM_STACK, ItemStack.EMPTY);
         this.getEntityData().define(RIDER_UUID, Optional.empty());
         this.getEntityData().define(RAIN_SCREEN_SWORD_ID, -1);
+    }
+
+    public RainScreenSwordEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
+        this(ModEntities.RAIN_SCREEN_SWORD.get(), level);
     }
 
     @Override

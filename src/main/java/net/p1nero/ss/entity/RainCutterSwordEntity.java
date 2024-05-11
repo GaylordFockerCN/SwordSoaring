@@ -312,18 +312,19 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
     }
 
     /**
-     * 加了个Pitch要了我的老命。。。试了3小时估计
+     * 加了个Pitch要了我的老命。。。试了5小时估计。六点了先熬不住了，学线代去了
      * 实在是想不到降维后Z轴是跟着X轴一起转
      */
     @Override
     public void setPose(PoseStack poseStack) {
+
         Item sword = getItemStack().getItem();
         poseStack.mulPose(Axis.XP.rotationDegrees(getXRot()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(getYRot() - 90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(- 90 + getYRot()));
         if(sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem){
-            poseStack.mulPose(Axis.ZP.rotationDegrees(getXRot()-45f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(- 45f));
         }else {
-            poseStack.mulPose(Axis.ZP.rotationDegrees(getXRot()-135f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(- 135f));
         }
     }
 
