@@ -19,13 +19,13 @@ public class PacketHandler {
     private static int index;
 
     public static synchronized void register() {
-        register(UpdateFlySpeedPacket.class, UpdateFlySpeedPacket::decode);
         register(StartFlyPacket.class, StartFlyPacket::decode);
         register(StopFlyPacket.class, StopFlyPacket::decode);
         register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);
         register(SyncSwordOwnerPacket.class, SyncSwordOwnerPacket::decode);
         register(StartYakshaJumpPacket.class, StartYakshaJumpPacket::decode);
         register(AddBladeRushSkillParticlePacket.class, AddBladeRushSkillParticlePacket::decode);
+        register(AddSmokeParticlePacket.class, AddSmokeParticlePacket::decode);
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {

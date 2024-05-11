@@ -3,14 +3,13 @@ package net.p1nero.ss.network.packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 
 import javax.annotation.Nullable;
 
-import static net.p1nero.ss.util.ItemStackUtil.*;
+import static net.p1nero.ss.util.InertiaUtil.*;
 
 /**
  * 实现飞行结束

@@ -38,13 +38,6 @@ public class RainScreenSwordEntity extends SwordEntity{
         this.getEntityData().define(RIDER_UUID, Optional.empty());
         this.getEntityData().define(RAIN_SCREEN_SWORD_ID, -1);
     }
-    public RainScreenSwordEntity(ItemStack itemStack, Player rider, int swordID) {
-        super(itemStack, rider);
-        this.rider = rider;
-        this.getEntityData().define(ITEM_STACK, itemStack);
-        this.getEntityData().define(RIDER_UUID, Optional.of(rider.getUUID()));
-        this.getEntityData().define(RAIN_SCREEN_SWORD_ID, swordID);
-    }
 
     @Override
     public ItemStack getItemStack() {
@@ -117,17 +110,6 @@ public class RainScreenSwordEntity extends SwordEntity{
             discard();
         }
 
-        //↓太无敌了，取消了
-        //触发技能，撞到实体造成伤害，自身回血
-//        List<Entity> entities = getHitEntities();
-//        for (Entity entity : entities){
-//            if(entity.getId() == rider.getId()){
-//                continue;
-//            }
-//            entity.hurt(damageSources().playerAttack(rider), 1f);
-//            return;
-//        }
-
     }
 
     /**
@@ -138,7 +120,7 @@ public class RainScreenSwordEntity extends SwordEntity{
     @Override
     public void setPose(PoseStack poseStack) {
         Item sword = getItemStack().getItem();
-        if(SwordSoaring.epicFightLoad() && (sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem)){
+        if((sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem)){
             poseStack.mulPose(Axis.ZP.rotationDegrees(225));
             poseStack.translate(-0.8,-0.8,0);
         }else {

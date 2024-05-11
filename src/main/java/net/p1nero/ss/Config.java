@@ -24,7 +24,6 @@ public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.BooleanValue HIDE_SWORD_WHEN_FLY = createBool("hide the sword in your hand when flying","hide_sword_when_fly", true);
-    public static final ForgeConfigSpec.BooleanValue ENABLE_SPIRIT_FLY_IN_EFM = createBool("this make you can use right click to fly when epic fight loaded. They use the same data, so it may cause bugs!","enable_spirit_fly_in_efm", false);
     public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA = createBool("enable_inertia", true);
     public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE = createDouble("the inertia tick.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
     public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
@@ -65,11 +64,6 @@ public class Config
     public static void registerCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(Commands.literal("sword_soaring").requires((commandSourceStack) -> commandSourceStack.hasPermission(2))
-                .then(Commands.literal("enable_spirit_fly_in_efm")
-                        .then(Commands.argument("value", BoolArgumentType.bool())
-                                .executes((context) -> setConfig(ENABLE_SPIRIT_FLY_IN_EFM, BoolArgumentType.getBool(context, "value"), context.getSource()))
-                        )
-                )
                 .then(Commands.literal("hide_sword_when_fly")
                         .then(Commands.argument("value", BoolArgumentType.bool())
                                 .executes((context) -> setConfig(HIDE_SWORD_WHEN_FLY, BoolArgumentType.getBool(context, "value"), context.getSource()))

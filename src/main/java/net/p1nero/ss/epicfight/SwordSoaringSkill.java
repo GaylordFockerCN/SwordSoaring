@@ -6,11 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
@@ -18,7 +15,6 @@ import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.AddSwordEntityPacket;
 import net.p1nero.ss.network.packet.StartFlyPacket;
 import net.p1nero.ss.network.packet.StopFlyPacket;
 import yesman.epicfight.skill.Skill;
@@ -29,8 +25,7 @@ import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.UUID;
 
-import static net.p1nero.ss.util.ItemStackUtil.*;
-import static net.p1nero.ss.util.ItemStackUtil.setLeftTick;
+import static net.p1nero.ss.util.InertiaUtil.*;
 
 public class SwordSoaringSkill extends Skill {
 
@@ -42,7 +37,6 @@ public class SwordSoaringSkill extends Skill {
 
     /**
      * 以后可能有用
-     * @param parameters
      */
     @Override
     public void setParams(CompoundTag parameters) {

@@ -7,10 +7,6 @@
   },
   "refmap": "sword_soaring.mixin-refmap.json",
   "minVersion": "0.8",
-  "client": [
-    "LivingRendererMixin",
-    "ClientItemMixin"
-  ],
   "mixins": [
     "ItemMixin"
   ]

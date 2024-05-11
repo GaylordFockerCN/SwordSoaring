@@ -5,8 +5,6 @@ import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
-import yesman.epicfight.skill.guard.GuardSkill;
-import yesman.epicfight.skill.passive.PassiveSkill;
 
 public class ModSkills {
 

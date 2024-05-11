@@ -15,8 +15,12 @@ public class ModEntities {
             EntityType.Builder.of(SwordEntity::new, MobCategory.CREATURE));
     public static final RegistryObject<EntityType<RainScreenSwordEntity>> RAIN_SCREEN_SWORD = register("rain_screen_sword",
             EntityType.Builder.of(RainScreenSwordEntity::new, MobCategory.CREATURE));
+
 //    public static final RegistryObject<EntityType<RainCutterSwordEntity>> RAIN_CUTTER_SWORD = register("rain_cutter_sword",
 //            EntityType.Builder.of(RainCutterSwordEntity::new, MobCategory.CREATURE), 1, 0.5f);
+    /**
+     * 这样构造出来的实体发射才不会卡，正常的方法构造会卡。
+     */
     public static final RegistryObject<EntityType<RainCutterSwordEntity>> RAIN_CUTTER_SWORD = register("rain_cutter_sword", EntityType.Builder.<RainCutterSwordEntity>of(RainCutterSwordEntity::new, MobCategory.MISC)
             .setCustomClientFactory(RainCutterSwordEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));
 

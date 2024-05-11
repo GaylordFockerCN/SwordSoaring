@@ -33,14 +33,14 @@ public record StartFlyPacket () implements BasePacket {
         if (player != null && player.getServer() != null) {
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                 ssPlayer.setProtectNextFall(true);
-//                ssPlayer.setFlying(!ssPlayer.isFlying());
                 ssPlayer.setFlying(true);
                 //剑放脚下就不拿出来了
-                ssPlayer.putAwaySword(((ServerPlayer) player));
+                if(player instanceof ServerPlayer serverPlayer){
+                    ssPlayer.putAwaySword(serverPlayer);
+                }
 
-                //下面注释掉的代码是尝试在服务端加剑的实体，实测速度会跟不上，于是改成向所有人发包。
+                //下面注释掉的代码是尝试在服务端加剑的实体，实测移动速度会跟不上，但是为了让大家看到脚下的剑，于是改成向所有人发包。
                 //让所有人都看到我的剑！
-                //FIXME 理论上存在bug，别人的客户端的玩家是否是飞行状态无法判断。。
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new AddSwordEntityPacket(player.getId()));
 
 //                if(!ssPlayer.hasSwordEntity() && player instanceof ServerPlayer serverPlayer){

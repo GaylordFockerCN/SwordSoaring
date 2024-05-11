@@ -11,7 +11,7 @@ import net.p1nero.ss.entity.SwordEntity;
 import javax.annotation.Nullable;
 
 /**
- * 同步客户端的剑，让所有人都看到我的剑！但是还没测试过。
+ * 同步客户端的剑，让所有人都看到我的剑！但是还没测试过。.
  */
 public record AddSwordEntityPacket(int ownerId) implements BasePacket {
     @Override
@@ -26,16 +26,19 @@ public record AddSwordEntityPacket(int ownerId) implements BasePacket {
     @Override
     public void execute(@Nullable Player player) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
+        if(localPlayer == null){
+            return;
+        }
         LocalPlayer owner = ((LocalPlayer) localPlayer.level().getEntity(ownerId));
+        if(owner == null){
+            return;
+        }
         owner.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(!ssPlayer.hasSwordEntity()){
                 SwordEntity swordEntity = new SwordEntity(owner.getMainHandItem(), owner);
-                swordEntity.setPos(player.getX(), player.getY(), player.getZ());
-                swordEntity.setYRot(player.getYRot());
-                //服务端加的话移动跟不上，所以在客户端加就好
-                if (player.level() instanceof ClientLevel clientLevel) {
-                    clientLevel.putNonPlayerEntity(114514+ownerId, swordEntity);
-                }
+                swordEntity.setPos(owner.getX(), owner.getY(), owner.getZ());
+                swordEntity.setYRot(owner.getYRot());
+                localPlayer.clientLevel.putNonPlayerEntity(114514+ownerId, swordEntity);
                 ssPlayer.setHasSwordEntity(true);
             }
         });

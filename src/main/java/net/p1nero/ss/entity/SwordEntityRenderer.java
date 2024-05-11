@@ -35,7 +35,6 @@ public class SwordEntityRenderer extends EntityRenderer<Entity> {
         if(entity instanceof AbstractSwordEntity swordEntity){
             poseStack.pushPose();
             swordEntity.setPose(poseStack);
-//        poseStack.translate(0,0,1);
             BakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(swordEntity.getItemStack());//能找到这个方法我也是天才
             Minecraft.getInstance().getItemRenderer().render(swordEntity.getItemStack(), ItemDisplayContext.FIXED,false,poseStack,multiBufferSource, light,1, model);
             poseStack.popPose();

@@ -9,6 +9,9 @@ import net.p1nero.ss.Config;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * 记录飞行和技能使用的状态，被坑了，这玩意儿也分服务端和客户端...
+ */
 public class SSPlayer {
     private boolean isFlying;
     private boolean protectNextFall;
@@ -101,6 +104,9 @@ public class SSPlayer {
     }
 
     public ItemStack getSword() {
+        if(sword == null){
+            return ItemStack.EMPTY;
+        }
         return sword;
     }
 

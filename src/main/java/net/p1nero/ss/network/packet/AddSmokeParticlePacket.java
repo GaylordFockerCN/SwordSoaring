@@ -1,8 +1,8 @@
 package net.p1nero.ss.network.packet;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -11,9 +11,9 @@ import yesman.epicfight.particle.EpicFightParticles;
 import javax.annotation.Nullable;
 
 /**
- * 添加命中粒子特效
+ * 妈的 record不能继承，直接复制了一份AddBladeRushSkillParticlePacket
  */
-public record AddBladeRushSkillParticlePacket(Vec3 pos, Vec3 movement) implements BasePacket {
+public record AddSmokeParticlePacket(Vec3 pos, Vec3 movement) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeDouble(pos.x);
@@ -24,8 +24,8 @@ public record AddBladeRushSkillParticlePacket(Vec3 pos, Vec3 movement) implement
         buf.writeDouble(movement.z);
     }
 
-    public static AddBladeRushSkillParticlePacket decode(FriendlyByteBuf buf) {
-        return new AddBladeRushSkillParticlePacket(new Vec3(buf.readDouble(),buf.readDouble(),buf.readDouble()), new Vec3(buf.readDouble(),buf.readDouble(),buf.readDouble()));
+    public static AddSmokeParticlePacket decode(FriendlyByteBuf buf) {
+        return new AddSmokeParticlePacket(new Vec3(buf.readDouble(),buf.readDouble(),buf.readDouble()), new Vec3(buf.readDouble(),buf.readDouble(),buf.readDouble()));
     }
 
     @Override
@@ -33,7 +33,7 @@ public record AddBladeRushSkillParticlePacket(Vec3 pos, Vec3 movement) implement
 
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         if(localPlayer != null){
-            localPlayer.clientLevel.addParticle(EpicFightParticles.BLADE_RUSH_SKILL.get(), pos.x , pos.y , pos.z , 0,0,0);
+            localPlayer.clientLevel.addParticle(ParticleTypes.SMOKE, pos.x , pos.y , pos.z , 0, 0.2, 0);
         }
 
     }

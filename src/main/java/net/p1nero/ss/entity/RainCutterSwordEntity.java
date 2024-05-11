@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,11 +31,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
-import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.AddBladeRushSkillParticlePacket;
+import net.p1nero.ss.network.packet.AddSmokeParticlePacket;
 import org.jetbrains.annotations.NotNull;
+import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -42,7 +44,7 @@ import yesman.epicfight.world.item.LongswordItem;
 import yesman.epicfight.world.item.TachiItem;
 import yesman.epicfight.world.item.UchigatanaItem;
 
-import java.util.Iterator;
+import java.util.Objects;
 
 public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwordEntity{
     public static final float speed = 1;
@@ -95,7 +97,7 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
      */
     public Vec3 getOffset(){
         double dis = 1.3;
-        double yRot = Math.toRadians(getOwner().getYRot());//虽然短时间内应该不会变吧
+        double yRot = Math.toRadians(Objects.requireNonNull(getOwner()).getYRot());//虽然短时间内应该不会变吧
         return switch (getRainCutterSwordId()){
             case 0 -> new Vec3(-dis*Math.cos(yRot),2.5, -dis*Math.sin(yRot));
             case 1 -> new Vec3(0,3,0);
@@ -105,7 +107,7 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
     }
 
     /**
-     * 抄了super的tick，把调整旋转和不能访问的地方删了
+     * 改了AbstractArrow的tick，把调整旋转和不能访问的地方删了
      */
     @Override
     public void tick() {
@@ -230,25 +232,23 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
             this.setPos(d7, d2, d3);
             this.checkInsideBlocks();
         }
-//-----------------------------------------------------以上是原版剑的修改-------------------------------------------------
+//-----------------------------------------------------以上是原版箭的修改-------------------------------------------------
 
-        //copy from AbstractArrow
         if(firstTick){
-            vec3 = this.getDeltaMovement();
-            double d5 = vec3.x;
-            double d6 = vec3.y;
-            double d1 = vec3.z;
-            int i = 0;
-            this.level().addParticle(EpicFightParticles.AIR_BURST.get(), this.getX() + d5 * (double)i / 4.0, this.getY() + d6 * (double)i / 4.0, this.getZ() + d1 * (double)i / 4.0, -d5, -d6 + 0.2, -d1);
+            this.level().addParticle(EpicFightParticles.AIR_BURST.get(), this.getX() , this.getY() , this.getZ() , 0,0,0);
             firstTick = false;
         }
 
         updateDir();
         setDeltaMovement(dir.normalize().scale(speed));
-//        setYRot(-(float) Math.toDegrees(Math.atan2(dir.x, dir.z)));
-
+        //NOTE! Client改变方向会让剑扭来扭去的，但是客户端也得setDeltaMovement
+        if(!level().isClientSide){
+            setYRot((float) Math.toDegrees(Math.atan2(dir.x, dir.z)));
+            this.setXRot((float) Math.toDegrees(Math.atan2(dir.y, dir.horizontalDistance())));
+        }
         //存活太久或者落地后一小会儿要紫砂。不落地马上紫砂是为了看清轨迹，以及更好的位置反馈
         if(tickCount > 100 || inGroundTime > 2){
+            PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddSmokeParticlePacket(getPosition(1.0f) ,getDeltaMovement()));
             discard();
         }
 
@@ -274,10 +274,14 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
         }
     }
 
-    public float getDirYRot(){
+    /**
+     * 调整初始发射方向
+     */
+    public void initDirection(){
         updateDir();
         setDeltaMovement(dir.normalize().scale(speed));
-        return -(float) Math.toDegrees(Math.atan2(dir.x, dir.z));
+        setYRot((float) Math.toDegrees(Math.atan2(dir.x, dir.z)));
+        setXRot((float) Math.toDegrees(Math.atan2(dir.y, dir.horizontalDistance())));
     }
 
     @Override
@@ -294,6 +298,7 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
                 if(entity instanceof LivingEntity livingEntity){
                     livingEntity.setHealth(livingEntity.getHealth() - 1);//强制扣血，防止霸体
                 }
+                level().playSound(null, getOnPos(), EpicFightSounds.BLADE_HIT.get(), SoundSource.BLOCKS,1f,1f);
                 PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddBladeRushSkillParticlePacket(getPosition(1.0f) ,getDeltaMovement()));
                 discard();
             }
@@ -302,18 +307,22 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
     }
 
     @Override
-    protected ItemStack getPickupItem() {
+    protected @NotNull ItemStack getPickupItem() {
         return getItemStack();
     }
 
+    /**
+     * 加了个Pitch要了我的老命。。。试了3小时估计
+     */
     @Override
     public void setPose(PoseStack poseStack) {
-        poseStack.mulPose(Axis.XP.rotationDegrees(90f));
         Item sword = getItemStack().getItem();
-        if(SwordSoaring.epicFightLoad() && (sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem)){
-            poseStack.mulPose(Axis.ZP.rotationDegrees(45f + getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(getXRot()));
+        poseStack.mulPose(Axis.YP.rotationDegrees(getYRot() - 90));
+        if(sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem){
+            poseStack.mulPose(Axis.ZP.rotationDegrees(getXRot()-45f));
         }else {
-            poseStack.mulPose(Axis.ZP.rotationDegrees(-45f + getYRot()));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(getXRot()-135f));
         }
     }
 

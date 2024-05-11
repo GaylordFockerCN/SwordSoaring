@@ -34,6 +34,10 @@ public class YakshaMask extends PassiveSkill {
         super(builder);
     }
 
+
+    /**
+     * 起跳的部分修改了 {@link yesman.epicfight.skill.mover.DemolitionLeapSkill#castSkill}
+     */
     @Override
     public void onInitiate(SkillContainer container) {
         PlayerEventListener listener = container.getExecuter().getEventListener();

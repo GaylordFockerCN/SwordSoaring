@@ -69,7 +69,7 @@ public class RainCutter extends Skill {
             sword.setKnockback(1);//击退
             sword.setPierceLevel((byte) 5);//穿透
             sword.setPos(player.getPosition(1.0f).add(sword.getOffset()));
-            sword.setYRot(sword.getDirYRot());
+            sword.initDirection();
             player.serverLevel().addFreshEntity(sword);
         }
     }

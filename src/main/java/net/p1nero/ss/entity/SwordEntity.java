@@ -101,7 +101,7 @@ public class SwordEntity extends Entity implements AbstractSwordEntity{
         rider.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(!ssPlayer.isFlying()){
                 ssPlayer.setHasSwordEntity(false);
-                SwordSoaring.LOGGER.info("sword entity "+ getId() + " rider no fly. "+level());
+                SwordSoaring.LOGGER.info("sword entity "+ getId() + " rider is not flying. "+level());
                 discard();
             }
         });
@@ -111,10 +111,10 @@ public class SwordEntity extends Entity implements AbstractSwordEntity{
     /**
      * 判断范围内和自己有交叉的实体
      */
-    public List<Entity> getHitEntities(){
+    public List<Entity> getHitEntities(double offset){
 //        return level().getEntities(this, new AABB(getPosition(0).add(-5,-5,-5), getPosition(0).add(5,5,5))
 //                , entity -> entity.getBoundingBox().contains(getPosition(0.5f)));
-        return level().getEntities(this, new AABB(getPosition(0).add(-5,-5,-5), getPosition(0).add(5,5,5))
+        return level().getEntities(this, new AABB(getPosition(0).add(-offset,-offset,-offset), getPosition(0).add(offset,offset,offset))
                 , entity -> entity.getBoundingBox().intersects(getBoundingBox()));
     }
 
@@ -126,7 +126,7 @@ public class SwordEntity extends Entity implements AbstractSwordEntity{
     public void setPose(PoseStack poseStack){
         poseStack.mulPose(Axis.XP.rotationDegrees(90f));
         Item sword = getItemStack().getItem();
-        if(SwordSoaring.epicFightLoad() && (sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem)){
+        if(sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem){
             poseStack.mulPose(Axis.ZP.rotationDegrees(45f + getYRot()));
         }else {
             poseStack.mulPose(Axis.ZP.rotationDegrees(-45f + getYRot()));
