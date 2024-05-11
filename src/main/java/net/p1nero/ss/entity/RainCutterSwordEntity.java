@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -29,6 +31,9 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 import net.p1nero.ss.SwordSoaring;
+import net.p1nero.ss.network.PacketHandler;
+import net.p1nero.ss.network.PacketRelay;
+import net.p1nero.ss.network.packet.AddBladeRushSkillParticlePacket;
 import org.jetbrains.annotations.NotNull;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -233,7 +238,7 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
             double d5 = vec3.x;
             double d6 = vec3.y;
             double d1 = vec3.z;
-            int i = 1;
+            int i = 0;
             this.level().addParticle(EpicFightParticles.AIR_BURST.get(), this.getX() + d5 * (double)i / 4.0, this.getY() + d6 * (double)i / 4.0, this.getZ() + d1 * (double)i / 4.0, -d5, -d6 + 0.2, -d1);
             firstTick = false;
         }
@@ -278,19 +283,18 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
-        if(getOwner() instanceof Player player){
+        if(getOwner() instanceof ServerPlayer player){
             if(entity.getId() != player.getId()){
                 entity.hurt(damageSources().playerAttack(player),0.5f);
+                int fireLevel = getItemStack().getEnchantmentLevel(Enchantments.FIRE_ASPECT);
+                if(fireLevel>0){
+                    //原版时间除以2
+                    entity.setSecondsOnFire(fireLevel * 2);
+                }
                 if(entity instanceof LivingEntity livingEntity){
                     livingEntity.setHealth(livingEntity.getHealth() - 1);//强制扣血，防止霸体
                 }
-
-                Vec3 vec3 = this.getDeltaMovement();
-                double d5 = vec3.x;
-                double d6 = vec3.y;
-                double d1 = vec3.z;
-                int i = 1;
-                this.level().addParticle(EpicFightParticles.HIT_BLADE.get(), this.getX() + d5 * (double)i / 4.0, this.getY() + d6 * (double)i / 4.0, this.getZ() + d1 * (double)i / 4.0, -d5, -d6 + 0.2, -d1);
+                PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddBladeRushSkillParticlePacket(getPosition(1.0f) ,getDeltaMovement()));
                 discard();
             }
         }

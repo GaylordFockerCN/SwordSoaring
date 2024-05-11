@@ -28,8 +28,8 @@ public class YakshaMask extends PassiveSkill {
 
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114517");
 
-    //tick决定高度
-    public static final int tick = 10;
+    //决定高度
+    public static final int tick = 5;
     public YakshaMask(Builder<? extends Skill> builder) {
         super(builder);
     }

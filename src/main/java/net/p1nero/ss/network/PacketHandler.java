@@ -25,6 +25,7 @@ public class PacketHandler {
         register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);
         register(SyncSwordOwnerPacket.class, SyncSwordOwnerPacket::decode);
         register(StartYakshaJumpPacket.class, StartYakshaJumpPacket::decode);
+        register(AddBladeRushSkillParticlePacket.class, AddBladeRushSkillParticlePacket::decode);
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {
