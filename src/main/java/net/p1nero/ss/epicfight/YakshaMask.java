@@ -92,6 +92,7 @@ public class YakshaMask extends PassiveSkill {
         });
     }
 
+    @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);

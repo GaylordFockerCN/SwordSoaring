@@ -110,6 +110,9 @@ public class RainScreenSwordEntity extends SwordEntity{
 
         SSPlayer ssPlayer = rider.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
         if(this.tickCount > 200){
+            if(!level().isClientSide){
+                ssPlayer.getSwordID().remove(getId());
+            }
             ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount() - 1);
             discard();
         }
