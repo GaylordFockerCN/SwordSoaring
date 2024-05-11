@@ -312,19 +312,28 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
     }
 
     /**
-     * 加了个Pitch要了我的老命。。。试了5小时估计。六点了先熬不住了，学线代去了
-     * 实在是想不到降维后Z轴是跟着X轴一起转
+     * 加了个Pitch要了我的老命。。。试了6小时估计。
+     * 终于想到斜着的时候的旋转合着就是两个方向的旋转叠加
+     * 然后再用一下三角函数和脑子
      */
     @Override
     public void setPose(PoseStack poseStack) {
 
         Item sword = getItemStack().getItem();
-        poseStack.mulPose(Axis.XP.rotationDegrees(getXRot()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(- 90 + getYRot()));
+        double pitchRad = Math.toRadians(-getYRot());
+        double yawRad = Math.toRadians(-getXRot());
+        float xRot = (float) Math.toDegrees(yawRad * Math.cos(pitchRad));
+        float zRot = (float) Math.toDegrees(yawRad * Math.sin(pitchRad));
+        if(0 < -getYRot() && -getYRot() <180){
+            zRot = -zRot;
+        }
+        
+        poseStack.mulPose(Axis.XP.rotationDegrees((xRot)));
+        poseStack.mulPose(Axis.YP.rotationDegrees(getYRot() - 90 ));
         if(sword instanceof UchigatanaItem || sword instanceof TachiItem || sword instanceof LongswordItem){
-            poseStack.mulPose(Axis.ZP.rotationDegrees(- 45f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(zRot - 45f));
         }else {
-            poseStack.mulPose(Axis.ZP.rotationDegrees(- 135f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(zRot - 135f));
         }
     }
 
