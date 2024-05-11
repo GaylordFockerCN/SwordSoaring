@@ -313,6 +313,7 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
 
     /**
      * 加了个Pitch要了我的老命。。。试了3小时估计
+     * 实在是想不到降维后Z轴是跟着X轴一起转
      */
     @Override
     public void setPose(PoseStack poseStack) {
