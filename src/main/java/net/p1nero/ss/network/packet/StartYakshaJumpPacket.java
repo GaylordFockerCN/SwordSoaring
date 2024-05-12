@@ -49,7 +49,7 @@ public record StartYakshaJumpPacket(int tick) implements BasePacket {
 //                    caster.consumeStamina(2);
                     caster.playSound(EpicFightSounds.ROCKET_JUMP.get(), 1.0F, 0.0F, 0.0F);
                     caster.playSound(EpicFightSounds.ENTITY_MOVE.get(), 1.0F, 0.0F, 0.0F);
-                    LevelUtil.circleSlamFracture(null, caster.getOriginal().level(), caster.getOriginal().position().subtract(0.0, 1.0, 0.0), (double)tick * 0.05, true, false, false);
+                    LevelUtil.circleSlamFracture(null, caster.getOriginal().level(), caster.getOriginal().position().subtract(0.0, 1.0, 0.0), (double)tick * 5 * 0.05, true, false, false);
                     Vec3 entityEyePos = caster.getOriginal().getEyePosition();
                     EpicFightParticles.AIR_BURST.get().spawnParticleWithArgument(caster.getOriginal().serverLevel(), entityEyePos.x, entityEyePos.y, entityEyePos.z, 0.0, 0.0, 2.0 + 0.05 * (double)tick);
                     caster.playAnimationSynchronized(Animations.BIPED_DEMOLITION_LEAP, 0.0F);

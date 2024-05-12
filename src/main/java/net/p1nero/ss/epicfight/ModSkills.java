@@ -15,7 +15,7 @@ public class ModSkills {
     public static void registerSkills() {
         SkillManager.register(RainCutter::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.IDENTITY), SwordSoaring.MOD_ID, "rain_cutter");
         SkillManager.register(RainScreen::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.GUARD), SwordSoaring.MOD_ID, "rain_screen");
-        SkillManager.register(YakshaMask::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.PASSIVE), SwordSoaring.MOD_ID, "yaksha_mask");
+        SkillManager.register(YakshaMask::new, YakshaMask.createYakshaMaskBuilder(), SwordSoaring.MOD_ID, "yaksha_mask");
         SkillManager.register(SwordSoaringSkill::new, Skill.createMoverBuilder(), SwordSoaring.MOD_ID, "sword_soaring");
     }
 

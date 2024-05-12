@@ -21,6 +21,7 @@ public class SSPlayer {
     private boolean isScreenCutterCoolDown;
     private int yakshaMaskTimer;
     public boolean canYakshaMask;
+    public boolean isYakshaFall;
     private Set<Integer> swordID;
     private int anticipationTick;
     private ItemStack sword;
