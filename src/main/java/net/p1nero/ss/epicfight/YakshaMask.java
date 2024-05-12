@@ -150,7 +150,7 @@ public class YakshaMask extends PassiveSkill {
                     Vec3 to = hitResult.getLocation();
                     Vec3 from = player.position();
                     double distance = to.distanceTo(from);
-                    if (distance > 6.0) {
+                    if (distance > 4.0) {
                         ssPlayer.isYakshaFall = true;
                         container.getExecuter().playAnimationSynchronized(slamAnimation, 0.0F);
                         event.setCanceled(true);
@@ -166,7 +166,7 @@ public class YakshaMask extends PassiveSkill {
                         Vec3 to = hitResult.getLocation();
                         Vec3 from = player.position();
                         double distance = to.distanceTo(from);
-                        if (distance > 6.0) {
+                        if (distance > 4.0) {
                             ssPlayer.isYakshaFall = true;
                             container.getExecuter().playAnimationSynchronized(slamAnimation, 0.0F);
                             event.setCanceled(true);

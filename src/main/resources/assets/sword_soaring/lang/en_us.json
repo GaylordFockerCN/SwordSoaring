@@ -6,7 +6,7 @@
   "skill.sword_soaring.sword_soaring": "Sword Soaring",
   "skill.sword_soaring.sword_soaring.tooltip": "Hold down the space to fly on the sword, release the space to stop. Consume stamina. Protect the next falling damage. Enchantment 'Enhance Sword Soaring Stamina' can reduce stamina consume.",
   "skill.sword_soaring.rain_screen": "Rain Screen",
-  "skill.sword_soaring.rain_screen.tooltip": "Right-click to kick away the surrounding enemies and summon 4 swords around for 10 seconds. The sword screen can guard against all attacks. Each attack break one sword and heal owner. The sword screen can only be summoned when there is no sword around and you have at least 6 stamina.",
+  "skill.sword_soaring.rain_screen.tooltip": "Right-click to kick away the surrounding enemies and summon 4 swords around for 10 seconds. The sword screen can guard against all attacks. Each attack breaks one sword, consumes 2 stamina and heals the owner. The sword screen can only be summoned when there is no sword around and you have at least 6 stamina.",
   "skill.sword_soaring.rain_cutter": "Rain Cutter",
   "skill.sword_soaring.rain_cutter.tooltip": "Within 10 seconds after executing weapon innate, a basic attack or air attack will summon three swords to track and hurt your target. If the target is null, the sword will fly straight ahead.\n\nThe Fire Aspect Enchantment still works, but the duration of fire is reduced.",
   "skill.sword_soaring.yaksha_mask": "Yaksha's Mask",
