@@ -101,7 +101,7 @@ public class SwordSoaringSkill extends Skill {
                     swordEntity.setYRot(player.getYRot());
                     //服务端加的话移动跟不上，所以在客户端加就好
                     if (player.level() instanceof ClientLevel clientLevel) {
-                        clientLevel.putNonPlayerEntity(114514 + player.getId(), swordEntity);
+                        clientLevel.putNonPlayerEntity(((int) 1145.14) + player.getId(), swordEntity);
                     }
                     ssPlayer.setHasSwordEntity(true);
                 }
