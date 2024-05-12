@@ -54,7 +54,7 @@ public class YakshaMask extends PassiveSkill {
     public static final float forcedXRot = 89.9f;
 
     /**
-     * 抄流星猛击的
+     * 抄流星猛击的，实际上统一为Animations.METEOR_SLAM即可，但是保留这个是为了以后能添加自己的动画。
      * TODO 做自己的动画 make custom animation
      */
     public static YakshaMask.Builder createYakshaMaskBuilder() {
@@ -129,7 +129,7 @@ public class YakshaMask extends PassiveSkill {
                     return;
                 }
 
-                //保留原有动画，不然只有剑有动画
+                //保留这个是为了以后加自定义的动画
                 StaticAnimation slamAnimation;
                 CapabilityItem holdingItem = container.getExecuter().getHoldingItemCapability(InteractionHand.MAIN_HAND);
                 if (!this.slamMotions.containsKey(holdingItem.getWeaponCategory())) {

@@ -56,7 +56,7 @@ public class RainScreen extends Skill {
         PlayerEventListener listener = container.getExecuter().getEventListener();
 
         listener.addEventListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID, (event) -> {
-            if(event.getPlayerPatch().hasStamina(4)){
+            if(event.getPlayerPatch().hasStamina(6)){
                 summonRainScreen(event.getPlayerPatch().getOriginal(), event.getPlayerPatch());
             }
         });
