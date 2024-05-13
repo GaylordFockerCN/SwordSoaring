@@ -3,6 +3,8 @@ package net.p1nero.ss;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -25,10 +27,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntityRenderer;
-import net.p1nero.ss.epicfight.ModSkills;
-import net.p1nero.ss.epicfight.RainCutter;
-import net.p1nero.ss.epicfight.SwordSoaringSkill;
-import net.p1nero.ss.epicfight.YakshaMask;
+import net.p1nero.ss.epicfight.skill.ModSkills;
+import net.p1nero.ss.epicfight.skill.RainCutter;
+import net.p1nero.ss.epicfight.skill.SwordSoaringSkill;
+import net.p1nero.ss.epicfight.skill.YakshaMask;
 import net.p1nero.ss.network.PacketHandler;
 import org.slf4j.Logger;
 import yesman.epicfight.config.ConfigManager;
@@ -84,6 +86,7 @@ public class SwordSoaring {
             EntityRenderers.register(ModEntities.SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.RAIN_SCREEN_SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.RAIN_CUTTER_SWORD.get(), SwordEntityRenderer::new);
+            EntityRenderers.register(ModEntities.STELLAR_SWORD.get(), SwordEntityRenderer::new);
         }
 
     }

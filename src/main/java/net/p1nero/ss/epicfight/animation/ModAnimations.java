@@ -1,0 +1,89 @@
+package net.p1nero.ss.epicfight.animation;
+
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
+import net.p1nero.ss.SwordSoaring;
+import reascer.wom.animation.attacks.SpecialAttackAnimation;
+import reascer.wom.gameasset.WOMAnimations;
+import reascer.wom.gameasset.WOMColliders;
+import reascer.wom.main.WeaponsOfMinecraft;
+import reascer.wom.skill.WOMSkillDataKeys;
+import reascer.wom.world.damagesources.WOMExtraDamageInstance;
+import yesman.epicfight.api.animation.property.AnimationEvent;
+import yesman.epicfight.api.animation.property.AnimationProperty;
+import yesman.epicfight.api.animation.types.*;
+import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
+import yesman.epicfight.api.utils.TimePairList;
+import yesman.epicfight.api.utils.math.ValueModifier;
+import yesman.epicfight.gameasset.Armatures;
+import yesman.epicfight.gameasset.EpicFightSounds;
+import yesman.epicfight.model.armature.HumanoidArmature;
+import yesman.epicfight.particle.EpicFightParticles;
+import yesman.epicfight.skill.SkillDataKey;
+import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.damagesource.EpicFightDamageType;
+import yesman.epicfight.world.damagesource.StunType;
+
+import java.util.Set;
+
+@Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class ModAnimations {
+    public static StaticAnimation PLUNGING_ATTACK;
+    public static StaticAnimation FLY_ON_SWORD;
+    public static StaticAnimation FLY_ON_SWORD_BASIC;
+    public static StaticAnimation FLY_ON_SWORD_ADVANCED;
+    public static StaticAnimation RAIN_SCREEN;
+    public static StaticAnimation STELLAR_RESTORATION_PRE;
+    public static StaticAnimation AGONY_PLUNGE_FORWARD;
+
+    @SubscribeEvent
+    public static void registerAnimations(AnimationRegistryEvent event) {
+        event.getRegistryMap().put(SwordSoaring.MOD_ID, ModAnimations::build);
+//        if(ModList.get().isLoaded("wom")){
+//            event.getRegistryMap().put(WeaponsOfMinecraft.MODID, ModAnimations::buildWOM);
+//        }
+    }
+
+    private static void build() {
+        HumanoidArmature biped = Armatures.BIPED;
+
+        RAIN_SCREEN = (new ActionAnimation(0.05F, 0.7F, "biped/rain_screen", biped)).addStateRemoveOld(EntityState.MOVEMENT_LOCKED, false).newTimePair(0.0F, 0.5F).addStateRemoveOld(EntityState.INACTION, true).addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, new AnimationEvent[]{AnimationEvent.create((entitypatch, animation, params) -> {
+            Vec3 pos = entitypatch.getOriginal().position();
+            entitypatch.playSound(EpicFightSounds.ROLL.get(), 0.0F, 0.0F);
+            entitypatch.getOriginal().level().addAlwaysVisibleParticle(EpicFightParticles.AIR_BURST.get(), pos.x, pos.y + (double)((LivingEntity)entitypatch.getOriginal()).getBbHeight() * 0.5, pos.z, 0.0, -1.0, 2.0);
+        }, AnimationEvent.Side.CLIENT)}).addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, new AnimationEvent[]{AnimationEvent.create((entitypatch, animation, params) -> {
+            if (entitypatch instanceof PlayerPatch<?> playerpatch) {
+                playerpatch.changeModelYRot(0.0F);
+            }
+        }, AnimationEvent.Side.CLIENT)});
+
+        STELLAR_RESTORATION_PRE = (new ActionAnimation(0.05F, 2.0F, "biped/stellar_restoration_pre", biped)).addStateRemoveOld(EntityState.MOVEMENT_LOCKED, false).newTimePair(0.0F, 2.0F).addStateRemoveOld(EntityState.INACTION, true).addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, new AnimationEvent[]{AnimationEvent.create((entitypatch, animation, params) -> {
+            entitypatch.playSound(EpicFightSounds.ROLL.get(), 0.0F, 0.0F);
+            }, AnimationEvent.Side.CLIENT)}).addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, new AnimationEvent[]{AnimationEvent.create((entitypatch, animation, params) -> {
+            if (entitypatch instanceof PlayerPatch<?> playerpatch) {
+                playerpatch.changeModelYRot(0.0F);
+            }
+        }, AnimationEvent.Side.CLIENT)});
+
+        AGONY_PLUNGE_FORWARD = (new SpecialAttackAnimation(0.05F, "biped/agony_plunge_forward", biped, new AttackAnimation.Phase(0.0F, 0.1F, 0.2F, 0.25F, 0.25F, biped.rootJoint, WOMColliders.AGONY_PLUNGE), new AttackAnimation.Phase(0.25F, 1.1F, 1.45F, 1.7F, Float.MAX_VALUE, biped.rootJoint, WOMColliders.AGONY_PLUNGE))).addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, EpicFightSounds.WHOOSH_BIG.get(), 0).addProperty(AnimationProperty.AttackPhaseProperty.PARTICLE, EpicFightParticles.HIT_BLUNT, 0).addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0).addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(9.0F), 0).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.setter(1.0F), 0).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD, 0).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.2F), 1).addProperty(AnimationProperty.AttackPhaseProperty.EXTRA_DAMAGE, Set.of(WOMExtraDamageInstance.WOM_SWEEPING_EDGE_ENCHANTMENT.create(1.5F), WOMExtraDamageInstance.TARGET_LOST_HEALTH.create(0.2F)), 1).addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(1.0F), 1).addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 1).addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(EpicFightDamageType.WEAPON_INNATE), 1).addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, EpicFightSounds.BLADE_RUSH_FINISHER.get(), 1).addProperty(AnimationProperty.AttackPhaseProperty.PARTICLE, EpicFightParticles.BLADE_RUSH_SKILL, 1).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN, 1).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.5F).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, false).addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false).addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(new float[]{0.0F, 1.3F}));
+//
+        FLY_ON_SWORD_BASIC = new StaticAnimation(false, "biped/fly_on_sword_beginner", biped);
+        FLY_ON_SWORD_ADVANCED = new StaticAnimation(false, "biped/fly_on_sword_master", biped);
+//        FLY_ON_SWORD = new SelectiveAnimation();
+    }
+    
+//    private static void buildWOM(){
+//        HumanoidArmature biped = Armatures.BIPED;
+//        AGONY_PLUNGE_FORWARD = (new SpecialAttackAnimation(0.05F, "biped/skill/agony_plunge_forward", biped, new AttackAnimation.Phase[]{new AttackAnimation.Phase(0.0F, 0.1F, 0.2F, 0.25F, 0.25F, biped.rootJoint, WOMColliders.AGONY_PLUNGE), new AttackAnimation.Phase(0.25F, 1.1F, 1.45F, 1.7F, Float.MAX_VALUE, biped.rootJoint, WOMColliders.AGONY_PLUNGE)})).addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, (SoundEvent)EpicFightSounds.WHOOSH_BIG.get(), 0).addProperty(AnimationProperty.AttackPhaseProperty.PARTICLE, EpicFightParticles.HIT_BLUNT, 0).addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0).addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(9.0F), 0).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.setter(1.0F), 0).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD, 0).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.2F), 1).addProperty(AnimationProperty.AttackPhaseProperty.EXTRA_DAMAGE, Set.of(WOMExtraDamageInstance.WOM_SWEEPING_EDGE_ENCHANTMENT.create(new float[]{1.5F}), WOMExtraDamageInstance.TARGET_LOST_HEALTH.create(new float[]{0.2F})), 1).addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(1.0F), 1).addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 1).addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(EpicFightDamageType.WEAPON_INNATE), 1).addProperty(AnimationProperty.AttackPhaseProperty.HIT_SOUND, (SoundEvent)EpicFightSounds.BLADE_RUSH_FINISHER.get(), 1).addProperty(AnimationProperty.AttackPhaseProperty.PARTICLE, EpicFightParticles.BLADE_RUSH_SKILL, 1).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN, 1).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.5F).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, false).addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false).addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(new float[]{0.0F, 1.3F})).addEvents(new AnimationEvent.TimeStampedEvent[]{AnimationEvent.TimeStampedEvent.create(0.15F, null, AnimationEvent.Side.CLIENT), AnimationEvent.TimeStampedEvent.create(0.2F, null, AnimationEvent.Side.CLIENT), AnimationEvent.TimeStampedEvent.create(0.25F, null, AnimationEvent.Side.CLIENT), AnimationEvent.TimeStampedEvent.create(0.3F, null, AnimationEvent.Side.CLIENT), AnimationEvent.TimeStampedEvent.create(0.35F, null, AnimationEvent.Side.CLIENT), AnimationEvent.TimeStampedEvent.create(1.3F, null, AnimationEvent.Side.CLIENT), AnimationEvent.TimeStampedEvent.create(1.45F, (entitypatch, self, params) -> {
+//        }, AnimationEvent.Side.SERVER), AnimationEvent.TimeStampedEvent.create(1.55F, null, AnimationEvent.Side.CLIENT)});
+//
+//    }
+
+}

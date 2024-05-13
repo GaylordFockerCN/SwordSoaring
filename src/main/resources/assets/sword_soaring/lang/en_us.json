@@ -11,6 +11,8 @@
   "skill.sword_soaring.rain_cutter.tooltip": "Within 10 seconds after executing weapon innate, a basic attack or air attack will summon three swords to track and hurt your target. If the target is null, the sword will fly straight ahead.\n\nThe Fire Aspect Enchantment still works, but the duration of fire is reduced.",
   "skill.sword_soaring.yaksha_mask": "Yaksha's Mask",
   "skill.sword_soaring.yaksha_mask.tooltip": "Within 10 seconds after executing weapon innate, you gain the ability to perform a high jump, enabling the use of §l§4Meteor Slam Plus§r.\n\n§l§4Meteor Slam Plus§r : If your depression angle are less than 40 degrees while airborne, it will automatically adjust to 90 degrees. This removes the limitation based on weapon type but imposes a cap on jump height. Each attack consumes 1.5 stamina.",
+  "skill.sword_soaring.stellar_restoration": "Stellar Restoration",
+  "skill.sword_soaring.stellar_restoration.tooltip": "",
   "config.sword_soaring.fly_speed_scale": "the ratio of flying speed to view vector",
   "config.sword_soaring.stamina_consume_per_tick": "the stamina consumed per tick when flying",
   "config.sword_soaring.max_anticipation_tick": "ticks of pre taking off",

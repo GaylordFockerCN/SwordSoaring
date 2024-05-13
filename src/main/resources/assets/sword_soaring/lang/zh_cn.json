@@ -11,6 +11,8 @@
   "skill.sword_soaring.rain_cutter.tooltip": "释放武器技能后10s内，普通攻击会召唤三把剑，追踪锁定的目标并造成伤害。如果目标不存在则往前飞。火焰附加依然生效，但附加时间折扣。",
   "skill.sword_soaring.yaksha_mask": "夜叉傩面",
   "skill.sword_soaring.yaksha_mask.tooltip": "释放武器技能后10s内，你可以跳跃到可以释放§l§4流星猛击Plus§r的高度。\n\n§l§4流星猛击Plus§r：如果跳起来后你的俯角小于40度将强制把俯角设为90度。移除了武器限制，但是限制了跳跃高度。每次攻击消耗1.5点耐力。",
+  "skill.sword_soaring.stellar_restoration": "星斗归位",
+  "skill.sword_soaring.stellar_restoration.tooltip": "",
   "config.sword_soaring.fly_speed_scale": "飞行速度和朝向向量的比例",
   "config.sword_soaring.stamina_consume_per_tick": "飞行时每刻耐力消耗",
   "config.sword_soaring.max_anticipation_tick": "前摇的刻数",

@@ -78,8 +78,9 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-//    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5159623")
+//    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5159623")WeaponsOfMiracles-20.1.7.40.jar
     implementation fg.deobf("libs:EpicFight:20.7.4")
+    implementation fg.deobf("libs:WeaponsOfMiracles:20.1.7.40")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

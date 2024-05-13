@@ -22,6 +22,8 @@ public class SSPlayer {
     private int yakshaMaskTimer;
     public boolean canYakshaMask;
     public boolean isYakshaFall;
+    public int stellarSwordID;
+    public boolean isStellarRestoration;
     private Set<Integer> swordID;
     private int anticipationTick;
     private ItemStack sword;
