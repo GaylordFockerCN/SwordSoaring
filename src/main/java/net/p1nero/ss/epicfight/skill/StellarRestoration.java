@@ -7,15 +7,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.TickEvent;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
-import net.p1nero.ss.entity.RainCutterSwordEntity;
 import net.p1nero.ss.entity.StellarSwordEntity;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
+import net.p1nero.ss.network.PacketHandler;
+import net.p1nero.ss.network.PacketRelay;
+import net.p1nero.ss.network.packet.StopStellarRestorationPacket;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
-import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -57,6 +59,10 @@ public class StellarRestoration extends Skill {
                             player.teleportTo(sword.getX(), sword.getY(), sword.getZ());
                             sword.discard();
                             event.getPlayerPatch().playAnimationSynchronized(Animations.SWEEPING_EDGE,0);
+                            ssPlayer.stayInAirTick = 20;
+                            if(player instanceof ServerPlayer serverPlayer){
+                                PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new StopStellarRestorationPacket(),serverPlayer);
+                            }
                         }
                         //不管能不能瞬移都要重置
                         ssPlayer.isStellarRestoration = false;
@@ -76,6 +82,21 @@ public class StellarRestoration extends Skill {
                         ssPlayer.setProtectNextFall(false);
                     }
                 });
+            }
+        });
+    }
+
+    /**
+     * 实现滞空
+     * 客户端通过发包实现。
+     */
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event){
+        Player player = event.player;
+        player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+            if(ssPlayer.stayInAirTick > 0){
+//                player.teleportTo(player.getX(), player.getY()+0.1, player.getZ());
+                player.setDeltaMovement(player.getDeltaMovement().scale(0.01));
+                ssPlayer.stayInAirTick--;
             }
         });
     }

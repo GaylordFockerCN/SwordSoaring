@@ -32,7 +32,7 @@ public record StartFlyPacket () implements BasePacket {
     public void execute(@Nullable Player player) {
         if (player != null && player.getServer() != null) {
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                ssPlayer.setProtectNextFall(true);
+//                ssPlayer.setProtectNextFall(true);
                 ssPlayer.setFlying(true);
                 //剑放脚下就不拿出来了
                 if(player instanceof ServerPlayer serverPlayer){

@@ -23,6 +23,9 @@ public class SSPlayer {
     public boolean canYakshaMask;
     public boolean isYakshaFall;
     public int stellarSwordID;
+    public int stayInAirTick;
+    private int flyingTick;
+    public double flyHeight;
     public boolean isStellarRestoration;
     private Set<Integer> swordID;
     private int anticipationTick;
@@ -106,6 +109,14 @@ public class SSPlayer {
         this.anticipationTick = anticipationTick;
     }
 
+    public int getFlyingTick() {
+        return flyingTick;
+    }
+
+    public void setFlyingTick(int flyingTick) {
+        this.flyingTick = flyingTick;
+    }
+
     public ItemStack getSword() {
         if(sword == null){
             return ItemStack.EMPTY;
@@ -145,6 +156,7 @@ public class SSPlayer {
         tag.putBoolean("rainCutterCoolDown", isScreenCutterCoolDown);
         tag.putInt("yakshaMaskTimer", yakshaMaskTimer);
         tag.putInt("anticipationTick", anticipationTick);
+        tag.putInt("flyingTick", flyingTick);
         if(sword != null){
             tag.put("sword", sword.serializeNBT());
         }else {
@@ -156,11 +168,12 @@ public class SSPlayer {
         isFlying = tag.getBoolean("isFlying");
         protectNextFall = tag.getBoolean("protectNextFall");
         hasSwordEntity = tag.getBoolean("hasEntity");
-        swordScreenEntityCount = tag.getInt("hasSwordScreenEntity");
+//        swordScreenEntityCount = tag.getInt("hasSwordScreenEntity");
         rainCutterTimer = tag.getInt("rainCutterTimer");
         isScreenCutterCoolDown = tag.getBoolean("rainCutterCoolDown");
         yakshaMaskTimer = tag.getInt("yakshaMaskTimer");
         anticipationTick = tag.getInt("anticipationTick");
+        flyingTick = tag.getInt("flyingTick");
         sword = ItemStack.of(tag.getCompound("sword"));
     }
 
@@ -168,11 +181,12 @@ public class SSPlayer {
         isFlying = old.isFlying;
         protectNextFall = old.protectNextFall;
         hasSwordEntity = old.hasSwordEntity;
-        swordScreenEntityCount = old.swordScreenEntityCount;
+//        swordScreenEntityCount = old.swordScreenEntityCount;
         rainCutterTimer = old.rainCutterTimer;
         isScreenCutterCoolDown = old.isScreenCutterCoolDown;
         yakshaMaskTimer = old.yakshaMaskTimer;
         anticipationTick = old.anticipationTick;
+        flyingTick = old.flyingTick;
         sword = old.sword;
     }
 

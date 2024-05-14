@@ -3,14 +3,19 @@ package net.p1nero.ss.epicfight.skill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
@@ -18,12 +23,17 @@ import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.StartFlyPacket;
 import net.p1nero.ss.network.packet.StopFlyPacket;
+import yesman.epicfight.api.utils.LevelUtil;
+import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillDataKey;
+import yesman.epicfight.skill.SkillDataKeys;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static net.p1nero.ss.util.InertiaUtil.*;
@@ -94,7 +104,11 @@ public class SwordSoaringSkill extends Skill {
                 //设置飞行状态并设置免疫下次摔落伤害
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket());
                 ssPlayer.setFlying(true);
-                event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_BASIC,0);
+                if(ssPlayer.getFlyingTick()>10000){
+                    event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED,0);
+                } else {
+                    event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_BASIC,0);
+                }
                 //向世界添加剑的实体
                 if(!ssPlayer.hasSwordEntity()){
                     SwordEntity swordEntity = new SwordEntity(sword, player);
@@ -111,18 +125,28 @@ public class SwordSoaringSkill extends Skill {
 
         });
 
-        //免疫摔落伤害
+        //取消免疫摔落伤害
         listener.addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
             if (event.getDamageSource().is(DamageTypeTags.IS_FALL) ) {
                 Player player = event.getPlayerPatch().getOriginal();
                 player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                     if(ssPlayer.isProtectNextFall()){
-                        event.setAmount(0.0F);
-                        event.setCanceled(true);
                         ssPlayer.setProtectNextFall(false);
                     }
                 });
             }
+        });
+
+        //调整下落伤害，不然高飞低会扣血
+        listener.addEventListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID, (event) -> {
+            Player player = event.getPlayerPatch().getOriginal();
+            player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+                if(ssPlayer.flyHeight == -1){
+                    return;
+                }
+                event.getForgeEvent().setDistance(((int) ssPlayer.flyHeight));
+                ssPlayer.flyHeight = -1;
+            });
         });
 
     }
@@ -134,9 +158,17 @@ public class SwordSoaringSkill extends Skill {
      */
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
-
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(ssPlayer.isFlying()){
+                //飞行经验增加
+                if(ssPlayer.getFlyingTick() < 10000){
+                    ssPlayer.setFlyingTick(ssPlayer.getFlyingTick()+1);
+                }else {
+                    player.displayClientMessage(Component.translatable("tip.sword_soaring.sword_master"), true);
+                }
+
+                resetHeight(player,ssPlayer);
+
                 //惯性控制。懒得重写就直接用getPersistentData了
                 if(Config.ENABLE_INERTIA.get()){
                     Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get());
@@ -168,6 +200,19 @@ public class SwordSoaringSkill extends Skill {
                 double endVecLength = getEndVec(player.getPersistentData()).length();
                 //惯性缓冲
                 if (getLeftTick(player.getPersistentData()) > 0 && endVecLength != 0) {
+                    player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
+                        if(entityPatch instanceof PlayerPatch<?> playerPatch){
+                            if(playerPatch.getEntityState().inaction()){
+                                return;
+                            }
+                            if(getLeftTick(player.getPersistentData()) == 1){
+                                playerPatch.playAnimationSynchronized(Animations.BIPED_IDLE, 0);
+                            } else {
+                                playerPatch.playAnimationSynchronized(Animations.BIPED_FALL, 0);
+                            }
+                        }
+                    });
+                    resetHeight(player,ssPlayer);
                     int leftTick = getLeftTick(player.getPersistentData());
                     setLeftTick(player.getPersistentData(), leftTick - 1);
                     //用末速度来计算
@@ -180,6 +225,24 @@ public class SwordSoaringSkill extends Skill {
         //更新方向向量队列
         updateViewVec(player.getPersistentData(), player.getViewVector(0));
 
+    }
+
+    /**
+     * 每tick都消耗太浪费资源了，但是有无惯性都得重置高度。。
+     */
+    private static void resetHeight(Player player, SSPlayer ssPlayer){
+        Vec3 vec3 = player.getEyePosition(1.0F);
+        Vec3 view = player.getViewVector(1.0f);
+        Vec3 vec31 = new Vec3(view.x, -1, view.z);
+        Vec3 vec32 = vec3.add(vec31.x * 50.0, vec31.y * 50.0, vec31.z * 50.0);
+        HitResult hitResult = player.level().clip(new ClipContext(vec3, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+        if(hitResult.getType() != HitResult.Type.MISS){
+            Vec3 to = hitResult.getLocation();
+            Vec3 from = player.position();
+            ssPlayer.flyHeight = to.distanceTo(from);
+        }else {
+            ssPlayer.flyHeight = -1;
+        }
     }
 
     @Override

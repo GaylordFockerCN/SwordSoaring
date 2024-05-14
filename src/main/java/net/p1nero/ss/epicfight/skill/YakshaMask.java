@@ -14,6 +14,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.ModList;
+import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
@@ -41,49 +42,48 @@ import java.util.function.BiFunction;
 /**
  * 靖妖傩舞!
  * 本质是无CD的毁坏跳跃
+ * 1.9.0更新：直接换成 AGONY_PLUNGE_FORWARD
  */
 public class YakshaMask extends PassiveSkill {
 
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114517");
 
     protected final Map<WeaponCategory, BiFunction<CapabilityItem, PlayerPatch<?>, StaticAnimation>> slamMotions;
-    private final StaticAnimation defaultAnim = ModAnimations.AGONY_PLUNGE_FORWARD;
+    private final StaticAnimation defaultAnim = Animations.METEOR_SLAM;
 
     //决定高度
-    public static final int height = 7;
+    public static final int height = 5;
     //低头的角度
     public static final float forcedXRot = 89.9f;
 
     /**
      * 抄流星猛击的，实际上统一为Animations.METEOR_SLAM即可，但是保留这个是为了以后能添加自己的动画。
-     * TODO 做自己的动画 make custom animation
      */
     public static YakshaMask.Builder createYakshaMaskBuilder() {
 //        if(ModList.get().isLoaded("wom")){
 //            //WOMAnimations.AGONY_PLUNGE_FORWARD_X
-            return (new YakshaMask.Builder()).setCategory(SkillCategories.IDENTITY).setResource(Resource.NONE)
-                    .addSlamMotion(CapabilityItem.WeaponCategories.SPEAR, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
-                    .addSlamMotion(CapabilityItem.WeaponCategories.GREATSWORD, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
-                    .addSlamMotion(CapabilityItem.WeaponCategories.TACHI, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
-                    .addSlamMotion(CapabilityItem.WeaponCategories.LONGSWORD, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD);
-//        }
 //            return (new YakshaMask.Builder()).setCategory(SkillCategories.IDENTITY).setResource(Resource.NONE)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.SPEAR, (item, player) -> Animations.METEOR_SLAM)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.GREATSWORD, (item, player) -> Animations.METEOR_SLAM)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.TACHI, (item, player) -> Animations.METEOR_SLAM)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.LONGSWORD, (item, player) -> Animations.METEOR_SLAM);
+//                    .addSlamMotion(CapabilityItem.WeaponCategories.SPEAR, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
+//                    .addSlamMotion(CapabilityItem.WeaponCategories.GREATSWORD, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
+//                    .addSlamMotion(CapabilityItem.WeaponCategories.TACHI, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
+//                    .addSlamMotion(CapabilityItem.WeaponCategories.LONGSWORD, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD);
+//        }
+            return (new YakshaMask.Builder()).setCategory(SkillCategories.IDENTITY).setResource(Resource.NONE)
+                    .addSlamMotion(CapabilityItem.WeaponCategories.SPEAR, (item, player) -> Animations.METEOR_SLAM)
+                    .addSlamMotion(CapabilityItem.WeaponCategories.GREATSWORD, (item, player) -> Animations.METEOR_SLAM)
+                    .addSlamMotion(CapabilityItem.WeaponCategories.TACHI, (item, player) -> Animations.METEOR_SLAM)
+                    .addSlamMotion(CapabilityItem.WeaponCategories.LONGSWORD, (item, player) -> Animations.METEOR_SLAM);
     }
 
     public YakshaMask(Builder builder) {
         super(builder);
         slamMotions = builder.slamMotions;
 //        if(ModList.get().isLoaded("wom")){
-//            defaultAnim = WOMAnimations.AGONY_CLAWSTRIKE;
+//            defaultAnim = ModAnimations.AGONY_PLUNGE_FORWARD;
 //        }else {
 //            defaultAnim = Animations.METEOR_SLAM;
 //        }
     }
-
 
     /**
      * 起跳的部分修改了 {@link yesman.epicfight.skill.mover.DemolitionLeapSkill#castSkill}
@@ -104,16 +104,18 @@ public class YakshaMask extends PassiveSkill {
                 }
                 //直接由这个来判断能否起跳，并且在tick事件中对其修改（已经懒得保存能否跳了）
                 ssPlayer.canYakshaMask = false;
-                int height = YakshaMask.height + new Random().nextInt(2);
+                int height = YakshaMask.height;
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartYakshaJumpPacket(height));
+                if(SwordSoaring.isWOMLoaded()){
+                    return;
+                }
                 int modifiedTicks = (int)(7.466800212860107 * Math.log10((float)height + 1.0F) / Math.log10(2.0));
                 Vec3f jumpDirection = new Vec3f(0.0F, (float)modifiedTicks * 0.05F, 0.0F);
-                float xRot = Mth.clamp(70.0F + Mth.clamp(-60f, -90.0F, 0.0F), 0.0F, 70.0F);
+                float xRot = Mth.clamp(70.0F + Mth.clamp(-60, -90.0F, 0.0F), 0.0F, 70.0F);
                 jumpDirection.add(0.0F, xRot / 70.0F * 0.05F, 0.0F);
                 jumpDirection.rotate(xRot, Vec3f.X_AXIS);
                 jumpDirection.rotate(-localPlayerPatch.getCameraYRot(), Vec3f.Y_AXIS);
                 localPlayerPatch.getOriginal().setDeltaMovement(jumpDirection.toDoubleVector());
-
             });
 
         });
@@ -128,7 +130,10 @@ public class YakshaMask extends PassiveSkill {
                     ssPlayer.setYakshaMaskTimer(400);
                     player.level().playSound(null, player.getOnPos(), SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.3f,1f);
                 }
-
+                //有装WOM就另外的动画
+                if(SwordSoaring.isWOMLoaded()){
+                    return;
+                }
                 //下面为流星猛击源码的修改版，取消了使用限制，如果不符合则强制低头
                 if (skill.getCategory() != SkillCategories.BASIC_ATTACK && skill.getCategory() != SkillCategories.AIR_ATTACK) {
                     return;
@@ -208,6 +213,7 @@ public class YakshaMask extends PassiveSkill {
         //播放下落砸地特效
         listener.addEventListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID, (event) -> {
             Player player = event.getPlayerPatch().getOriginal();
+//            event.getForgeEvent().setDistance(0);
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                 if(ssPlayer.isYakshaFall){
                     ssPlayer.isYakshaFall = false;

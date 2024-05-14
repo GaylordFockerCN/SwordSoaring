@@ -32,7 +32,7 @@ public record StopFlyPacket() implements BasePacket {
                     //TODO 向下倾斜模拟重力
                     Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get());
                     setEndVec(player.getPersistentData(), endVec);
-                    double leftTick = endVec.length() * maxRecordTick * 2;
+                    double leftTick = endVec.length() * maxRecordTick;
                     setLeftTick(player.getPersistentData(), ((int) leftTick));
                 }
                 ssPlayer.setFlying(false);

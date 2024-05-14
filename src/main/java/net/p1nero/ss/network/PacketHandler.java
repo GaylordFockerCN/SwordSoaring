@@ -21,9 +21,11 @@ public class PacketHandler {
     public static synchronized void register() {
         register(StartFlyPacket.class, StartFlyPacket::decode);
         register(StopFlyPacket.class, StopFlyPacket::decode);
+        register(StopStellarRestorationPacket.class, StopStellarRestorationPacket::decode);
         register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);
         register(SyncSwordOwnerPacket.class, SyncSwordOwnerPacket::decode);
         register(StartYakshaJumpPacket.class, StartYakshaJumpPacket::decode);
+
         register(AddBladeRushSkillParticlePacket.class, AddBladeRushSkillParticlePacket::decode);
         register(AddSmokeParticlePacket.class, AddSmokeParticlePacket::decode);
     }

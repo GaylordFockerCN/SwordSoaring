@@ -17,6 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -27,10 +28,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntityRenderer;
-import net.p1nero.ss.epicfight.skill.ModSkills;
-import net.p1nero.ss.epicfight.skill.RainCutter;
-import net.p1nero.ss.epicfight.skill.SwordSoaringSkill;
-import net.p1nero.ss.epicfight.skill.YakshaMask;
+import net.p1nero.ss.epicfight.skill.*;
 import net.p1nero.ss.network.PacketHandler;
 import org.slf4j.Logger;
 import yesman.epicfight.config.ConfigManager;
@@ -56,6 +54,7 @@ public class SwordSoaring {
         fg_bus.addListener(RainCutter::onPlayerTick);
         fg_bus.addListener(SwordSoaringSkill::onPlayerTick);
         fg_bus.addListener(YakshaMask::onPlayerTick);
+        fg_bus.addListener(StellarRestoration::onPlayerTick);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -63,6 +62,14 @@ public class SwordSoaring {
     private void commonSetup(final FMLCommonSetupEvent event) {
         PacketHandler.register();
         ModSkills.registerSkills();
+    }
+
+    /**
+     * 调整是否在有WOM的环境下
+     */
+    public static boolean isWOMLoaded(){
+        return ModList.get().isLoaded("wom");
+//        return false;
     }
 
     /**
