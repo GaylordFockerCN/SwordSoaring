@@ -25,9 +25,9 @@ public class Config
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.BooleanValue HIDE_SWORD_WHEN_FLY = createBool("hide the sword in your hand when flying","hide_sword_when_fly", true);
     public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA = createBool("enable_inertia", true);
-    public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE = createDouble("the inertia tick.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
+    public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE = createDouble("the inertia shouldPlayAnim.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
     public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
-    public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per tick when flying" ,"stamina_consume_per_tick", 0.05);
+    public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per shouldPlayAnim when flying" ,"stamina_consume_per_tick", 0.05);
     public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK = createDouble("ticks of pre taking off","max_anticipation_tick", 10);
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
             .comment("A list of items considered as sword.")

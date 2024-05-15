@@ -216,7 +216,7 @@ public class SwordSoaringSkill extends Skill {
                                 return;
                             }
                             if(getLeftTick(player.getPersistentData()) == 1){
-                                playerPatch.playAnimationSynchronized(Animations.BIPED_IDLE, 0);
+                                playerPatch.playAnimationSynchronized(Animations.BIPED_WALK, 0);
                             } else {
                                 playerPatch.playAnimationSynchronized(Animations.BIPED_FALL, 0);
                             }

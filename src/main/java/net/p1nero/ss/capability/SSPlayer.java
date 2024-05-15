@@ -26,7 +26,9 @@ public class SSPlayer {
     public int stayInAirTick;
     private int flyingTick;
     public double flyHeight;
+    //客户端和服务端用途不一样
     public boolean isStellarRestoration;
+    public boolean isStellarRestorationReady;
     private Set<Integer> swordID;
     private int anticipationTick;
     private ItemStack sword;

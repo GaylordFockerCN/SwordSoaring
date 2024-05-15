@@ -1,10 +1,6 @@
 package net.p1nero.ss.epicfight.skill;
 
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,13 +12,11 @@ import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.RainScreenSwordEntity;
-import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.SyncSwordOwnerPacket;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
@@ -58,7 +52,7 @@ public class RainScreen extends Skill {
 
         listener.addEventListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID, (event) -> {
             if(event.getPlayerPatch().hasStamina(6)){
-                summonRainScreen(event.getPlayerPatch().getOriginal(), event.getPlayerPatch());
+                summonSword(event.getPlayerPatch().getOriginal(), event.getPlayerPatch());
             }
         });
 
@@ -101,7 +95,7 @@ public class RainScreen extends Skill {
 
     }
 
-    public void summonRainScreen(ServerPlayer player, ServerPlayerPatch playerPatch){
+    public static void summonSword(ServerPlayer player, ServerPlayerPatch playerPatch){
         if(!SwordSoaring.isValidSword(player.getMainHandItem())){
             return;
         }
@@ -120,9 +114,8 @@ public class RainScreen extends Skill {
                 }
             }
 
-            if(ssPlayer.getSwordScreenEntityCount() == 0){
+            if(ssPlayer.getSwordScreenEntityCount() == 0 && !playerPatch.getEntityState().inaction()){
                 //播放动画，对周围实体造成伤害
-                playerPatch.playAnimationSynchronized(Animations.BIPED_PHANTOM_ASCENT_BACKWARD, 0);
                 playerPatch.playAnimationSynchronized(ModAnimations.RAIN_SCREEN, 0);
                 double r = 3;
                 List<Entity> entities = player.serverLevel().getEntities(player,new AABB(player.getPosition(0).add(-r,-r,-r), player.getPosition(0).add(r,r,r)));
@@ -133,17 +126,25 @@ public class RainScreen extends Skill {
                     entity.hurt(player.damageSources().playerAttack(player), 2f);
                 }
 
-                //添加四把剑帘
-                for(int i = 0; i < 4; i++){
-                    RainScreenSwordEntity sword = ModEntities.RAIN_SCREEN_SWORD.get().spawn(player.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
-                    sword.setRider(player);
-                    sword.setItemStack(player.getMainHandItem());
-                    PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
-                    sword.setSwordID(i);
-                    sword.setPos(player.getPosition(0.5f).add(sword.getOffset()));
-                    swordID.add(sword.getId());
-                    ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()+1);
-                }
+                new Thread(()->{
+                    try {
+                        Thread.sleep(600);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    for(int i = 0; i < 4; i++){
+                        RainScreenSwordEntity sword = ModEntities.RAIN_SCREEN_SWORD.get().spawn(player.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
+                        sword.setRider(player);
+                        sword.setItemStack(player.getMainHandItem());
+                        PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
+                        sword.setSwordID(i);
+                        sword.setPos(player.getPosition(0.5f).add(sword.getOffset()));
+                        ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()+1);
+                        swordID.add(sword.getId());
+                    }
+                }).start();
+
+
             }
 
         });
