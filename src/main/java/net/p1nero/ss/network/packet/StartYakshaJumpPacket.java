@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
@@ -47,15 +48,15 @@ public record StartYakshaJumpPacket(int tick) implements BasePacket {
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
 
                 if(entityPatch instanceof ServerPlayerPatch caster){
+                    SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
                     if(SwordSoaring.isWOMLoaded() && !(caster.hasStamina(6) || player.isCreative())){
+                        ssPlayer.setProtectNextFall(true);
                         return;
                     }
-                    player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                        ssPlayer.setProtectNextFall(true);
-                        if(SwordSoaring.isWOMLoaded()){
-                            ssPlayer.isYakshaFall = true;
-                        }
-                    });
+                    ssPlayer.setProtectNextFall(true);
+                    if(SwordSoaring.isWOMLoaded()){
+                        ssPlayer.isYakshaFall = true;
+                    }
                     caster.playSound(EpicFightSounds.ROCKET_JUMP.get(), 1.0F, 0.0F, 0.0F);
                     caster.playSound(EpicFightSounds.ENTITY_MOVE.get(), 1.0F, 0.0F, 0.0F);
                     LevelUtil.circleSlamFracture(null, caster.getOriginal().level(), caster.getOriginal().position().subtract(0.0, 1.0, 0.0), (double)tick * 5 * 0.05, true, false, false);

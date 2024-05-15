@@ -2,6 +2,8 @@ package net.p1nero.ss.epicfight.skill;
 
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
@@ -16,11 +18,14 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.ModList;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
+import net.p1nero.ss.network.packet.SetClientYakshaMaskTimePacket;
 import net.p1nero.ss.network.packet.StartYakshaJumpPacket;
 import reascer.wom.gameasset.WOMAnimations;
+import reascer.wom.world.damagesources.WOMExtraDamageInstance;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.LevelUtil;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -32,6 +37,7 @@ import yesman.epicfight.skill.passive.PassiveSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
+import yesman.epicfight.world.damagesource.EpicFightDamageTypes;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.Map;
@@ -126,8 +132,9 @@ public class YakshaMask extends PassiveSkill {
             Player player = event.getPlayerPatch().getOriginal();
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                 //客户端找不到方法限制。。按G就可以启动。。能放技能的三把武器太那啥了
-                if(skill.getCategory() == SkillCategories.WEAPON_INNATE){
+                if(skill.getCategory() == SkillCategories.WEAPON_INNATE && player instanceof ServerPlayer serverPlayer){
                     ssPlayer.setYakshaMaskTimer(400);
+                    PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new SetClientYakshaMaskTimePacket(), serverPlayer);//充能没满客户端也被视为释放技能，所以客户端应该由服务端获取
                     player.level().playSound(null, player.getOnPos(), SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.3f,1f);
                 }
                 //有装WOM就另外的动画
@@ -196,17 +203,22 @@ public class YakshaMask extends PassiveSkill {
             });
         });
 
-        //免疫摔落伤害
+
         listener.addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
+            Player player = event.getPlayerPatch().getOriginal();
+            SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
+            //免疫摔落伤害
             if (event.getDamageSource().is(DamageTypeTags.IS_FALL) ) {
-                Player player = event.getPlayerPatch().getOriginal();
-                player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                    if(ssPlayer.isProtectNextFall()){
-                        event.setAmount(0.0F);
-                        event.setCanceled(true);
-                        ssPlayer.setProtectNextFall(false);
-                    }
-                });
+                if(ssPlayer.isProtectNextFall()){
+                    event.setAmount(0.0F);
+                    event.setCanceled(true);
+                    ssPlayer.setProtectNextFall(false);
+                }
+            }
+            //保护冲击波
+            if(event.getDamageSource().is(EpicFightDamageTypes.SHOCKWAVE) && SwordSoaring.isWOMLoaded() && ssPlayer.getYakshaMaskTimer() > 0){
+                event.setCanceled(true);
+                event.setAmount(0.0F);
             }
         });
 

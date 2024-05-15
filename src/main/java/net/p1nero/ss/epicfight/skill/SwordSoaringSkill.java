@@ -5,10 +5,13 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
@@ -73,9 +76,10 @@ public class SwordSoaringSkill extends Skill {
 
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 
-                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”
+
+                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”。player.isInWater没吊用。。
                 if (!jumpPressed || event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
-                        || event.getPlayerPatch().getStamina() <= 0.1f || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity()) ) {
+                        || event.getPlayerPatch().getStamina() <= 0.1f || player.isInLava() || player.isUnderWater() || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity())) {
                     //停止飞行
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
                     //飞行结束后再获取末向量。因为此时isFlying还没设为false
@@ -104,11 +108,16 @@ public class SwordSoaringSkill extends Skill {
                 //设置飞行状态并设置免疫下次摔落伤害
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket());
                 ssPlayer.setFlying(true);
-                if(ssPlayer.getFlyingTick()>10000){
-                    event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED,0);
-                } else {
-                    event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_BASIC,0);
+
+                //如果没在播放动画则播放飞行动画
+                if(!event.getPlayerPatch().getEntityState().inaction()){
+                    if(ssPlayer.getFlyingTick()>10000){
+                        event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED,0);
+                    } else {
+                        event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_BASIC,0);
+                    }
                 }
+
                 //向世界添加剑的实体
                 if(!ssPlayer.hasSwordEntity()){
                     SwordEntity swordEntity = new SwordEntity(sword, player);
@@ -165,6 +174,7 @@ public class SwordSoaringSkill extends Skill {
                     ssPlayer.setFlyingTick(ssPlayer.getFlyingTick()+1);
                 }else {
                     player.displayClientMessage(Component.translatable("tip.sword_soaring.sword_master"), true);
+                    player.level().playSound(null, player.getOnPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1f,1f);
                 }
 
                 resetHeight(player,ssPlayer);
