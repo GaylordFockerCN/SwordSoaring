@@ -15,10 +15,10 @@ import javax.annotation.Nullable;
  * 告诉服务端我正在蓄力
  * true为播动画，false为发射
  */
-public record StartPreStellarRestorationPacket(boolean shouldPlayAnim) implements BasePacket {
+public record StartPreStellarRestorationPacket(boolean pre) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buf) {
-        buf.writeBoolean(shouldPlayAnim);
+        buf.writeBoolean(pre);
     }
 
     public static StartPreStellarRestorationPacket decode(FriendlyByteBuf buf) {
@@ -36,7 +36,7 @@ public record StartPreStellarRestorationPacket(boolean shouldPlayAnim) implement
                     }
                     if(!caster.getSkill(ModSkills.STELLAR_RESTORATION).isEmpty()){
                         SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
-                        if(shouldPlayAnim){
+                        if(pre){
                             caster.playAnimationSynchronized(ModAnimations.STELLAR_RESTORATION_PRE0, 0.0F);
                         } else {
                             ssPlayer.isStellarRestorationReady = true;

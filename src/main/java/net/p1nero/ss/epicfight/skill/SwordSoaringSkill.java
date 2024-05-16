@@ -96,7 +96,6 @@ public class SwordSoaringSkill extends Skill {
                     ssPlayer.setAnticipationTick(ssPlayer.getAnticipationTick()-1);
                     return;
                 }
-
                 //设置飞行状态并设置免疫下次摔落伤害
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket());
                 ssPlayer.setFlying(true);

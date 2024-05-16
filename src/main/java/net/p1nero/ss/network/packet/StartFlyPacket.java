@@ -40,10 +40,8 @@ public record StartFlyPacket () implements BasePacket {
                 ssPlayer.setFlying(true);
                 player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                     if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                        DynamicAnimation dynamicAnimation = serverPlayerPatch.getServerAnimator().getPlayerFor(null).getAnimation();
-                        System.out.println(dynamicAnimation.getId()+" "+ModAnimations.FLY_ON_SWORD_ADVANCED.getId());
                         if(!serverPlayerPatch.getEntityState().inaction() && !ssPlayer.isPlayingAnim){
-                            serverPlayerPatch.playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0);
+                            serverPlayerPatch.playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0.15F);
                         }
                     }
                 });

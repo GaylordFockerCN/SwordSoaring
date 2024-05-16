@@ -130,9 +130,12 @@ public class StellarRestoration extends Skill {
 
                     boolean isDodgeKeyPress = EpicFightKeyMappings.DODGE.isDown();
 
-                    //播放动画，且仅需要一次。通过isStellarRestoration来判断是否播放过。
-                    if(isDodgeKeyPress && !ssPlayer.isStellarRestoration){
-                        PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartPreStellarRestorationPacket(true));
+                    //奇数次按就播放动画。需要一直播，防止中断
+                    if(isDodgeKeyPress && !ssPlayer.isStellarRestorationReady){
+                        caster.playAnimationSynchronized(ModAnimations.STELLAR_RESTORATION_PRE0, 0.0F);
+                        player.setYBodyRot(player.getYHeadRot());//不这样的话头动身不动
+                        player.setDeltaMovement(Vec3.ZERO);
+//                        PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartPreStellarRestorationPacket(true));
                     }
 
                     //isStellarRestorationReady表示第二次按。如果是第二次按就清空状态。如果是第一次按下那就先标记为true，为上面那个铺垫
