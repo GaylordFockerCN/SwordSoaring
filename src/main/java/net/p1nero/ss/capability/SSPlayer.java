@@ -13,6 +13,7 @@ import java.util.Set;
  * 记录飞行和技能使用的状态，被坑了，这玩意儿也分服务端和客户端...
  */
 public class SSPlayer {
+    public boolean isPlayingAnim;
     private boolean isFlying;
     private boolean protectNextFall;
     private boolean hasSwordEntity;

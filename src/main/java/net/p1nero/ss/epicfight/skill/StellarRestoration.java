@@ -59,7 +59,7 @@ public class StellarRestoration extends Skill {
                     if(ssPlayer.isStellarRestorationReady && !ssPlayer.isStellarRestoration){
                         if(player instanceof ServerPlayer serverPlayer && event.getPlayerPatch().hasStamina(4)){
                             if(!player.isCreative()){
-                                event.getPlayerPatch().consumeStamina(4);
+                                event.getPlayerPatch().consumeStamina(5);
                             }
                             summonSword(serverPlayer, ssPlayer);
                             event.getPlayerPatch().playAnimationSynchronized(ModAnimations.STELLAR_RESTORATION_PRE,0);
@@ -121,46 +121,46 @@ public class StellarRestoration extends Skill {
             //蓄力判断
             //isStellarRestorationReady 可以理解为用来判断是否是第二次按下
             // isStellarRestoration 用来判断是否按下
-            if(player.isLocalPlayer()){
+            player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
+                if(entityPatch instanceof LocalPlayerPatch caster){
 
-                boolean isDodgeKeyPress = EpicFightKeyMappings.DODGE.isDown();
-
-                //播放动画，且仅需要一次。通过isStellarRestoration来判断是否播放过。
-                if(isDodgeKeyPress && !ssPlayer.isStellarRestoration){
-                    PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartPreStellarRestorationPacket(true));
-                }
-
-                //isStellarRestorationReady表示第二次按。如果是第二次按就清空状态。如果是第一次按下那就先标记为true，为上面那个铺垫
-                if(isDodgeKeyPress){
-                    ssPlayer.isStellarRestoration = true;
-                    return;
-                }
-
-                //如果isStellarRestoration是true而且没按下，说明是按下后松开了
-                if(ssPlayer.isStellarRestoration){
-//                    System.out.println("Released");
-                    //第二次按下则不执行发包
-                    if(ssPlayer.isStellarRestorationReady){
-                        ssPlayer.isStellarRestoration = false;
-                        ssPlayer.isStellarRestorationReady = false;
+                    if(caster.getSkill(ModSkills.STELLAR_RESTORATION) == null){
                         return;
                     }
 
-                    PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartPreStellarRestorationPacket(false));
-                    player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
-                        if(entityPatch instanceof LocalPlayerPatch caster){
-                            //客户端请求服务端执行技能的最好方法
-                            caster.getSkill(ModSkills.STELLAR_RESTORATION).sendExecuteRequest(caster, ClientEngine.getInstance().controllEngine);
+                    boolean isDodgeKeyPress = EpicFightKeyMappings.DODGE.isDown();
+
+                    //播放动画，且仅需要一次。通过isStellarRestoration来判断是否播放过。
+                    if(isDodgeKeyPress && !ssPlayer.isStellarRestoration){
+                        PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartPreStellarRestorationPacket(true));
+                    }
+
+                    //isStellarRestorationReady表示第二次按。如果是第二次按就清空状态。如果是第一次按下那就先标记为true，为上面那个铺垫
+                    if(isDodgeKeyPress){
+                        ssPlayer.isStellarRestoration = true;
+                        return;
+                    }
+
+                    //如果isStellarRestoration是true而且没按下，说明是按下后松开了
+                    if(ssPlayer.isStellarRestoration){
+//                    System.out.println("Released");
+                        //第二次按下则不执行发包
+                        if(ssPlayer.isStellarRestorationReady){
+                            ssPlayer.isStellarRestoration = false;
+                            ssPlayer.isStellarRestorationReady = false;
+                            return;
                         }
-                    });
 
-                    ssPlayer.isStellarRestoration = false;
-                    ssPlayer.isStellarRestorationReady = true;
+                        PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartPreStellarRestorationPacket(false));
+                        //客户端请求服务端执行技能的最好方法
+                        caster.getSkill(ModSkills.STELLAR_RESTORATION).sendExecuteRequest(caster, ClientEngine.getInstance().controllEngine);
+
+                        ssPlayer.isStellarRestoration = false;
+                        ssPlayer.isStellarRestorationReady = true;
+                    }
                 }
+            });
 
-
-
-            }
         });
     }
 

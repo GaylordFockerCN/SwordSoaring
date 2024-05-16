@@ -50,14 +50,6 @@ public class SwordSoaringSkill extends Skill {
     }
 
     /**
-     * 以后可能有用
-     */
-    @Override
-    public void setParams(CompoundTag parameters) {
-        super.setParams(parameters);
-    }
-
-    /**
      * 注册监听器
      */
     @Override
@@ -108,27 +100,7 @@ public class SwordSoaringSkill extends Skill {
                 //设置飞行状态并设置免疫下次摔落伤害
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket());
                 ssPlayer.setFlying(true);
-
-                //如果没在播放动画则播放飞行动画
-                if(!event.getPlayerPatch().getEntityState().inaction()){
-                    if(ssPlayer.getFlyingTick()>10000){
-                        event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED,0);
-                    } else {
-                        event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_BASIC,0);
-                    }
-                }
-
-                //向世界添加剑的实体
-                if(!ssPlayer.hasSwordEntity()){
-                    SwordEntity swordEntity = new SwordEntity(sword, player);
-                    swordEntity.setPos(player.getX(), player.getY(), player.getZ());
-                    swordEntity.setYRot(player.getYRot());
-                    //服务端加的话移动跟不上，所以在客户端加就好//FIXME 存在未知bug！
-                    if (player.level() instanceof ClientLevel clientLevel) {
-                        clientLevel.putNonPlayerEntity(((int) 1145.14) + player.getId(), swordEntity);
-                    }
-                    ssPlayer.setHasSwordEntity(true);
-                }
+//                event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0);
 
             });
 
@@ -169,13 +141,14 @@ public class SwordSoaringSkill extends Skill {
         Player player = event.player;
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(ssPlayer.isFlying()){
-                //飞行经验增加
-                if(ssPlayer.getFlyingTick() < 10000){
-                    ssPlayer.setFlyingTick(ssPlayer.getFlyingTick()+1);
-                }else {
-                    player.displayClientMessage(Component.translatable("tip.sword_soaring.sword_master"), true);
-                    player.level().playSound(null, player.getOnPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1f,1f);
-                }
+
+//                //飞行经验增加
+//                if(ssPlayer.getFlyingTick() < 10000){
+//                    ssPlayer.setFlyingTick(ssPlayer.getFlyingTick()+1);
+//                }else {
+//                    player.displayClientMessage(Component.translatable("tip.sword_soaring.sword_master"), true);
+//                    player.level().playSound(null, player.getOnPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1f,1f);
+//                }
 
                 resetHeight(player,ssPlayer);
 
@@ -215,11 +188,12 @@ public class SwordSoaringSkill extends Skill {
                             if(playerPatch.getEntityState().inaction()){
                                 return;
                             }
-                            if(getLeftTick(player.getPersistentData()) == 1){
-                                playerPatch.playAnimationSynchronized(Animations.BIPED_WALK, 0);
-                            } else {
-                                playerPatch.playAnimationSynchronized(Animations.BIPED_FALL, 0);
-                            }
+                            //播放结束动画
+//                            if(getLeftTick(player.getPersistentData()) == 1){
+//                                playerPatch.playAnimationSynchronized(Animations.BIPED_WALK, 0);
+//                            } else {
+//                                playerPatch.playAnimationSynchronized(Animations.BIPED_FALL, 0);
+//                            }
                         }
                     });
                     resetHeight(player,ssPlayer);
@@ -238,6 +212,7 @@ public class SwordSoaringSkill extends Skill {
     }
 
     /**
+     * 这个是重置当前位置所处高度。因为飞行后会以初位置为初高度，摔落会有偏差
      * 每tick都消耗太浪费资源了，但是有无惯性都得重置高度。。
      */
     private static void resetHeight(Player player, SSPlayer ssPlayer){

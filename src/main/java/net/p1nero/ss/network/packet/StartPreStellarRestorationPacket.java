@@ -31,7 +31,7 @@ public record StartPreStellarRestorationPacket(boolean shouldPlayAnim) implement
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
 
                 if(entityPatch instanceof ServerPlayerPatch caster){
-                    if(!caster.hasStamina(4)){
+                    if(!caster.hasStamina(5)){
                         return;
                     }
                     if(!caster.getSkill(ModSkills.STELLAR_RESTORATION).isEmpty()){

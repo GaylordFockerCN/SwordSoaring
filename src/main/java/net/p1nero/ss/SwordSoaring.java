@@ -118,6 +118,7 @@ public class SwordSoaring {
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
                                 "sword_soaring:yaksha_mask",
+                                "sword_soaring:stellar_restoration",
                                 "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
@@ -129,6 +130,7 @@ public class SwordSoaring {
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
                                 "sword_soaring:yaksha_mask",
+                                "sword_soaring:stellar_restoration",
                                 "sword_soaring:rain_screen"
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier))
                         .build());
@@ -140,6 +142,7 @@ public class SwordSoaring {
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
                                 "sword_soaring:yaksha_mask",
+                                "sword_soaring:stellar_restoration",
                                 "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
@@ -151,6 +154,7 @@ public class SwordSoaring {
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
                                 "sword_soaring:yaksha_mask",
+                                "sword_soaring:stellar_restoration",
                                 "sword_soaring:rain_screen"
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
@@ -162,6 +166,7 @@ public class SwordSoaring {
                                 "sword_soaring:sword_soaring",
                                 "sword_soaring:rain_cutter",
                                 "sword_soaring:yaksha_mask",
+                                "sword_soaring:stellar_restoration",
                                 "sword_soaring:rain_screen"
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier * 0.3F))
                         .build());

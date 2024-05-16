@@ -11,8 +11,12 @@ import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntity;
+import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 import javax.annotation.Nullable;
 
@@ -34,25 +38,15 @@ public record StartFlyPacket () implements BasePacket {
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 //                ssPlayer.setProtectNextFall(true);
                 ssPlayer.setFlying(true);
-                //剑放脚下就不拿出来了
-                if(player instanceof ServerPlayer serverPlayer){
-                    ssPlayer.putAwaySword(serverPlayer);
-                }
-
-                //下面注释掉的代码是尝试在服务端加剑的实体，实测移动速度会跟不上，但是为了让大家看到脚下的剑，于是改成向所有人发包。
-                //让所有人都看到我的剑！
-                PacketRelay.sendToServer(PacketHandler.INSTANCE, new AddSwordEntityPacket(player.getId()));
-
-//                if(!ssPlayer.hasSwordEntity() && player instanceof ServerPlayer serverPlayer){
-//                    SwordEntity swordEntity = ModEntities.SWORD.get().spawn(serverPlayer.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
-//                    SwordSoaring.LOGGER.info("add sword entity "+ swordEntity.getId());
-//                    swordEntity.setRider(player);
-//                    swordEntity.setItemStack(player.getMainHandItem());
-//                    swordEntity.setPos(player.getX(), player.getY(), player.getZ());
-//                    swordEntity.setYRot(player.getYRot());
-//                    PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new AddSwordEntityPacket(swordEntity.getId()), serverPlayer);
-//                    ssPlayer.setHasSwordEntity(true);
-//                }
+                player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
+                    if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+                        DynamicAnimation dynamicAnimation = serverPlayerPatch.getServerAnimator().getPlayerFor(null).getAnimation();
+                        System.out.println(dynamicAnimation.getId()+" "+ModAnimations.FLY_ON_SWORD_ADVANCED.getId());
+                        if(!serverPlayerPatch.getEntityState().inaction() && !ssPlayer.isPlayingAnim){
+                            serverPlayerPatch.playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0);
+                        }
+                    }
+                });
             });
         }
     }

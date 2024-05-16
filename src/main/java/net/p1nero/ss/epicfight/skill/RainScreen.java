@@ -51,7 +51,7 @@ public class RainScreen extends Skill {
         PlayerEventListener listener = container.getExecuter().getEventListener();
 
         listener.addEventListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID, (event) -> {
-            if(event.getPlayerPatch().hasStamina(6)){
+            if(event.getPlayerPatch().hasStamina(10)){
                 summonSword(event.getPlayerPatch().getOriginal(), event.getPlayerPatch());
             }
         });
@@ -68,7 +68,7 @@ public class RainScreen extends Skill {
                 for(int i : swordID){
                     Entity sword = serverPlayer.serverLevel().getEntity(i);
                     if(sword != null){
-                        event.getPlayerPatch().consumeStaminaAlways(2);
+                        event.getPlayerPatch().consumeStaminaAlways(3);
                         serverPlayer.heal(2f);
 //                        serverPlayer.serverLevel().addParticle(ParticleTypes.HAPPY_VILLAGER, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),0,0,0);
 //                        serverPlayer.serverLevel().playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1, 1);
