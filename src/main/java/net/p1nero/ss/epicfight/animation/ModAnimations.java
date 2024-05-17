@@ -1,9 +1,5 @@
 package net.p1nero.ss.epicfight.animation;
 
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -11,13 +7,8 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
-import net.p1nero.ss.capability.SSPlayer;
-import net.p1nero.ss.epicfight.skill.RainScreen;
 import reascer.wom.animation.attacks.SpecialAttackAnimation;
-import reascer.wom.gameasset.WOMAnimations;
 import reascer.wom.gameasset.WOMColliders;
-import reascer.wom.main.WeaponsOfMinecraft;
-import reascer.wom.skill.WOMSkillDataKeys;
 import reascer.wom.world.damagesources.WOMExtraDamageInstance;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
@@ -30,14 +21,14 @@ import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.particle.EpicFightParticles;
-import yesman.epicfight.skill.SkillDataKey;
-import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.EpicFightDamageType;
 import yesman.epicfight.world.damagesource.StunType;
 
 import java.util.Set;
+
+import static net.p1nero.ss.epicfight.skill.RainScreen.summonSword;
 
 @Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModAnimations {
@@ -59,11 +50,18 @@ public class ModAnimations {
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
 
-        RAIN_SCREEN = (new ActionAnimation(0.05F, 0.7F, "biped/rain_screen", biped)).addStateRemoveOld(EntityState.MOVEMENT_LOCKED, false).newTimePair(0.0F, 2.0F).addStateRemoveOld(EntityState.INACTION, true).addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, new AnimationEvent[]{AnimationEvent.create((entitypatch, animation, params) -> {
+        RAIN_SCREEN = (new ActionAnimation(0.05F, 0.7F, "biped/rain_screen", biped))
+                .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, false).newTimePair(0.0F, 2.0F)
+                .addStateRemoveOld(EntityState.INACTION, true)
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
             Vec3 pos = entitypatch.getOriginal().position();
             entitypatch.playSound(EpicFightSounds.ROLL.get(), 0.0F, 0.0F);
             entitypatch.getOriginal().level().addAlwaysVisibleParticle(EpicFightParticles.AIR_BURST.get(), pos.x, pos.y + (double) entitypatch.getOriginal().getBbHeight() * 0.5, pos.z, 0.0, -1.0, 2.0);
-        }, AnimationEvent.Side.CLIENT)}).addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
+        }, AnimationEvent.Side.CLIENT))
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
+            if(entitypatch instanceof ServerPlayerPatch caster){
+                summonSword(caster.getOriginal());
+            }
         }, AnimationEvent.Side.SERVER));
 
         STELLAR_RESTORATION_PRE0 = new StaticAnimation(true, "biped/stellar_restoration_pre0", biped)

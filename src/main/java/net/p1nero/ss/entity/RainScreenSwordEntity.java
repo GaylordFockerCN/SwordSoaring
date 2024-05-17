@@ -5,7 +5,6 @@ import com.mojang.math.Axis;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -20,7 +19,6 @@ import yesman.epicfight.world.item.LongswordItem;
 import yesman.epicfight.world.item.TachiItem;
 import yesman.epicfight.world.item.UchigatanaItem;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -109,7 +107,7 @@ public class RainScreenSwordEntity extends SwordEntity{
         SSPlayer ssPlayer = rider.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
         if(this.tickCount > 200){
             if(!level().isClientSide){
-                ssPlayer.getSwordID().remove(getId());
+                ssPlayer.getSwordScreensID().remove(getId());
             }
             ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount() - 1);
             discard();

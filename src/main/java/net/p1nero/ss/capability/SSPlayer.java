@@ -97,7 +97,7 @@ public class SSPlayer {
         this.swordID = swordID;
     }
 
-    public Set<Integer> getSwordID() {
+    public Set<Integer> getSwordScreensID() {
         if(swordID == null){
             swordID = new HashSet<>();
         }

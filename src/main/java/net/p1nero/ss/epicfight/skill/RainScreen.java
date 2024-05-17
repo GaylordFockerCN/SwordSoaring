@@ -22,7 +22,6 @@ import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.HashSet;
@@ -52,7 +51,21 @@ public class RainScreen extends Skill {
 
         listener.addEventListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID, (event) -> {
             if(event.getPlayerPatch().hasStamina(10)){
-                summonSword(event.getPlayerPatch().getOriginal(), event.getPlayerPatch());
+                //播放动画，对周围实体造成伤害
+                ServerPlayer player =  event.getPlayerPatch().getOriginal();
+                SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
+                if(!event.getPlayerPatch().getEntityState().inaction() && ssPlayer.getSwordScreensID().isEmpty()){
+                    event.getPlayerPatch().playAnimationSynchronized(ModAnimations.RAIN_SCREEN, 0);
+                    double r = 3;
+                    List<Entity> entities = player.serverLevel().getEntities(player,new AABB(player.getPosition(0).add(-r,-r,-r), player.getPosition(0).add(r,r,r)));
+                    for (Entity entity : entities){
+                        if(entity.getId() == player.getId()){
+                            continue;
+                        }
+                        entity.hurt(player.damageSources().playerAttack(player), 2f);
+                    }
+                }
+
             }
         });
 
@@ -61,9 +74,9 @@ public class RainScreen extends Skill {
             float knockback = 0.25F;
             SSPlayer ssPlayer = event.getPlayerPatch().getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
             ServerPlayer serverPlayer = event.getPlayerPatch().getOriginal();
-            if(ssPlayer.getSwordScreenEntityCount() > 0){
+            if(ssPlayer.getSwordScreenEntityCount() > 0 && !ssPlayer.isProtectNextFall()){
 
-                Set<Integer> swordID = ssPlayer.getSwordID();
+                Set<Integer> swordID = ssPlayer.getSwordScreensID();
                 //剑挡伤害并回血（顺序很重要，需要先销毁剑再反弹，省得获取SourceEntity为null的时候被打断）
                 for(int i : swordID){
                     Entity sword = serverPlayer.serverLevel().getEntity(i);
@@ -95,57 +108,56 @@ public class RainScreen extends Skill {
 
     }
 
-    public static void summonSword(ServerPlayer player, ServerPlayerPatch playerPatch){
+    public static void summonSword(ServerPlayer player){
         if(!SwordSoaring.isValidSword(player.getMainHandItem())){
             return;
         }
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 
-            //多个保险，以防重启的时候剑帘不存在
-            Set<Integer> swordID = ssPlayer.getSwordID();
-            if(swordID.isEmpty()){
-                ssPlayer.setSwordScreenEntityCount(0);
-            }
-            for(Integer entityID : swordID){
-                if(!((player.serverLevel().getEntity(entityID) instanceof RainScreenSwordEntity))){
-                    ssPlayer.setSwordScreenEntityCount(0);
-                    ssPlayer.setSwordID(new HashSet<>());
-                    break;
+            //多个保险，以防重启的时候剑帘不存在。其实可以设置不读取即可（
+            Set<Integer> swordID = ssPlayer.getSwordScreensID();
+//            if(swordID.isEmpty()){
+//                ssPlayer.setSwordScreenEntityCount(0);
+//            }
+//            for(Integer entityID : swordID){
+//                if(!((player.serverLevel().getEntity(entityID) instanceof RainScreenSwordEntity))){
+//                    ssPlayer.setSwordScreenEntityCount(0);
+//                    ssPlayer.setSwordID(new HashSet<>());
+//                    break;
+//                }
+//            }
+//
+//            if(ssPlayer.getSwordScreenEntityCount() == 0){
+//
+//                for(int i = 0; i < 4; i++){
+//                    RainScreenSwordEntity sword = ModEntities.RAIN_SCREEN_SWORD.get().spawn(player.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
+//                    if(sword == null){
+//                        return;
+//                    }
+//                    sword.setRider(player);
+//                    sword.setItemStack(player.getMainHandItem());
+//                    PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
+//                    sword.setSwordID(i);
+//                    sword.setPos(player.getPosition(0.5f).add(sword.getOffset()));
+//                    ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()+1);
+//                    swordID.add(sword.getId());
+//                }
+//
+//            }
+
+            for(int i = 0; i < 4; i++){
+                    RainScreenSwordEntity sword = ModEntities.RAIN_SCREEN_SWORD.get().spawn(player.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
+                    if(sword == null){
+                        return;
+                    }
+                    sword.setRider(player);
+                    sword.setItemStack(player.getMainHandItem());
+                    PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
+                    sword.setSwordID(i);
+                    sword.setPos(player.getPosition(0.5f).add(sword.getOffset()));
+                    ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()+1);
+                    swordID.add(sword.getId());
                 }
-            }
-
-            if(ssPlayer.getSwordScreenEntityCount() == 0 && !playerPatch.getEntityState().inaction()){
-                //播放动画，对周围实体造成伤害
-                playerPatch.playAnimationSynchronized(ModAnimations.RAIN_SCREEN, 0);
-                double r = 3;
-                List<Entity> entities = player.serverLevel().getEntities(player,new AABB(player.getPosition(0).add(-r,-r,-r), player.getPosition(0).add(r,r,r)));
-                for (Entity entity : entities){
-                    if(entity.getId() == player.getId()){
-                        continue;
-                    }
-                    entity.hurt(player.damageSources().playerAttack(player), 2f);
-                }
-
-                new Thread(()->{
-                    try {
-                        Thread.sleep(600);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    for(int i = 0; i < 4; i++){
-                        RainScreenSwordEntity sword = ModEntities.RAIN_SCREEN_SWORD.get().spawn(player.serverLevel(), player.getOnPos(), MobSpawnType.MOB_SUMMONED);
-                        sword.setRider(player);
-                        sword.setItemStack(player.getMainHandItem());
-                        PacketRelay.sendToAll(PacketHandler.INSTANCE, new SyncSwordOwnerPacket(player.getId(), sword.getId()));
-                        sword.setSwordID(i);
-                        sword.setPos(player.getPosition(0.5f).add(sword.getOffset()));
-                        ssPlayer.setSwordScreenEntityCount(ssPlayer.getSwordScreenEntityCount()+1);
-                        swordID.add(sword.getId());
-                    }
-                }).start();
-
-
-            }
 
         });
     }
