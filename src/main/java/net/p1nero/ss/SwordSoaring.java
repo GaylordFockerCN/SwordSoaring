@@ -51,6 +51,7 @@ public class SwordSoaring {
         bus.addListener(this::commonSetup);
         //我可以用SubscribeEvent的，但是之前这样写就懒得改了
         fg_bus.addListener(ModSkills::BuildSkills);
+        fg_bus.addListener(RainScreen::onPlayerTick);
         fg_bus.addListener(RainCutter::onPlayerTick);
         fg_bus.addListener(SwordSoaringSkill::onPlayerTick);
         fg_bus.addListener(YakshaMask::onPlayerTick);

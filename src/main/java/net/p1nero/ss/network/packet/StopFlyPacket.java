@@ -29,14 +29,12 @@ public record StopFlyPacket() implements BasePacket {
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                 //飞行结束后再获取末向量。因为此时isFlying还没设为false
                 if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
-                    //TODO 向下倾斜模拟重力
                     Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get());
                     setEndVec(player.getPersistentData(), endVec);
                     double leftTick = endVec.length() * maxRecordTick;
                     setLeftTick(player.getPersistentData(), ((int) leftTick));
                 }
                 ssPlayer.setFlying(false);
-                ssPlayer.returnSword(((ServerPlayer) player));
             });
 
         }

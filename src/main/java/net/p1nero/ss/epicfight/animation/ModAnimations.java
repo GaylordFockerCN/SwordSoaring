@@ -5,6 +5,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import reascer.wom.animation.attacks.SpecialAttackAnimation;
@@ -17,6 +18,7 @@ import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.forgeevent.AnimationRegistryEvent;
 import yesman.epicfight.api.utils.TimePairList;
 import yesman.epicfight.api.utils.math.ValueModifier;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -54,6 +56,11 @@ public class ModAnimations {
                 .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, false).newTimePair(0.0F, 2.0F)
                 .addStateRemoveOld(EntityState.INACTION, true)
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
+                    if(entitypatch instanceof LocalPlayerPatch playerPatch){
+                        playerPatch.getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+                            ssPlayer.rainScreenCooldownTimer = Config.RAIN_SCREEN_COOLDOWN.get().intValue();
+                        });
+                    }
             Vec3 pos = entitypatch.getOriginal().position();
             entitypatch.playSound(EpicFightSounds.ROLL.get(), 0.0F, 0.0F);
             entitypatch.getOriginal().level().addAlwaysVisibleParticle(EpicFightParticles.AIR_BURST.get(), pos.x, pos.y + (double) entitypatch.getOriginal().getBbHeight() * 0.5, pos.z, 0.0, -1.0, 2.0);
@@ -61,6 +68,9 @@ public class ModAnimations {
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create((entitypatch, animation, params) -> {
             if(entitypatch instanceof ServerPlayerPatch caster){
                 summonSword(caster.getOriginal());
+                caster.getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+                    ssPlayer.rainScreenCooldownTimer = Config.RAIN_SCREEN_COOLDOWN.get().intValue();;
+                });
             }
         }, AnimationEvent.Side.SERVER));
 

@@ -34,6 +34,9 @@ public class MyKeyMapping extends KeyMapping {
         return false;
     }
 
+    /**
+     * 是否是偶数次按下
+     */
     public boolean isEvenNumber() {
         return isEvenNumber;
     }

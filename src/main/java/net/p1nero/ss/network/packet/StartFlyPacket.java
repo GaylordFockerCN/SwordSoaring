@@ -1,20 +1,10 @@
 package net.p1nero.ss.network.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.p1nero.ss.Config;
-import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
-import net.p1nero.ss.entity.ModEntities;
-import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
-import net.p1nero.ss.network.PacketHandler;
-import net.p1nero.ss.network.PacketRelay;
-import yesman.epicfight.api.animation.types.DynamicAnimation;
+import net.p1nero.ss.epicfight.skill.SwordSoaringSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
@@ -23,17 +13,19 @@ import javax.annotation.Nullable;
 /**
  * 实现开始飞行的服务端操作
  */
-public record StartFlyPacket () implements BasePacket {
+public record StartFlyPacket (float flySpeedLevel) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buf) {
+        buf.writeFloat(flySpeedLevel);
     }
 
     public static StartFlyPacket decode(FriendlyByteBuf buf) {
-        return new StartFlyPacket();
+        return new StartFlyPacket(buf.readFloat());
     }
 
     @Override
     public void execute(@Nullable Player player) {
+        SwordSoaringSkill.flySpeedLevel = flySpeedLevel;
         if (player != null && player.getServer() != null) {
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 //                ssPlayer.setProtectNextFall(true);
@@ -41,7 +33,11 @@ public record StartFlyPacket () implements BasePacket {
                 player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                     if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                         if(!serverPlayerPatch.getEntityState().inaction() && !ssPlayer.isPlayingAnim){
-                            serverPlayerPatch.playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0.15F);
+                            if(flySpeedLevel == 1){
+                                serverPlayerPatch.playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0.15F);
+                            }else {
+                                serverPlayerPatch.playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_BASIC, 0.15F);
+                            }
                         }
                     }
                 });

@@ -1,17 +1,11 @@
 package net.p1nero.ss.epicfight.skill;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
@@ -20,24 +14,17 @@ import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.enchantment.ModEnchantments;
-import net.p1nero.ss.entity.SwordEntity;
-import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.keymapping.ModKeyMappings;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.StartFlyPacket;
 import net.p1nero.ss.network.packet.StopFlyPacket;
-import yesman.epicfight.api.utils.LevelUtil;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.skill.SkillDataKey;
-import yesman.epicfight.skill.SkillDataKeys;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import static net.p1nero.ss.util.InertiaUtil.*;
@@ -50,7 +37,7 @@ public class SwordSoaringSkill extends Skill {
         super(builder);
     }
 
-    public static float speedLevel = 1;
+    public static float flySpeedLevel = 1;
 
     /**
      * 注册监听器
@@ -78,7 +65,7 @@ public class SwordSoaringSkill extends Skill {
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
                     //飞行结束后再获取末向量。因为此时isFlying还没设为false
                     if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
-                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get() * speedLevel);
+                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel);
                         setEndVec(player.getPersistentData(), endVec);
                         double leftTick = endVec.length() * maxRecordTick;
                         setLeftTick(player.getPersistentData(), ((int) leftTick));
@@ -99,7 +86,7 @@ public class SwordSoaringSkill extends Skill {
                     return;
                 }
                 //设置飞行状态并设置免疫下次摔落伤害
-                PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket());
+                PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket(flySpeedLevel));
                 ssPlayer.setFlying(true);
 //                event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0);
 
@@ -147,22 +134,22 @@ public class SwordSoaringSkill extends Skill {
                 //速度切换
                 if(ModKeyMappings.CHANGE_SPEED.isRelease()){
                     if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
-                        speedLevel = 2.0f;
+                        flySpeedLevel = 2.0f;
                     } else {
-                        speedLevel = 1.0f;
+                        flySpeedLevel = 1.0f;
                     }
-                    player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) speedLevel))), true);
+                    player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
                 }
 
                 resetHeight(player,ssPlayer);
                 //惯性控制。懒得重写就直接用getPersistentData了
                 if(Config.ENABLE_INERTIA.get()){
-                    Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get() * speedLevel);
+                    Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel);
                     if(targetVec.length() != 0) {
                         player.setDeltaMovement(targetVec);
                     }
                 } else {
-                    player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get() * speedLevel));
+                    player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel));
                 }
 
                 //消耗耐力
@@ -178,7 +165,7 @@ public class SwordSoaringSkill extends Skill {
                                     default -> 1;
                                 };
                             }
-                            playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * speedLevel);
+                            playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * flySpeedLevel);
                         }
                     }
                 });

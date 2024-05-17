@@ -14,6 +14,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.stringtemplate.v4.ST;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,17 +24,37 @@ import java.util.Set;
 public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec.BooleanValue HIDE_SWORD_WHEN_FLY = createBool("hide the sword in your hand when flying","hide_sword_when_fly", true);
-    public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA = createBool("enable_inertia", true);
-    public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE = createDouble("the inertia pre.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
-    public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
-    public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per pre when flying" ,"stamina_consume_per_tick", 0.05);
-    public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK = createDouble("ticks of pre taking off","max_anticipation_tick", 10);
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
-            .comment("A list of items considered as sword.")
-            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
+    public static final ForgeConfigSpec.DoubleValue RAIN_SCREEN_COOLDOWN;
+    public static final ForgeConfigSpec.DoubleValue STELLAR_RESTORATION_COOLDOWN;
+    public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA;
+    public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE;
+    public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE;
+    public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK;
+    public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS;
 
-    static final ForgeConfigSpec SPEC = BUILDER.build();
+    static final ForgeConfigSpec SPEC;
+
+    static {
+
+        BUILDER.push("Skill Cooldown");
+        RAIN_SCREEN_COOLDOWN = createDouble("the cooldown ticks of Rain Screen skill", "rain_screen_cooldown", 862);
+        STELLAR_RESTORATION_COOLDOWN = createDouble("the cooldown ticks of Stellar Restoration skill", "stellar_restoration_cooldown", 312);
+        BUILDER.pop();
+
+        BUILDER.push("Sword Soaring");
+        ENABLE_INERTIA = createBool("enable_inertia", true);
+        INERTIA_TICK_BEFORE = createDouble("the inertia end.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
+        FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
+        STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per end when flying" ,"stamina_consume_per_tick", 0.05);
+        MAX_ANTICIPATION_TICK = createDouble("ticks of end taking off","max_anticipation_tick", 10);
+        ITEM_STRINGS = BUILDER
+                .comment("A list of items considered as sword.")
+                .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
+        BUILDER.pop();
+
+        SPEC = BUILDER.build();
+    }
 
     public static Set<Item> swordItems = new HashSet<>();
 
@@ -64,11 +85,18 @@ public class Config
     public static void registerCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(Commands.literal("sword_soaring").requires((commandSourceStack) -> commandSourceStack.hasPermission(2))
-                .then(Commands.literal("hide_sword_when_fly")
-                        .then(Commands.argument("value", BoolArgumentType.bool())
-                                .executes((context) -> setConfig(HIDE_SWORD_WHEN_FLY, BoolArgumentType.getBool(context, "value"), context.getSource()))
+
+                .then(Commands.literal("rain_screen_cooldown")
+                        .then(Commands.argument("value", DoubleArgumentType.doubleArg())
+                                .executes((context) -> setConfig(RAIN_SCREEN_COOLDOWN, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
                         )
                 )
+                .then(Commands.literal("stellar_restoration_cooldown")
+                        .then(Commands.argument("value", DoubleArgumentType.doubleArg())
+                                .executes((context) -> setConfig(STELLAR_RESTORATION_COOLDOWN, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
+                        )
+                )
+
                 .then(Commands.literal("enable_inertia")
                         .then(Commands.argument("value", BoolArgumentType.bool())
                                 .executes((context) -> setConfig(ENABLE_INERTIA, BoolArgumentType.getBool(context, "value"), context.getSource()))
@@ -101,7 +129,7 @@ public class Config
         config.set(value);
         if(stack.isPlayer()){
             stack.getPlayer().sendSystemMessage(Component.literal("Successfully set to : "+value));
-            if(value<=0){
+            if(value <= 0){
                 stack.getPlayer().sendSystemMessage(Component.literal("Waring! It's a strange value :D"));
             }
         }

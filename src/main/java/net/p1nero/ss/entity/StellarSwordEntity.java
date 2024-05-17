@@ -84,7 +84,7 @@ public class StellarSwordEntity extends AbstractArrow implements AbstractSwordEn
         if(tickCount > 100){
             if(getOwner() instanceof ServerPlayer serverPlayer){
                 serverPlayer.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                    ssPlayer.isStellarRestoration = false;
+                    ssPlayer.isStellarRestorationPressing = false;
                 });
             }
             discard();

@@ -26,7 +26,7 @@ public class PacketHandler {
         register(StartYakshaJumpPacket.class, StartYakshaJumpPacket::decode);
         register(SetClientYakshaMaskTimePacket.class, SetClientYakshaMaskTimePacket::decode);
 
-        register(StartPreStellarRestorationPacket.class, StartPreStellarRestorationPacket::decode);
+        register(StartStellarRestorationPacket.class, StartStellarRestorationPacket::decode);
         register(StopStellarRestorationPacket.class, StopStellarRestorationPacket::decode);
 
         register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);

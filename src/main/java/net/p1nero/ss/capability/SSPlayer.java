@@ -18,6 +18,7 @@ public class SSPlayer {
     private boolean protectNextFall;
     private boolean hasSwordEntity;
     private int swordScreenEntityCount;
+    public int rainScreenCooldownTimer;
     private int rainCutterTimer;
     private boolean isScreenCutterCoolDown;
     private int yakshaMaskTimer;
@@ -28,8 +29,9 @@ public class SSPlayer {
     private int flyingTick;
     public double flyHeight;
     //客户端和服务端用途不一样
-    public boolean isStellarRestoration;
-    public boolean isStellarRestorationReady;
+    public boolean isStellarRestorationPressing;
+    public boolean isStellarRestorationSecondPressing;
+    public int stellarRestorationCooldownTimer;
     private Set<Integer> swordID;
     private int anticipationTick;
     private ItemStack sword;
@@ -129,25 +131,6 @@ public class SSPlayer {
 
     public void setSword(ItemStack sword) {
         this.sword = sword;
-    }
-
-    public void putAwaySword(ServerPlayer player){
-        if(getSword().isEmpty()){
-            setSword(player.getMainHandItem());
-            if(Config.HIDE_SWORD_WHEN_FLY.get()){
-                player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-            }
-        }
-
-    }
-
-    public void returnSword(ServerPlayer player){
-        if(Config.HIDE_SWORD_WHEN_FLY.get()){
-            if(!player.addItem(getSword())){
-                player.drop(getSword(),true);
-            }
-        }
-        setSword(ItemStack.EMPTY);
     }
 
     public void saveNBTData(CompoundTag tag){
