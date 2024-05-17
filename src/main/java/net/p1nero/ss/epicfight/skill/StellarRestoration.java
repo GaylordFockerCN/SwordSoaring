@@ -72,7 +72,7 @@ public class StellarRestoration extends Skill {
         Player player = event.player;
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 
-            if(ssPlayer.stellarRestorationCooldownTimer >0){
+            if(ssPlayer.stellarRestorationCooldownTimer > 0){
                 ssPlayer.stellarRestorationCooldownTimer--;
             }
 
@@ -88,7 +88,7 @@ public class StellarRestoration extends Skill {
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                 if(entityPatch instanceof LocalPlayerPatch caster){
 
-                    if(caster.getSkill(ModSkills.STELLAR_RESTORATION) == null || ssPlayer.stellarRestorationCooldownTimer > 0){
+                    if(caster.getSkill(ModSkills.STELLAR_RESTORATION) == null || ssPlayer.stellarRestorationCooldownTimer > 0 || !SwordSoaring.isValidSword(player.getMainHandItem())){
                         return;
                     }
 
