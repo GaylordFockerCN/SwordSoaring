@@ -54,7 +54,10 @@ public class RainScreen extends Skill {
                 //播放动画，对周围实体造成伤害
                 ServerPlayer player =  event.getPlayerPatch().getOriginal();
                 SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
-                if(!event.getPlayerPatch().getEntityState().inaction() && ssPlayer.getSwordScreensID().isEmpty()){
+                if(!SwordSoaring.isValidSword(player.getMainHandItem())){
+                    return;
+                }
+                if(!event.getPlayerPatch().getEntityState().inaction() && ssPlayer.getSwordScreensID().isEmpty() && event.getPlayerPatch().isBattleMode()){
                     event.getPlayerPatch().playAnimationSynchronized(ModAnimations.RAIN_SCREEN, 0);
                     double r = 3;
                     List<Entity> entities = player.serverLevel().getEntities(player,new AABB(player.getPosition(0).add(-r,-r,-r), player.getPosition(0).add(r,r,r)));
@@ -109,9 +112,7 @@ public class RainScreen extends Skill {
     }
 
     public static void summonSword(ServerPlayer player){
-        if(!SwordSoaring.isValidSword(player.getMainHandItem())){
-            return;
-        }
+
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 
             //多个保险，以防重启的时候剑帘不存在。其实可以设置不读取即可（

@@ -22,6 +22,7 @@ import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.SwordEntity;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
+import net.p1nero.ss.keymapping.ModKeyMappings;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.StartFlyPacket;
@@ -49,6 +50,8 @@ public class SwordSoaringSkill extends Skill {
         super(builder);
     }
 
+    public static float speedLevel = 1;
+
     /**
      * 注册监听器
      */
@@ -68,7 +71,6 @@ public class SwordSoaringSkill extends Skill {
 
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 
-
                 //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”。player.isInWater没吊用。。
                 if (!jumpPressed || event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
                         || event.getPlayerPatch().getStamina() <= 0.1f || player.isInLava() || player.isUnderWater() || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity())) {
@@ -76,7 +78,7 @@ public class SwordSoaringSkill extends Skill {
                     PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
                     //飞行结束后再获取末向量。因为此时isFlying还没设为false
                     if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
-                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get());
+                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get() * speedLevel);
                         setEndVec(player.getPersistentData(), endVec);
                         double leftTick = endVec.length() * maxRecordTick;
                         setLeftTick(player.getPersistentData(), ((int) leftTick));
@@ -138,27 +140,29 @@ public class SwordSoaringSkill extends Skill {
      */
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
+
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
             if(ssPlayer.isFlying()){
 
-//                //飞行经验增加
-//                if(ssPlayer.getFlyingTick() < 10000){
-//                    ssPlayer.setFlyingTick(ssPlayer.getFlyingTick()+1);
-//                }else {
-//                    player.displayClientMessage(Component.translatable("tip.sword_soaring.sword_master"), true);
-//                    player.level().playSound(null, player.getOnPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1f,1f);
-//                }
+                //速度切换
+                if(ModKeyMappings.CHANGE_SPEED.isRelease()){
+                    if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
+                        speedLevel = 2.0f;
+                    } else {
+                        speedLevel = 1.0f;
+                    }
+                    player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) speedLevel))), true);
+                }
 
                 resetHeight(player,ssPlayer);
-
                 //惯性控制。懒得重写就直接用getPersistentData了
                 if(Config.ENABLE_INERTIA.get()){
-                    Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get());
+                    Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get() * speedLevel);
                     if(targetVec.length() != 0) {
                         player.setDeltaMovement(targetVec);
                     }
                 } else {
-                    player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get()));
+                    player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get() * speedLevel));
                 }
 
                 //消耗耐力
@@ -174,7 +178,7 @@ public class SwordSoaringSkill extends Skill {
                                     default -> 1;
                                 };
                             }
-                            playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale);
+                            playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * speedLevel);
                         }
                     }
                 });

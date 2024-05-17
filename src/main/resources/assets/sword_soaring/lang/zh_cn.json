@@ -3,6 +3,7 @@
   "tip.sword_soaring.learn": "你已经掌握了某人的秘笈，现在你可以驾驭剑飞行了！",
   "tip.sword_soaring.spirit_value": "灵气值 : %d",
   "tip.sword_soaring.stamina_consume": "当前每刻耐力消耗 : %s",
+  "tip.sword_soaring.speed_level": "当前速度档位 : ",
   "tip.sword_soaring.sword_master": "你的飞行里程已经是大师了！",
   "skill.sword_soaring.sword_soaring": "御剑飞行",
   "skill.sword_soaring.sword_soaring.tooltip": "按住空格乘上剑飞行，松开空格则停下。消耗耐力。附魔“御剑耐力强化”会减少耐力消耗。",
@@ -17,5 +18,6 @@
   "config.sword_soaring.fly_speed_scale": "飞行速度和朝向向量的比例",
   "config.sword_soaring.stamina_consume_per_tick": "飞行时每刻耐力消耗",
   "config.sword_soaring.max_anticipation_tick": "前摇的刻数",
-  "enchantment.sword_soaring.sword_soaring": "御剑耐力强化"
+  "enchantment.sword_soaring.sword_soaring": "御剑耐力强化",
+  "key.sword_soaring.change_speed": "切换飞行速度"
 }
