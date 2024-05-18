@@ -1,12 +1,11 @@
-package net.p1nero.ss.network.packet;
+package net.p1nero.ss.network.packet.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.entity.SwordEntity;
+import net.p1nero.ss.network.packet.BasePacket;
 
 import javax.annotation.Nullable;
 
@@ -25,11 +24,11 @@ public record AddSwordEntityPacket(int ownerId) implements BasePacket {
 
     @Override
     public void execute(@Nullable Player player) {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        if(localPlayer == null){
+        Player localPlayer = Minecraft.getInstance().player;
+        if(localPlayer == null || Minecraft.getInstance().level == null){
             return;
         }
-        LocalPlayer owner = ((LocalPlayer) localPlayer.level().getEntity(ownerId));
+        Player owner = ((Player) localPlayer.level().getEntity(ownerId));
         if(owner == null){
             return;
         }
@@ -38,7 +37,7 @@ public record AddSwordEntityPacket(int ownerId) implements BasePacket {
                 SwordEntity swordEntity = new SwordEntity(owner.getMainHandItem(), owner);
                 swordEntity.setPos(owner.getX(), owner.getY(), owner.getZ());
                 swordEntity.setYRot(owner.getYRot());
-                localPlayer.clientLevel.putNonPlayerEntity(114514+ownerId, swordEntity);
+                Minecraft.getInstance().level.putNonPlayerEntity(114514+ownerId, swordEntity);
                 ssPlayer.setHasSwordEntity(true);
             }
         });

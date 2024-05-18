@@ -17,12 +17,13 @@ import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.keymapping.ModKeyMappings;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.StartFlyPacket;
-import net.p1nero.ss.network.packet.StopFlyPacket;
+import net.p1nero.ss.network.packet.server.StartFlyPacket;
+import net.p1nero.ss.network.packet.server.StopFlyPacket;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.UUID;
@@ -132,13 +133,15 @@ public class SwordSoaringSkill extends Skill {
             if(ssPlayer.isFlying()){
 
                 //速度切换
-                if(ModKeyMappings.CHANGE_SPEED.isRelease()){
-                    if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
-                        flySpeedLevel = 2.0f;
-                    } else {
-                        flySpeedLevel = 1.0f;
+                if(player.isLocalPlayer()){
+                    if(ModKeyMappings.CHANGE_SPEED.isRelease()){
+                        if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
+                            flySpeedLevel = 2.0f;
+                        } else {
+                            flySpeedLevel = 1.0f;
+                        }
+                        player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
                     }
-                    player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
                 }
 
                 resetHeight(player,ssPlayer);
@@ -154,17 +157,14 @@ public class SwordSoaringSkill extends Skill {
 
                 //消耗耐力
                 player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
-                    if(entityPatch instanceof PlayerPatch<?> playerPatch){
+                    if(entityPatch instanceof ServerPlayerPatch playerPatch){
                         if(!player.isCreative()){
-                            float scale = 1;
-                            if(ssPlayer.getSword() != null){
-                                int enchantmentLevel = ssPlayer.getSword().getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get());
-                                scale = switch (enchantmentLevel) {
-                                    case 1 -> 0.75f;
-                                    case 2 -> 0.5f;
-                                    default -> 1;
-                                };
-                            }
+                            int enchantmentLevel = player.getMainHandItem().getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get());
+                            float scale = switch (enchantmentLevel) {
+                                case 1 -> 0.75f;
+                                case 2 -> 0.5f;
+                                default -> 1;
+                            };
                             playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * flySpeedLevel);
                         }
                     }
@@ -173,19 +173,6 @@ public class SwordSoaringSkill extends Skill {
                 double endVecLength = getEndVec(player.getPersistentData()).length();
                 //惯性缓冲
                 if (getLeftTick(player.getPersistentData()) > 0 && endVecLength != 0) {
-                    player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
-                        if(entityPatch instanceof PlayerPatch<?> playerPatch){
-                            if(playerPatch.getEntityState().inaction()){
-                                return;
-                            }
-                            //播放结束动画
-//                            if(getLeftTick(player.getPersistentData()) == 1){
-//                                playerPatch.playAnimationSynchronized(Animations.BIPED_WALK, 0);
-//                            } else {
-//                                playerPatch.playAnimationSynchronized(Animations.BIPED_FALL, 0);
-//                            }
-                        }
-                    });
                     resetHeight(player,ssPlayer);
                     int leftTick = getLeftTick(player.getPersistentData());
                     setLeftTick(player.getPersistentData(), leftTick - 1);

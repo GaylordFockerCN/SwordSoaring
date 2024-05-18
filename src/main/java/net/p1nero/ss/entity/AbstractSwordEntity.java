@@ -1,7 +1,6 @@
 package net.p1nero.ss.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**

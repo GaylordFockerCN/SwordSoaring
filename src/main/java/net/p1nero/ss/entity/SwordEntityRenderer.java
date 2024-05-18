@@ -1,7 +1,6 @@
 package net.p1nero.ss.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -10,14 +9,8 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraftforge.fml.ModList;
-import net.p1nero.ss.SwordSoaring;
 import org.jetbrains.annotations.NotNull;
-import yesman.epicfight.world.item.LongswordItem;
-import yesman.epicfight.world.item.TachiItem;
-import yesman.epicfight.world.item.UchigatanaItem;
 
 public class SwordEntityRenderer extends EntityRenderer<Entity> {
 

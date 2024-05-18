@@ -33,8 +33,8 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.AddBladeRushSkillParticlePacket;
-import net.p1nero.ss.network.packet.AddSmokeParticlePacket;
+import net.p1nero.ss.network.packet.client.AddBladeRushSkillParticlePacket;
+import net.p1nero.ss.network.packet.client.AddSmokeParticlePacket;
 import org.jetbrains.annotations.NotNull;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
@@ -245,12 +245,14 @@ public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwor
         if(!level().isClientSide){
             setYRot((float) Math.toDegrees(Math.atan2(dir.x, dir.z)));
             this.setXRot((float) Math.toDegrees(Math.atan2(dir.y, dir.horizontalDistance())));
+
+            //存活太久或者落地后一小会儿要紫砂。不落地马上紫砂是为了看清轨迹，以及更好的位置反馈
+            if(tickCount > 100 || inGroundTime > 2){
+                PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddSmokeParticlePacket(getPosition(1.0f) ,getDeltaMovement()));
+                discard();
+            }
         }
-        //存活太久或者落地后一小会儿要紫砂。不落地马上紫砂是为了看清轨迹，以及更好的位置反馈
-        if(tickCount > 100 || inGroundTime > 2){
-            PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddSmokeParticlePacket(getPosition(1.0f) ,getDeltaMovement()));
-            discard();
-        }
+
 
     }
 

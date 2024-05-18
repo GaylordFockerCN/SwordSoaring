@@ -6,6 +6,11 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.network.packet.*;
+import net.p1nero.ss.network.packet.client.*;
+import net.p1nero.ss.network.packet.server.StartFlyPacket;
+import net.p1nero.ss.network.packet.server.StartStellarRestorationPacket;
+import net.p1nero.ss.network.packet.server.StartYakshaJumpPacket;
+import net.p1nero.ss.network.packet.server.StopFlyPacket;
 
 import java.util.function.Function;
 
@@ -20,20 +25,19 @@ public class PacketHandler {
 
     public static synchronized void register() {
 
-        register(StartFlyPacket.class, StartFlyPacket::decode);
-        register(StopFlyPacket.class, StopFlyPacket::decode);
-
-        register(StartYakshaJumpPacket.class, StartYakshaJumpPacket::decode);
+        //Client
         register(SetClientYakshaMaskTimePacket.class, SetClientYakshaMaskTimePacket::decode);
-
-        register(StartStellarRestorationPacket.class, StartStellarRestorationPacket::decode);
-        register(StopStellarRestorationPacket.class, StopStellarRestorationPacket::decode);
-
-        register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);
+//        register(AddSwordEntityPacket.class, AddSwordEntityPacket::decode);
         register(SyncSwordOwnerPacket.class, SyncSwordOwnerPacket::decode);
-
         register(AddBladeRushSkillParticlePacket.class, AddBladeRushSkillParticlePacket::decode);
         register(AddSmokeParticlePacket.class, AddSmokeParticlePacket::decode);
+
+        //Server
+        register(StartFlyPacket.class, StartFlyPacket::decode);
+        register(StopFlyPacket.class, StopFlyPacket::decode);
+        register(StartYakshaJumpPacket.class, StartYakshaJumpPacket::decode);
+        register(StartStellarRestorationPacket.class, StartStellarRestorationPacket::decode);
+
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {

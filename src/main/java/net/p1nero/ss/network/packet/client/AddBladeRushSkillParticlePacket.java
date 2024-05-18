@@ -1,11 +1,12 @@
-package net.p1nero.ss.network.packet;
+package net.p1nero.ss.network.packet.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.p1nero.ss.network.packet.BasePacket;
+import net.p1nero.ss.util.ClientHelper;
 import yesman.epicfight.particle.EpicFightParticles;
 
 import javax.annotation.Nullable;
@@ -31,10 +32,9 @@ public record AddBladeRushSkillParticlePacket(Vec3 pos, Vec3 movement) implement
     @Override
     public void execute(@Nullable Player player) {
 
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        if(localPlayer != null){
-            localPlayer.clientLevel.addParticle(EpicFightParticles.BLADE_RUSH_SKILL.get(), pos.x , pos.y , pos.z , 0,0,0);
-        }
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ()-> ClientHelper.localPlayerDo((localPlayer)->{
+            localPlayer.level().addParticle(EpicFightParticles.BLADE_RUSH_SKILL.get(), pos.x , pos.y , pos.z , 0,0,0);
+        }));
 
     }
 }

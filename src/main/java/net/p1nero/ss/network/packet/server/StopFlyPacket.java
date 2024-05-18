@@ -1,11 +1,11 @@
-package net.p1nero.ss.network.packet;
+package net.p1nero.ss.network.packet.server;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.network.packet.BasePacket;
 
 import javax.annotation.Nullable;
 

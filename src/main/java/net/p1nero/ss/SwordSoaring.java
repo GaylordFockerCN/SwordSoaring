@@ -44,11 +44,11 @@ public class SwordSoaring {
     public static final Logger LOGGER = LogUtils.getLogger();
     public SwordSoaring(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(this::commonSetup);
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
         MinecraftForge.EVENT_BUS.register(this);
         ModEntities.ENTITIES.register(bus);
         ModEnchantments.ENCHANTMENTS.register(bus);
-        bus.addListener(this::commonSetup);
         //我可以用SubscribeEvent的，但是之前这样写就懒得改了
         fg_bus.addListener(ModSkills::BuildSkills);
         fg_bus.addListener(RainScreen::onPlayerTick);
@@ -60,7 +60,7 @@ public class SwordSoaring {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
+    private void commonSetup(FMLCommonSetupEvent event) {
         PacketHandler.register();
         ModSkills.registerSkills();
     }

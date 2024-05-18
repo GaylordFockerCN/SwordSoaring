@@ -19,7 +19,7 @@ import net.p1nero.ss.entity.StellarSwordEntity;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.StartStellarRestorationPacket;
+import net.p1nero.ss.network.packet.server.StartStellarRestorationPacket;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
@@ -85,6 +85,9 @@ public class StellarRestoration extends Skill {
             //蓄力判断
             //isStellarRestorationSecondPressing 可以理解为用来判断是否是第二次按下
             // isStellarRestorationPressing 用来判断是否按下
+            if(!player.isLocalPlayer()){//该死的服务端
+                return;
+            }
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                 if(entityPatch instanceof LocalPlayerPatch caster){
 
@@ -116,6 +119,7 @@ public class StellarRestoration extends Skill {
                             ssPlayer.isStellarRestorationSecondPressing = false;
                             ssPlayer.stellarRestorationCooldownTimer = Config.STELLAR_RESTORATION_COOLDOWN.get().intValue();
                             PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartStellarRestorationPacket(true));
+                            ssPlayer.stayInAirTick = 20;//滞空处理
                             return;
                         }
 

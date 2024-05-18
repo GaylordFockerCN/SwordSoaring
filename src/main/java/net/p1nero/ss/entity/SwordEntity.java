@@ -16,9 +16,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.ModList;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.util.ClientHelper;
 import org.jetbrains.annotations.NotNull;
 import yesman.epicfight.world.item.LongswordItem;
 import yesman.epicfight.world.item.TachiItem;
@@ -75,7 +77,8 @@ public class SwordEntity extends Entity implements AbstractSwordEntity{
         if(rider == null){
             //呃呃呃简单粗暴，后面才想到的。要个屁的UUID同步，妈的
             if(level().isClientSide){
-                rider = Minecraft.getInstance().player;
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ()-> ClientHelper.getLocalPlayer(rider));
+//                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ()-> rider =  Minecraft.getInstance().player);
             }
             if(this.getEntityData().get(RIDER_UUID).isPresent()){
                 rider = level().getPlayerByUUID(this.getEntityData().get(RIDER_UUID).get());

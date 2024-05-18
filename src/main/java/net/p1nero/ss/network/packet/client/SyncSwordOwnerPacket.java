@@ -1,10 +1,12 @@
-package net.p1nero.ss.network.packet;
+package net.p1nero.ss.network.packet.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.p1nero.ss.entity.SwordEntity;
+import net.p1nero.ss.network.packet.BasePacket;
+import net.p1nero.ss.util.ClientHelper;
 
 import javax.annotation.Nullable;
 
@@ -24,15 +26,15 @@ public record SyncSwordOwnerPacket(int ownerId, int swordId) implements BasePack
 
     @Override
     public void execute(@Nullable Player player) {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        if(localPlayer == null){
-            return;
-        }
-        LocalPlayer owner = ((LocalPlayer) localPlayer.level().getEntity(ownerId));
-        SwordEntity sword = ((SwordEntity) localPlayer.level().getEntity(swordId));
-        if(owner == null || sword == null){
-            return;
-        }
-        sword.setRider(owner);
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ()-> ClientHelper.localPlayerDo((localPlayer)->{
+            Player owner = ((Player) localPlayer.level().getEntity(ownerId));
+            SwordEntity sword = ((SwordEntity) localPlayer.level().getEntity(swordId));
+            if(owner == null || sword == null){
+                return;
+            }
+            sword.setRider(owner);
+        }));
+
     }
 }

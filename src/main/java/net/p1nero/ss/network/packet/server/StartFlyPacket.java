@@ -1,10 +1,11 @@
-package net.p1nero.ss.network.packet;
+package net.p1nero.ss.network.packet.server;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.epicfight.skill.SwordSoaringSkill;
+import net.p1nero.ss.network.packet.BasePacket;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 

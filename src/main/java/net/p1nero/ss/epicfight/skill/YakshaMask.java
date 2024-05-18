@@ -2,7 +2,6 @@ package net.p1nero.ss.epicfight.skill;
 
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -15,17 +14,13 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.ModList;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
-import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.SetClientYakshaMaskTimePacket;
-import net.p1nero.ss.network.packet.StartYakshaJumpPacket;
-import reascer.wom.gameasset.WOMAnimations;
-import reascer.wom.world.damagesources.WOMExtraDamageInstance;
+import net.p1nero.ss.network.packet.client.SetClientYakshaMaskTimePacket;
+import net.p1nero.ss.network.packet.server.StartYakshaJumpPacket;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.LevelUtil;
 import yesman.epicfight.api.utils.math.Vec3f;
@@ -41,7 +36,6 @@ import yesman.epicfight.world.damagesource.EpicFightDamageTypes;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.BiFunction;
 

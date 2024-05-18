@@ -24,8 +24,8 @@ import net.p1nero.ss.entity.RainScreenSwordEntity;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
-import net.p1nero.ss.network.packet.AddBladeRushSkillParticlePacket;
-import net.p1nero.ss.network.packet.SyncSwordOwnerPacket;
+import net.p1nero.ss.network.packet.client.AddBladeRushSkillParticlePacket;
+import net.p1nero.ss.network.packet.client.SyncSwordOwnerPacket;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.gameasset.EpicFightSounds;
@@ -199,8 +199,8 @@ public class RainScreen extends Skill {
         return toReturn.get();
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics, float x, float y) {
         Player player = container.getExecuter().getOriginal();
         SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());

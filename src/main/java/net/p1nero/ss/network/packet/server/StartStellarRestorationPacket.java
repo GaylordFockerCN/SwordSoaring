@@ -1,4 +1,4 @@
-package net.p1nero.ss.network.packet;
+package net.p1nero.ss.network.packet.server;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -8,8 +8,7 @@ import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.epicfight.skill.ModSkills;
-import net.p1nero.ss.network.PacketHandler;
-import net.p1nero.ss.network.PacketRelay;
+import net.p1nero.ss.network.packet.BasePacket;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
@@ -51,9 +50,6 @@ public record StartStellarRestorationPacket(boolean end) implements BasePacket {
                                 sword.discard();
                                 caster.playAnimationSynchronized(Animations.SWEEPING_EDGE,0);
                                 ssPlayer.stayInAirTick = 20;
-                                if(player instanceof ServerPlayer serverPlayer){
-                                    PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new StopStellarRestorationPacket(),serverPlayer);
-                                }
                             }
                         } else {
                             //发射出剑

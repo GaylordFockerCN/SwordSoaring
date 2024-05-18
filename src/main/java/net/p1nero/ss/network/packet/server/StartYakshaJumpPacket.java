@@ -1,25 +1,17 @@
-package net.p1nero.ss.network.packet;
+package net.p1nero.ss.network.packet.server;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
-import net.p1nero.ss.network.PacketHandler;
-import net.p1nero.ss.network.PacketRelay;
+import net.p1nero.ss.network.packet.BasePacket;
 import yesman.epicfight.api.utils.LevelUtil;
-import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
-import yesman.epicfight.network.server.SPSkillExecutionFeedback;
 import yesman.epicfight.particle.EpicFightParticles;
-import yesman.epicfight.particle.HitParticleType;
-import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
