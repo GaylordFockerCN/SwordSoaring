@@ -25,6 +25,8 @@ public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.DoubleValue RAIN_SCREEN_COOLDOWN;
+    public static final ForgeConfigSpec.DoubleValue RAIN_CUTTER_COOLDOWN;
+    public static final ForgeConfigSpec.DoubleValue YAKSHAS_MASK_COOLDOWN;
     public static final ForgeConfigSpec.DoubleValue STELLAR_RESTORATION_COOLDOWN;
     public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA;
     public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE;
@@ -39,6 +41,8 @@ public class Config
 
         BUILDER.push("Skill Cooldown");
         RAIN_SCREEN_COOLDOWN = createDouble("the cooldown ticks of Rain Screen skill", "rain_screen_cooldown", 862);
+        RAIN_CUTTER_COOLDOWN = createDouble("the cooldown ticks of Rain Cutter skill", "rain_cutter_cooldown", 816);
+        YAKSHAS_MASK_COOLDOWN = createDouble("the cooldown ticks of Yaksha's Mask skill", "yaksha_mask_cooldown", 749);
         STELLAR_RESTORATION_COOLDOWN = createDouble("the cooldown ticks of Stellar Restoration skill", "stellar_restoration_cooldown", 312);
         BUILDER.pop();
 
@@ -89,6 +93,16 @@ public class Config
                 .then(Commands.literal("rain_screen_cooldown")
                         .then(Commands.argument("value", DoubleArgumentType.doubleArg())
                                 .executes((context) -> setConfig(RAIN_SCREEN_COOLDOWN, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
+                        )
+                )
+                .then(Commands.literal("rain_cutter_cooldown")
+                        .then(Commands.argument("value", DoubleArgumentType.doubleArg())
+                                .executes((context) -> setConfig(RAIN_CUTTER_COOLDOWN, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
+                        )
+                )
+                .then(Commands.literal("yaksha_mask_cooldown")
+                        .then(Commands.argument("value", DoubleArgumentType.doubleArg())
+                                .executes((context) -> setConfig(YAKSHAS_MASK_COOLDOWN, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
                         )
                 )
                 .then(Commands.literal("stellar_restoration_cooldown")

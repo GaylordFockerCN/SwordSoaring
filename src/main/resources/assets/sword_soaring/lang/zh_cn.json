@@ -6,7 +6,7 @@
   "tip.sword_soaring.speed_level": "当前速度档位 : ",
   "tip.sword_soaring.sword_master": "你的飞行里程已经是大师了！",
   "skill.sword_soaring.sword_soaring": "御剑飞行",
-  "skill.sword_soaring.sword_soaring.tooltip": "按住空格乘上剑飞行，松开空格则停下。消耗耐力。飞行时按tab可以切换速度档位，可以在设置中调整按键绑定。附魔“御剑耐力强化”会减少耐力消耗。",
+  "skill.sword_soaring.sword_soaring.tooltip": "战斗模式下，按住空格乘上剑飞行，松开空格则停下。消耗耐力。飞行时按tab可以切换速度档位，可以在设置中调整按键绑定。附魔“御剑耐力强化”会减少耐力消耗。",
   "skill.sword_soaring.rain_screen": "画雨笼山",
   "skill.sword_soaring.rain_screen.tooltip": "右键振开周围敌人，并召唤四把剑在身边，持续10s。剑帘可以抵御伤害，每次受击将破坏一把雨帘剑，消耗3点耐力并回血。仅当场上不存在剑帘且拥有至少十点耐力时才可召唤。\n\n冷却时间：21秒",
   "skill.sword_soaring.rain_cutter": "裁雨留虹",

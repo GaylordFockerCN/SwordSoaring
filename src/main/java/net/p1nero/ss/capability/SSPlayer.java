@@ -20,8 +20,10 @@ public class SSPlayer {
     private int swordScreenEntityCount;
     public int rainScreenCooldownTimer;
     private int rainCutterTimer;
+    public int rainCutterCooldownTimer;
     private boolean isScreenCutterCoolDown;
     private int yakshaMaskTimer;
+    public int yakshaMaskCooldownTimer;
     public boolean canYakshaMask;
     public boolean isYakshaFall;
     public int stellarSwordID;

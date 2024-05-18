@@ -1,7 +1,9 @@
 package net.p1nero.ss.epicfight.skill;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -13,7 +15,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
+import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
@@ -24,6 +29,7 @@ import net.p1nero.ss.network.packet.server.StartYakshaJumpPacket;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.LevelUtil;
 import yesman.epicfight.api.utils.math.Vec3f;
+import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.particle.EpicFightParticles;
@@ -37,6 +43,7 @@ import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
 /**
@@ -44,7 +51,7 @@ import java.util.function.BiFunction;
  * 本质是无CD的毁坏跳跃
  * 1.9.0更新：直接换成 AGONY_PLUNGE_FORWARD
  */
-public class YakshaMask extends PassiveSkill {
+public class YakshaMask extends Skill {
 
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114517");
 
@@ -60,14 +67,6 @@ public class YakshaMask extends PassiveSkill {
      * 抄流星猛击的，实际上统一为Animations.METEOR_SLAM即可，但是保留这个是为了以后能添加自己的动画。
      */
     public static YakshaMask.Builder createYakshaMaskBuilder() {
-//        if(ModList.get().isLoaded("wom")){
-//            //WOMAnimations.AGONY_PLUNGE_FORWARD_X
-//            return (new YakshaMask.Builder()).setCategory(SkillCategories.IDENTITY).setResource(Resource.NONE)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.SPEAR, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.GREATSWORD, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.TACHI, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD)
-//                    .addSlamMotion(CapabilityItem.WeaponCategories.LONGSWORD, (item, player) -> ModAnimations.AGONY_PLUNGE_FORWARD);
-//        }
             return (new YakshaMask.Builder()).setCategory(SkillCategories.IDENTITY).setResource(Resource.NONE)
                     .addSlamMotion(CapabilityItem.WeaponCategories.SPEAR, (item, player) -> Animations.METEOR_SLAM)
                     .addSlamMotion(CapabilityItem.WeaponCategories.GREATSWORD, (item, player) -> Animations.METEOR_SLAM)
@@ -78,11 +77,6 @@ public class YakshaMask extends PassiveSkill {
     public YakshaMask(Builder builder) {
         super(builder);
         slamMotions = builder.slamMotions;
-//        if(ModList.get().isLoaded("wom")){
-//            defaultAnim = ModAnimations.AGONY_PLUNGE_FORWARD;
-//        }else {
-//            defaultAnim = Animations.METEOR_SLAM;
-//        }
     }
 
     /**
@@ -126,8 +120,9 @@ public class YakshaMask extends PassiveSkill {
             Player player = event.getPlayerPatch().getOriginal();
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                 //客户端找不到方法限制。。按G就可以启动。。能放技能的三把武器太那啥了
-                if(skill.getCategory() == SkillCategories.WEAPON_INNATE && player instanceof ServerPlayer serverPlayer){
-                    ssPlayer.setYakshaMaskTimer(400);
+                if(ssPlayer.yakshaMaskCooldownTimer == 0 && skill.getCategory() == SkillCategories.WEAPON_INNATE && player instanceof ServerPlayer serverPlayer){
+                    ssPlayer.setYakshaMaskTimer(500);
+                    ssPlayer.yakshaMaskCooldownTimer = Config.YAKSHAS_MASK_COOLDOWN.get().intValue();
                     PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new SetClientYakshaMaskTimePacket(), serverPlayer);//充能没满客户端也被视为释放技能，所以客户端应该由服务端获取
                     player.level().playSound(null, player.getOnPos(), SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.3f,1f);
                 }
@@ -243,6 +238,9 @@ public class YakshaMask extends PassiveSkill {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+            if(ssPlayer.yakshaMaskCooldownTimer>0){
+                ssPlayer.yakshaMaskCooldownTimer--;
+            }
             int yakshaMaskTimer = ssPlayer.getYakshaMaskTimer();
             if(yakshaMaskTimer > 0){
                 ssPlayer.setYakshaMaskTimer(yakshaMaskTimer-1);
@@ -252,6 +250,29 @@ public class YakshaMask extends PassiveSkill {
                 ssPlayer.canYakshaMask = true;
             }
         });
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean shouldDraw(SkillContainer container) {
+        AtomicBoolean toReturn = new AtomicBoolean(false);
+        container.getExecuter().getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+            toReturn.set(ssPlayer.yakshaMaskCooldownTimer > 0);
+        });
+        return toReturn.get();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics, float x, float y) {
+        Player player = container.getExecuter().getOriginal();
+        SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
+        guiGraphics.blit(ModSkills.YAKSHA_MASK.getSkillTexture(), (int)x, (int)y, 24, 24, 0, 0, 1, 1, 1, 1);
+        guiGraphics.drawString(gui.font, String.format("%d", (ssPlayer.yakshaMaskCooldownTimer / 40)), x + 6, y + 6, 16777215, true);
+        poseStack.popPose();
     }
 
     public static class Builder extends Skill.Builder<YakshaMask> {
