@@ -12,7 +12,7 @@
   "skill.sword_soaring.rain_cutter": "裁雨留虹",
   "skill.sword_soaring.rain_cutter.tooltip": "释放武器技能后10s内，普通攻击会召唤三把剑，追踪锁定的目标并造成伤害。如果目标不存在则往前飞。火焰附加依然生效，但附加时间折扣。",
   "skill.sword_soaring.yaksha_mask": "夜叉傩面",
-  "skill.sword_soaring.yaksha_mask.tooltip": "释放武器技能后10s内，你可以跳跃到可以释放§l§4流星猛击Plus§r的高度。\n\n§l§4流星猛击Plus§r：如果跳起来后你的俯角小于40度将强制把俯角设为90度。移除了武器限制，但是限制了跳跃高度。每次攻击消耗2点耐力。如果你有安装奇迹武器，每次攻击将消耗4点耐力，使用不同下落攻击动作并造成更大伤害。",
+  "skill.sword_soaring.yaksha_mask.tooltip": "释放武器技能后10s内，你可以跳跃到可以释放§l§4流星猛击Plus§r的高度。\n\n§l§4流星猛击Plus§r：如果跳起来后你的俯角小于40度将强制把俯角设为90度。移除了武器限制，但是限制了跳跃高度。每次攻击消耗3点耐力。如果你有安装奇迹武器，每次攻击将消耗4点耐力，使用不同下落攻击动作并造成更大伤害。",
   "skill.sword_soaring.stellar_restoration": "星斗归位",
   "skill.sword_soaring.stellar_restoration.tooltip": "按下alt消耗5点耐力并向前方丢出一把剑，长按可以瞄准。再次按下瞬移到剑的位置并释放横扫攻击。\n\n冷却时间：7.5秒",
   "config.sword_soaring.fly_speed_scale": "飞行速度和朝向向量的比例",
