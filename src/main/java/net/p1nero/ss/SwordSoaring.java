@@ -113,14 +113,17 @@ public class SwordSoaring {
             int antiDropChance = 100 - modifier;
             float dropChanceModifier = dropChance / (float) (antiDropChance + dropChance);
 
+            String[] skills = new String[]{
+                    "sword_soaring:sword_soaring",
+                    "sword_soaring:rain_cutter",
+                    "sword_soaring:yaksha_mask",
+                    "sword_soaring:stellar_restoration",
+                    "sword_soaring:rain_screen"
+            };
             if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring",
-                                "sword_soaring:rain_cutter",
-                                "sword_soaring:yaksha_mask",
-                                "sword_soaring:stellar_restoration",
-                                "sword_soaring:rain_screen"
+
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
             }
@@ -128,11 +131,7 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY_ICE_BOX)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring",
-                                "sword_soaring:rain_cutter",
-                                "sword_soaring:yaksha_mask",
-                                "sword_soaring:stellar_restoration",
-                                "sword_soaring:rain_screen"
+                                skills
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier))
                         .build());
             }
@@ -140,11 +139,7 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.END_CITY_TREASURE)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring",
-                                "sword_soaring:rain_cutter",
-                                "sword_soaring:yaksha_mask",
-                                "sword_soaring:stellar_restoration",
-                                "sword_soaring:rain_screen"
+                                skills
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
             }
@@ -152,11 +147,7 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.FISHING_TREASURE)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring",
-                                "sword_soaring:rain_cutter",
-                                "sword_soaring:yaksha_mask",
-                                "sword_soaring:stellar_restoration",
-                                "sword_soaring:rain_screen"
+                                skills
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
             }
@@ -164,11 +155,7 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.STRONGHOLD_LIBRARY)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 5.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-                                "sword_soaring:sword_soaring",
-                                "sword_soaring:rain_cutter",
-                                "sword_soaring:yaksha_mask",
-                                "sword_soaring:stellar_restoration",
-                                "sword_soaring:rain_screen"
+                                skills
                         ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier * 0.3F))
                         .build());
             }
