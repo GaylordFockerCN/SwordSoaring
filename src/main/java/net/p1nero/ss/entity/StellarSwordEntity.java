@@ -86,9 +86,9 @@ public class StellarSwordEntity extends AbstractArrow implements AbstractSwordEn
                 serverPlayer.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
                     ssPlayer.isStellarRestorationPressing = false;
                 });
+                PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddSmokeParticlePacket(getPosition(1.0f) ,getDeltaMovement()));
             }
             discard();
-            PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddSmokeParticlePacket(getPosition(1.0f) ,getDeltaMovement()));
         }
     }
 
