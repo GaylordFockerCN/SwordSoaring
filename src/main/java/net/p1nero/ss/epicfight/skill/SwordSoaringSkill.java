@@ -111,6 +111,7 @@ public class SwordSoaringSkill extends Skill {
         listener.addEventListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID, (event) -> {
             Player player = event.getPlayerPatch().getOriginal();
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+                //-1表示不作修改
                 if(ssPlayer.flyHeight == -1){
                     return;
                 }
@@ -130,6 +131,8 @@ public class SwordSoaringSkill extends Skill {
         Player player = event.player;
 
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+
+            System.out.println(ssPlayer.flyHeight + "" + player.level());
             if(ssPlayer.isFlying()){
 
                 //速度切换
@@ -144,7 +147,6 @@ public class SwordSoaringSkill extends Skill {
                     }
                 }
 
-                resetHeight(player,ssPlayer);
                 //惯性控制。懒得重写就直接用getPersistentData了
                 if(Config.ENABLE_INERTIA.get()){
                     Vec3 targetVec = getViewVec(player.getPersistentData(), Config.INERTIA_TICK_BEFORE.get().intValue()).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel);
@@ -153,6 +155,7 @@ public class SwordSoaringSkill extends Skill {
                     }
                 } else {
                     player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel));
+                    resetHeight(player,ssPlayer);
                 }
 
                 //消耗耐力
@@ -194,10 +197,9 @@ public class SwordSoaringSkill extends Skill {
      */
     private static void resetHeight(Player player, SSPlayer ssPlayer){
         Vec3 vec3 = player.getEyePosition(1.0F);
-        Vec3 view = player.getViewVector(1.0f);
-        Vec3 vec31 = new Vec3(view.x, -1, view.z);
+        Vec3 vec31 = new Vec3(0, -1, 0);
         Vec3 vec32 = vec3.add(vec31.x * 50.0, vec31.y * 50.0, vec31.z * 50.0);
-        HitResult hitResult = player.level().clip(new ClipContext(vec3, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+        HitResult hitResult = player.level().clip(new ClipContext(vec3, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player));
         if(hitResult.getType() != HitResult.Type.MISS){
             Vec3 to = hitResult.getLocation();
             Vec3 from = player.position();
