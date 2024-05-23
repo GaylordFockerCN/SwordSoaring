@@ -24,6 +24,8 @@ public class ModEntities {
      */
     public static final RegistryObject<EntityType<RainCutterSwordEntity>> RAIN_CUTTER_SWORD = register("rain_cutter_sword", EntityType.Builder.<RainCutterSwordEntity>of(RainCutterSwordEntity::new, MobCategory.MISC)
             .setCustomClientFactory(RainCutterSwordEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));
+    public static final RegistryObject<EntityType<SmoothDirSwordEntity>> SMOOTH_DIR_SWORD = register("smooth_dir_sword", EntityType.Builder.<SmoothDirSwordEntity>of(SmoothDirSwordEntity::new, MobCategory.MISC)
+            .setCustomClientFactory(SmoothDirSwordEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));
 
     public static final RegistryObject<EntityType<StellarSwordEntity>> STELLAR_SWORD = register("stellar_sword", EntityType.Builder.<StellarSwordEntity>of(StellarSwordEntity::new, MobCategory.MISC)
             .setCustomClientFactory(StellarSwordEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));

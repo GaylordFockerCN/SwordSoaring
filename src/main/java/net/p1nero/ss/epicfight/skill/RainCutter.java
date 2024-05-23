@@ -30,16 +30,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RainCutter extends Skill {
 
-
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114516");
 
     public RainCutter(Builder<? extends Skill> builder) {
         super(builder);
     }
 
-    /**
-     * 监听是否在防御状态
-     */
     @Override
     public void onInitiate(SkillContainer container) {
 

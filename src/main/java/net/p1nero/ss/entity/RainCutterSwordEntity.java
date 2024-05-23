@@ -48,8 +48,8 @@ import java.util.Objects;
 
 public class RainCutterSwordEntity extends AbstractArrow implements AbstractSwordEntity{
     public static final float speed = 1;
-    private Vec3 targetPos = Vec3.ZERO;
-    private Vec3 dir = Vec3.ZERO;
+    protected Vec3 targetPos = Vec3.ZERO;
+    protected Vec3 dir = Vec3.ZERO;
 
     private static final EntityDataAccessor<ItemStack> ITEM_STACK = SynchedEntityData.defineId(RainCutterSwordEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Integer> RAIN_CUTTER_SWORD_ID = SynchedEntityData.defineId(RainCutterSwordEntity.class, EntityDataSerializers.INT);

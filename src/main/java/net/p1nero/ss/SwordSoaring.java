@@ -95,6 +95,7 @@ public class SwordSoaring {
             EntityRenderers.register(ModEntities.RAIN_SCREEN_SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.RAIN_CUTTER_SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.STELLAR_SWORD.get(), SwordEntityRenderer::new);
+            EntityRenderers.register(ModEntities.SMOOTH_DIR_SWORD.get(), SwordEntityRenderer::new);
         }
 
     }
