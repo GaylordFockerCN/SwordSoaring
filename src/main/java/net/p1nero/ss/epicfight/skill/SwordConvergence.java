@@ -37,22 +37,22 @@ public class SwordConvergence extends Skill {
             Skill skill = event.getSkillContainer().getSkill();
             Player player = event.getPlayerPatch().getOriginal();
             if(skill.getCategory() == SkillCategories.WEAPON_INNATE && player instanceof ServerPlayer serverPlayer){
-                summonSwords(serverPlayer);
+                summonSwords(serverPlayer, 1000);
             }
         });
 
     }
 
-    public static void summonSwords(ServerPlayer player){
+    public static void summonSwords(ServerPlayer player, int swordCnt){
         if(!SwordSoaring.isValidSword(player.getMainHandItem())){
             return;
         }
-        int n = 10000, y = 5; // 总共生成的点的数量
+        int y = 5; // 总共生成的点的数量
         Random random = new Random();
 
-        for (int i = 0; i < n / 4; i++) {
+        for (int i = 0; i < swordCnt / 4; i++) {
             double angle = random.nextDouble() * Math.PI / 2; // 生成0到90度之间的角度
-            double radius = random.nextDouble() * 20; // 生成0到4之间的半径
+            double radius = random.nextDouble() * 4 * swordCnt/300.0; // 生成半径
 
             // 第一象限
             double x1 = radius * Math.cos(angle);

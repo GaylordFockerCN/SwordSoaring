@@ -149,7 +149,7 @@ public class SwordSoaring {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 skills
-                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
+                        )).when(LootItemRandomChanceCondition.randomChance(0.2f * dropChanceModifier)))
                         .build());
             }
 
