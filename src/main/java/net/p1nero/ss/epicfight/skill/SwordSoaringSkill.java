@@ -154,8 +154,8 @@ public class SwordSoaringSkill extends Skill {
                     }
                 } else {
                     player.setDeltaMovement(player.getViewVector(0.5f).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel));
-                    resetHeight(player,ssPlayer);
                 }
+                resetHeight(player,ssPlayer);
 
                 //消耗耐力
                 player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
