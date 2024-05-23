@@ -110,14 +110,17 @@ public class SwordSoaringSkill extends Skill {
         //调整下落伤害，不然高飞低会扣血
         listener.addEventListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID, (event) -> {
             Player player = event.getPlayerPatch().getOriginal();
+//            player.displayClientMessage(Component.literal("当前高度"+event.getForgeEvent().getDistance()),true);
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                //-1表示不作修改
-                if(ssPlayer.flyHeight == -1){
+                //-1表示不作修改，高度变高也是错误的计算
+                if(ssPlayer.flyHeight == -1 || ssPlayer.flyHeight > event.getForgeEvent().getDistance()){
                     return;
                 }
                 event.getForgeEvent().setDistance(((int) ssPlayer.flyHeight));
                 ssPlayer.flyHeight = -1;
             });
+
+//            player.displayClientMessage(Component.literal("改（或没改）后高度"+event.getForgeEvent().getDistance()),false);
         });
 
     }
@@ -195,14 +198,11 @@ public class SwordSoaringSkill extends Skill {
      * 每tick都消耗太浪费资源了，但是有无惯性都得重置高度。。
      */
     private static void resetHeight(Player player, SSPlayer ssPlayer){
-        Vec3 vec3 = player.getEyePosition(1.0F);
-        Vec3 vec31 = new Vec3(0, -1, 0);
-        Vec3 vec32 = vec3.add(vec31.x * 50.0, vec31.y * 50.0, vec31.z * 50.0);
-        HitResult hitResult = player.level().clip(new ClipContext(vec3, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player));
+        Vec3 from = player.getEyePosition(1.0F);
+        Vec3 to = from.add(0, -500.0, 0);
+        HitResult hitResult = player.level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player));
         if(hitResult.getType() != HitResult.Type.MISS){
-            Vec3 to = hitResult.getLocation();
-            Vec3 from = player.position();
-            ssPlayer.flyHeight = to.distanceTo(from);
+            ssPlayer.flyHeight = hitResult.distanceTo(player);
         }else {
             ssPlayer.flyHeight = -1;
         }
