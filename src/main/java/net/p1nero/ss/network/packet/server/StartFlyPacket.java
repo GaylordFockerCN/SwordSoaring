@@ -30,6 +30,10 @@ public record StartFlyPacket (float flySpeedLevel) implements BasePacket {
         if (player != null && player.getServer() != null) {
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 //                ssPlayer.setProtectNextFall(true);
+                if(flySpeedLevel == 0){
+                    ssPlayer.setFlying(false);
+                    return;
+                }
                 ssPlayer.setFlying(true);
                 player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                     if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){

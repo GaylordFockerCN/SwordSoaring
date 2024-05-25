@@ -20,8 +20,8 @@ import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModWeaponCapabilityPresets {
-    //Lion's Roar 匣里龙吟
-    public static final Function<Item, CapabilityItem.Builder> STAFF = (item) -> {
+    //Loong's Roar 匣里龙吟
+    public static final Function<Item, CapabilityItem.Builder> LOONG_ROAR = (item) -> {
         return (CapabilityItem.Builder) WeaponCapability.builder().category(CapabilityItem.WeaponCategories.SPEAR)
                 .styleProvider((playerPatch) -> CapabilityItem.Styles.TWO_HAND).collider(WOMColliders.STAFF)
                 .hitSound(EpicFightSounds.BLUNT_HIT.get())
@@ -58,7 +58,7 @@ public class ModWeaponCapabilityPresets {
 
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
-        event.getTypeEntry().put(new ResourceLocation(SwordSoaring.MOD_ID, "test"), STAFF);
+        event.getTypeEntry().put(new ResourceLocation(SwordSoaring.MOD_ID, "test"), LOONG_ROAR);
     }
 
 }

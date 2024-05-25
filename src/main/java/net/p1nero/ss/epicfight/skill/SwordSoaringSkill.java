@@ -3,6 +3,7 @@ package net.p1nero.ss.epicfight.skill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.ParticleUtils;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -51,6 +52,11 @@ public class SwordSoaringSkill extends Skill {
 
         listener.addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event) -> {
 
+            //这个开关的判断好像不能取消延迟
+            if(flySpeedLevel == 0){
+                System.out.println(true);
+                return;
+            }
             // Check directly from the keybind because event.getMovementInput().isJumping doesn't allow to be set as true while player's jumping
             boolean jumpPressed = Minecraft.getInstance().options.keyJump.isDown();
 
@@ -58,6 +64,7 @@ public class SwordSoaringSkill extends Skill {
             ItemStack sword = player.getMainHandItem();
 
             player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+
 
                 //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”。player.isInWater没吊用。。
                 if (!jumpPressed || event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
@@ -95,17 +102,17 @@ public class SwordSoaringSkill extends Skill {
 
         });
 
-        //取消免疫摔落伤害
-        listener.addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
-            if (event.getDamageSource().is(DamageTypeTags.IS_FALL) ) {
-                Player player = event.getPlayerPatch().getOriginal();
-                player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-                    if(ssPlayer.isProtectNextFall()){
-                        ssPlayer.setProtectNextFall(false);
-                    }
-                });
-            }
-        });
+//        //取消免疫摔落伤害
+//        listener.addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
+//            if (event.getDamageSource().is(DamageTypeTags.IS_FALL) ) {
+//                Player player = event.getPlayerPatch().getOriginal();
+//                player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+//                    if(ssPlayer.isProtectNextFall()){
+//                        ssPlayer.setProtectNextFall(false);
+//                    }
+//                });
+//            }
+//        });
 
         //调整下落伤害，不然高飞低会扣血
         listener.addEventListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID, (event) -> {
@@ -137,14 +144,25 @@ public class SwordSoaringSkill extends Skill {
 
             if(ssPlayer.isFlying()){
 
+//                //速度切换
+//                if(player.isLocalPlayer()){
+//                    if(ModKeyMappings.CHANGE_SPEED.isRelease()){
+//                        if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
+//                            flySpeedLevel = 2.0f;
+//                        } else {
+//                            flySpeedLevel = 1.0f;
+//                        }
+//                        player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
+//                    }
+//                }
                 //速度切换
                 if(player.isLocalPlayer()){
                     if(ModKeyMappings.CHANGE_SPEED.isRelease()){
-                        if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
-                            flySpeedLevel = 2.0f;
-                        } else {
-                            flySpeedLevel = 1.0f;
-                        }
+                        flySpeedLevel = switch (ModKeyMappings.CHANGE_SPEED.getPressCnt() % 3){
+                            case 0 -> 1.0f;
+                            case 1 -> 2.0f;
+                            default -> 0.0f;//关
+                        };
                         player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
                     }
                 }
