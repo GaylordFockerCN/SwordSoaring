@@ -3,8 +3,6 @@ package net.p1nero.ss;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -29,6 +27,8 @@ import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntityRenderer;
 import net.p1nero.ss.epicfight.skill.*;
+import net.p1nero.ss.item.ModItemTabs;
+import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
 import org.slf4j.Logger;
 import yesman.epicfight.config.ConfigManager;
@@ -48,6 +48,8 @@ public class SwordSoaring {
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
         MinecraftForge.EVENT_BUS.register(this);
         ModEntities.ENTITIES.register(bus);
+        ModItems.ITEMS.register(bus);
+        ModItemTabs.ITEM_TABS.register(bus);
         ModEnchantments.ENCHANTMENTS.register(bus);
         //我可以用SubscribeEvent的，但是之前这样写就懒得改了
         fg_bus.addListener(ModSkills::BuildSkills);

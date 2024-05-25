@@ -25,6 +25,7 @@ import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.gameasset.EpicFightSounds;
+import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -118,6 +119,7 @@ public class StellarRestoration extends Skill {
                             ssPlayer.isStellarRestorationPressing = false;
                             ssPlayer.isStellarRestorationSecondPressing = false;
                             ssPlayer.stellarRestorationCooldownTimer = Config.STELLAR_RESTORATION_COOLDOWN.get().intValue();
+                            player.level().addParticle(EpicFightParticles.ENTITY_AFTER_IMAGE.get(), player.getX(), player.getY(), player.getZ(),Double.longBitsToDouble(player.getId()),0,0);
                             PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartStellarRestorationPacket(true));
                             ssPlayer.stayInAirTick = 20;//滞空处理
                             return;
