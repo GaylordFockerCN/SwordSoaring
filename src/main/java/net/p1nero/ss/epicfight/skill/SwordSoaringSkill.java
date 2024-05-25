@@ -2,8 +2,6 @@ package net.p1nero.ss.epicfight.skill;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.ParticleUtils;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -15,6 +13,7 @@ import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.enchantment.ModEnchantments;
+import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.keymapping.ModKeyMappings;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
@@ -23,7 +22,6 @@ import net.p1nero.ss.network.packet.server.StopFlyPacket;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
-import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
@@ -31,6 +29,9 @@ import java.util.UUID;
 
 import static net.p1nero.ss.util.InertiaUtil.*;
 
+/**
+ * FIXME 跳跃延迟 jump delay
+ */
 public class SwordSoaringSkill extends Skill {
 
     private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114514");
@@ -49,6 +50,13 @@ public class SwordSoaringSkill extends Skill {
         super.onInitiate(container);
 
         PlayerEventListener listener = container.getExecuter().getEventListener();
+        listener.addEventListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID, (event) -> {
+            event.getPlayerPatch().getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+                if(Config.FORCE_FLY_ANIM.get() && ssPlayer.isFlying() && (!event.getSkillContainer().hasSkill(ModSkills.SWORD_SOARING))){
+                    event.setCanceled(true);
+                }
+            });
+        });
 
         listener.addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event) -> {
 
@@ -144,28 +152,28 @@ public class SwordSoaringSkill extends Skill {
 
             if(ssPlayer.isFlying()){
 
-//                //速度切换
-//                if(player.isLocalPlayer()){
-//                    if(ModKeyMappings.CHANGE_SPEED.isRelease()){
-//                        if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
-//                            flySpeedLevel = 2.0f;
-//                        } else {
-//                            flySpeedLevel = 1.0f;
-//                        }
-//                        player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
-//                    }
-//                }
                 //速度切换
                 if(player.isLocalPlayer()){
                     if(ModKeyMappings.CHANGE_SPEED.isRelease()){
-                        flySpeedLevel = switch (ModKeyMappings.CHANGE_SPEED.getPressCnt() % 3){
-                            case 0 -> 1.0f;
-                            case 1 -> 2.0f;
-                            default -> 0.0f;//关
-                        };
+                        if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
+                            flySpeedLevel = 2.0f;
+                        } else {
+                            flySpeedLevel = 1.0f;
+                        }
                         player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
                     }
                 }
+//                //速度切换
+//                if(player.isLocalPlayer()){
+//                    if(ModKeyMappings.CHANGE_SPEED.isRelease()){
+//                        flySpeedLevel = switch (ModKeyMappings.CHANGE_SPEED.getPressCnt() % 3){
+//                            case 0 -> 1.0f;
+//                            case 1 -> 2.0f;
+//                            default -> 0.0f;//关
+//                        };
+//                        player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
+//                    }
+//                }
 
                 //惯性控制。懒得重写就直接用getPersistentData了
                 if(Config.ENABLE_INERTIA.get()){
@@ -232,6 +240,7 @@ public class SwordSoaringSkill extends Skill {
         PlayerEventListener listener = container.getExecuter().getEventListener();
         listener.removeListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID);
     }
 
 }

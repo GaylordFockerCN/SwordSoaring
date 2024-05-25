@@ -82,9 +82,16 @@ public class SwordSoaring {
     public static boolean isValidSword(ItemStack sword){
         //不知为何无法监听
         if(Config.swordItems.isEmpty()){
-            Config.swordItems = Config.ITEM_STRINGS.get().stream()
+            Config.swordItems = Config.ITEMS_CAN_FLY.get().stream()
                     .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
                     .collect(Collectors.toSet());
+            Config.notSwordItems = Config.ITEMS_CAN_NOT_FLY.get().stream()
+                    .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                    .collect(Collectors.toSet());
+            Config.swordItems.removeAll(Config.notSwordItems);
+        }
+        if(Config.notSwordItems.contains(sword.getItem())){
+            return false;
         }
         return sword.getItem() instanceof SwordItem  || Config.swordItems.contains(sword.getItem());
     }

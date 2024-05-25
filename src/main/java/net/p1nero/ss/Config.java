@@ -3,7 +3,6 @@ package net.p1nero.ss;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -14,7 +13,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.stringtemplate.v4.ST;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,12 +26,14 @@ public class Config
     public static final ForgeConfigSpec.DoubleValue RAIN_CUTTER_COOLDOWN;
     public static final ForgeConfigSpec.DoubleValue YAKSHAS_MASK_COOLDOWN;
     public static final ForgeConfigSpec.DoubleValue STELLAR_RESTORATION_COOLDOWN;
+    public static final ForgeConfigSpec.BooleanValue FORCE_FLY_ANIM;
     public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA;
     public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE;
     public static final ForgeConfigSpec.DoubleValue FLY_SPEED_SCALE;
     public static final ForgeConfigSpec.DoubleValue STAMINA_CONSUME_PER_TICK;
     public static final ForgeConfigSpec.DoubleValue MAX_ANTICIPATION_TICK;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEMS_CAN_FLY;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEMS_CAN_NOT_FLY;
 
     static final ForgeConfigSpec SPEC;
 
@@ -47,20 +47,25 @@ public class Config
         BUILDER.pop();
 
         BUILDER.push("Sword Soaring");
+        FORCE_FLY_ANIM = createBool("force_fly_anim", false);
         ENABLE_INERTIA = createBool("enable_inertia", true);
         INERTIA_TICK_BEFORE = createDouble("the inertia end.(delay time) only work when enable_inertia is true. Shouldn't larger than 100!!!","inertia_tick_before", 10);
         FLY_SPEED_SCALE = createDouble("the ratio of flying speed to view vector","fly_speed_scale", 0.6);
         STAMINA_CONSUME_PER_TICK = createDouble("the stamina consumed per end when flying" ,"stamina_consume_per_tick", 0.05);
         MAX_ANTICIPATION_TICK = createDouble("ticks of end taking off","max_anticipation_tick", 10);
-        ITEM_STRINGS = BUILDER
+        ITEMS_CAN_FLY = BUILDER
                 .comment("A list of items considered as sword.")
                 .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
+        ITEMS_CAN_NOT_FLY = BUILDER
+                .comment("A list of items not considered as sword.")
+                .defineListAllowEmpty(List.of("items can't fly"), () -> List.of("minecraft:iron_ingot"), Config::validateItemName);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
     }
 
     public static Set<Item> swordItems = new HashSet<>();
+    public static Set<Item> notSwordItems = new HashSet<>();
 
     private static ForgeConfigSpec.BooleanValue createBool(String key, boolean defaultValue){
         return BUILDER
@@ -111,6 +116,11 @@ public class Config
                         )
                 )
 
+                .then(Commands.literal("force_fly_anim")
+                        .then(Commands.argument("value", BoolArgumentType.bool())
+                                .executes((context) -> setConfig(FORCE_FLY_ANIM, BoolArgumentType.getBool(context, "value"), context.getSource()))
+                        )
+                )
                 .then(Commands.literal("enable_inertia")
                         .then(Commands.argument("value", BoolArgumentType.bool())
                                 .executes((context) -> setConfig(ENABLE_INERTIA, BoolArgumentType.getBool(context, "value"), context.getSource()))

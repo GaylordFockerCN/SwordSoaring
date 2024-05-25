@@ -2,6 +2,7 @@ package net.p1nero.ss.network.packet.server;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
+import net.p1nero.ss.Config;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.epicfight.skill.SwordSoaringSkill;
@@ -37,7 +38,7 @@ public record StartFlyPacket (float flySpeedLevel) implements BasePacket {
                 ssPlayer.setFlying(true);
                 player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                     if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                        if(!serverPlayerPatch.getEntityState().inaction() && !ssPlayer.isPlayingAnim){
+                        if(Config.FORCE_FLY_ANIM.get() || !serverPlayerPatch.getEntityState().inaction() && !ssPlayer.isPlayingAnim){
                             if(flySpeedLevel == 1){
                                 serverPlayerPatch.playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0.15F);
                             }else {
