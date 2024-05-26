@@ -30,6 +30,7 @@ import net.p1nero.ss.epicfight.skill.*;
 import net.p1nero.ss.item.ModItemTabs;
 import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
+import net.p1nero.ss.particle.ModParticles;
 import org.slf4j.Logger;
 import yesman.epicfight.config.ConfigManager;
 import yesman.epicfight.data.loot.function.SetSkillFunction;
@@ -51,6 +52,7 @@ public class SwordSoaring {
         ModItems.ITEMS.register(bus);
         ModItemTabs.ITEM_TABS.register(bus);
         ModEnchantments.ENCHANTMENTS.register(bus);
+        ModParticles.PARTICLES.register(bus);
         //我可以用SubscribeEvent的，但是之前这样写就懒得改了
         fg_bus.addListener(ModSkills::BuildSkills);
         fg_bus.addListener(RainScreen::onPlayerTick);

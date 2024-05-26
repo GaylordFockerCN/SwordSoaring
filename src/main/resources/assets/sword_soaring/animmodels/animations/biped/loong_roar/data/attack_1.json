@@ -1,0 +1,16 @@
+{
+    "trail_effects": [
+        {
+            "begin_pos": [0.0, -0.2, 2.8],
+            "end_pos": [0.0, -0.2, -1.8],
+            "lifetime": 6,
+            "fade_time": 0.95,
+            "start_time": 0.2,
+            "end_time": 0.3,
+            "interpolations": 12,
+            "joint": "Tool_R",
+            "item_skin_hand": "main_hand",
+            "texture_path": "sword_soaring:textures/particle/gold_trail2.png"
+        }
+    ]
+}

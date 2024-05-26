@@ -8,7 +8,6 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 /**
  * 重击
- * TODO 改为长按左键实现
  */
 public class LoongRoarChargedAttack extends WeaponInnateSkill {
     public LoongRoarChargedAttack(Builder<? extends Skill> builder) {
@@ -17,7 +16,7 @@ public class LoongRoarChargedAttack extends WeaponInnateSkill {
 
     @Override
     public void executeOnServer(ServerPlayerPatch executer, FriendlyByteBuf args) {
-        executer.playAnimationSynchronized(ModAnimations.LOONG_ROAR_HEAVY, 0.0F);
+        executer.playAnimationSynchronized(ModAnimations.LOONG_ROAR_HEAVY_ALL, 0.0F);
         super.executeOnServer(executer, args);
     }
 }
