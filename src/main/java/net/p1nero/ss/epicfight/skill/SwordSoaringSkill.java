@@ -166,12 +166,12 @@ public class SwordSoaringSkill extends Skill {
 //                //速度切换
 //                if(player.isLocalPlayer()){
 //                    if(ModKeyMappings.CHANGE_SPEED.isRelease()){
-//                        flySpeedLevel = switch (ModKeyMappings.CHANGE_SPEED.getPressCnt() % 3){
+//                        shouldRelease = switch (ModKeyMappings.CHANGE_SPEED.getPressCnt() % 3){
 //                            case 0 -> 1.0f;
 //                            case 1 -> 2.0f;
 //                            default -> 0.0f;//关
 //                        };
-//                        player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) flySpeedLevel))), true);
+//                        player.displayClientMessage(Component.translatable("tip.sword_soaring.speed_level").append(String.valueOf(((int) shouldRelease))), true);
 //                    }
 //                }
 

@@ -25,6 +25,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.ModEntities;
+import net.p1nero.ss.entity.SwordConvergenceEntity;
 import net.p1nero.ss.entity.SwordEntityRenderer;
 import net.p1nero.ss.epicfight.skill.*;
 import net.p1nero.ss.item.ModItemTabs;
@@ -60,6 +61,7 @@ public class SwordSoaring {
         fg_bus.addListener(SwordSoaringSkill::onPlayerTick);
         fg_bus.addListener(YakshaMask::onPlayerTick);
         fg_bus.addListener(StellarRestoration::onPlayerTick);
+        fg_bus.addListener(SwordConvergence::onPlayerTick);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
