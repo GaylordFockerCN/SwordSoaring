@@ -7,10 +7,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.network.packet.*;
 import net.p1nero.ss.network.packet.client.*;
-import net.p1nero.ss.network.packet.server.StartFlyPacket;
-import net.p1nero.ss.network.packet.server.StartStellarRestorationPacket;
-import net.p1nero.ss.network.packet.server.StartYakshaJumpPacket;
-import net.p1nero.ss.network.packet.server.StopFlyPacket;
+import net.p1nero.ss.network.packet.server.*;
 
 import java.util.function.Function;
 
@@ -37,6 +34,7 @@ public class PacketHandler {
         register(StopFlyPacket.class, StopFlyPacket::decode);
         register(StartYakshaJumpPacket.class, StartYakshaJumpPacket::decode);
         register(StartStellarRestorationPacket.class, StartStellarRestorationPacket::decode);
+        register(StartSwordConvergencePacket.class, StartSwordConvergencePacket::decode);
 
     }
 

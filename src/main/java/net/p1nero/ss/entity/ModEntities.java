@@ -26,7 +26,8 @@ public class ModEntities {
             .setCustomClientFactory(RainCutterSwordEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));
     public static final RegistryObject<EntityType<SmoothDirSwordEntity>> SMOOTH_DIR_SWORD = register("smooth_dir_sword", EntityType.Builder.<SmoothDirSwordEntity>of(SmoothDirSwordEntity::new, MobCategory.MISC)
             .setCustomClientFactory(SmoothDirSwordEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));
-
+    public static final RegistryObject<EntityType<SwordConvergenceEntity>> CONVERGENCE_SWORD = register("convergence_sword", EntityType.Builder.<SwordConvergenceEntity>of(SwordConvergenceEntity::new, MobCategory.MISC)
+            .setCustomClientFactory(SwordConvergenceEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));
     public static final RegistryObject<EntityType<StellarSwordEntity>> STELLAR_SWORD = register("stellar_sword", EntityType.Builder.<StellarSwordEntity>of(StellarSwordEntity::new, MobCategory.MISC)
             .setCustomClientFactory(StellarSwordEntity::new).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(1f, 0.2f));
 
