@@ -138,7 +138,7 @@ public class SwordSoaring {
             if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY)) {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
-
+                                skills
                         )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
                         .build());
             }
@@ -163,7 +163,7 @@ public class SwordSoaring {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 skills
-                        )).when(LootItemRandomChanceCondition.randomChance(0.2f * dropChanceModifier)))
+                        )).when(LootItemRandomChanceCondition.randomChance(0.01f * dropChanceModifier)))
                         .build());
             }
 

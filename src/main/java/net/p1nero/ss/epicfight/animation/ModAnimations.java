@@ -196,20 +196,9 @@ public class ModAnimations {
         LOONG_ROAR_HEAVY_ALL = (new BasicAttackAnimation(0.05F, 0.125F, 0.3F, 0.8F, null, biped.toolR, "biped/loong_roar/attack_1", biped))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.2F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
-                        AnimationEvent.create((entityPatch, animation, params) -> {
-                            if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                                serverPlayerPatch.getOriginal().getPersistentData().putBoolean("markPlayChargedAttack", false);
-                            }
-                        }, AnimationEvent.Side.SERVER))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS,
                         AnimationEvent.create((entityPatch, animation, params) -> {
-                            if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
-                                if(!serverPlayerPatch.getOriginal().getPersistentData().getBoolean("markPlayChargedAttack")){
-                                    serverPlayerPatch.getOriginal().getPersistentData().putBoolean("markPlayChargedAttack", true);
-                                    entityPatch.playAnimationSynchronized(LOONG_ROAR_HEAVY, 0);
-                                }
-                            }
+                            entityPatch.reserveAnimation(LOONG_ROAR_HEAVY);
                         }, AnimationEvent.Side.SERVER));
 
     }

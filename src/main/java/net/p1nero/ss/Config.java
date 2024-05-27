@@ -26,6 +26,7 @@ public class Config
     public static final ForgeConfigSpec.DoubleValue RAIN_CUTTER_COOLDOWN;
     public static final ForgeConfigSpec.DoubleValue YAKSHAS_MASK_COOLDOWN;
     public static final ForgeConfigSpec.DoubleValue STELLAR_RESTORATION_COOLDOWN;
+    public static final ForgeConfigSpec.DoubleValue SWORD_CONVERGENCE_COOLDOWN;
     public static final ForgeConfigSpec.BooleanValue FORCE_FLY_ANIM;
     public static final ForgeConfigSpec.BooleanValue ENABLE_INERTIA;
     public static final ForgeConfigSpec.DoubleValue INERTIA_TICK_BEFORE;
@@ -44,6 +45,7 @@ public class Config
         RAIN_CUTTER_COOLDOWN = createDouble("the cooldown ticks of Rain Cutter skill", "rain_cutter_cooldown", 816);
         YAKSHAS_MASK_COOLDOWN = createDouble("the cooldown ticks of Yaksha's Mask skill", "yaksha_mask_cooldown", 749);
         STELLAR_RESTORATION_COOLDOWN = createDouble("the cooldown ticks of Stellar Restoration skill", "stellar_restoration_cooldown", 312);
+        SWORD_CONVERGENCE_COOLDOWN = createDouble("the cooldown ticks of Sword Convergence skill", "sword_convergence_cooldown", 648);
         BUILDER.pop();
 
         BUILDER.push("Sword Soaring");
@@ -113,6 +115,11 @@ public class Config
                 .then(Commands.literal("stellar_restoration_cooldown")
                         .then(Commands.argument("value", DoubleArgumentType.doubleArg())
                                 .executes((context) -> setConfig(STELLAR_RESTORATION_COOLDOWN, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
+                        )
+                )
+                .then(Commands.literal("sword_convergence_cooldown")
+                        .then(Commands.argument("value", DoubleArgumentType.doubleArg())
+                                .executes((context) -> setConfig(SWORD_CONVERGENCE_COOLDOWN, DoubleArgumentType.getDouble(context, "value"), context.getSource()))
                         )
                 )
 
