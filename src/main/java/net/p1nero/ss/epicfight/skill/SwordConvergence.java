@@ -87,7 +87,6 @@ public class SwordConvergence extends Skill {
                 patch.playAnimationSynchronized(ModAnimations.STELLAR_RESTORATION_PRE,0);
 
                 dataManager.setData(IS_PRESSING, false);
-                System.out.println(dataManager.getDataValue(TOTAL_SWORD_CNT));
                 dataManager.setData(COOL_DOWN, Config.SWORD_CONVERGENCE_COOLDOWN.get().intValue()+dataManager.getDataValue(TOTAL_SWORD_CNT));
                 dataManager.setData(TOTAL_SWORD_CNT, 0);
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartSwordConvergencePacket(true));

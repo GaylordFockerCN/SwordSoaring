@@ -22,6 +22,7 @@ import net.p1nero.ss.network.packet.server.StopFlyPacket;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
@@ -58,57 +59,57 @@ public class SwordSoaringSkill extends Skill {
             });
         });
 
-        listener.addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event) -> {
-
-            //这个开关的判断好像不能取消延迟
-            if(flySpeedLevel == 0){
-                System.out.println(true);
-                return;
-            }
-            // Check directly from the keybind because event.getMovementInput().isJumping doesn't allow to be set as true while player's jumping
-            boolean jumpPressed = Minecraft.getInstance().options.keyJump.isDown();
-
-            Player player = container.getExecuter().getOriginal();
-            ItemStack sword = player.getMainHandItem();
-
-            player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
-
-
-                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”。player.isInWater没吊用。。
-                if (!jumpPressed || event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
-                        || event.getPlayerPatch().getStamina() <= 0.1f || player.isInLava() || player.isUnderWater() || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity())) {
-                    //停止飞行
-                    PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
-                    //飞行结束后再获取末向量。因为此时isFlying还没设为false
-                    if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
-                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel);
-                        setEndVec(player.getPersistentData(), endVec);
-                        double leftTick = endVec.length() * maxRecordTick;
-                        setLeftTick(player.getPersistentData(), ((int) leftTick));
-                    }
-                    ssPlayer.setFlying(false);
-                    //重置飞行前摇时间
-                    ssPlayer.setAnticipationTick(0);
-                    return;
-                }
-
-                //进行前摇判断，按住空格0.5s后才起飞（不然就跳不了了..）
-                if(ssPlayer.getAnticipationTick() == 0){
-                    ssPlayer.setAnticipationTick(Config.MAX_ANTICIPATION_TICK.get().intValue());
-                    return;
-                }
-                if(ssPlayer.getAnticipationTick() > 1){
-                    ssPlayer.setAnticipationTick(ssPlayer.getAnticipationTick()-1);
-                    return;
-                }
-                //设置飞行状态并设置免疫下次摔落伤害
-                PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket(flySpeedLevel));
-                ssPlayer.setFlying(true);
-//                event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0);
-
-            });
-
-        });
+//        listener.addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event) -> {
+//
+//            //这个开关的判断好像不能取消延迟
+//            if(flySpeedLevel == 0){
+//                System.out.println(true);
+//                return;
+//            }
+//
+//            boolean jumpPressed = ModKeyMappings.TAKE_OFF.isDown();
+//
+//            Player player = container.getExecuter().getOriginal();
+//            ItemStack sword = player.getMainHandItem();
+//
+//            player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
+//
+//
+//                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”。player.isInWater没吊用。。
+//                if (!jumpPressed || event.getPlayerPatch().getOriginal().getVehicle() != null || event.getPlayerPatch().getOriginal().getAbilities().flying || !event.getPlayerPatch().isBattleMode()
+//                        || event.getPlayerPatch().getStamina() <= 0.1f || player.isInLava() || player.isUnderWater() || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity())) {
+//                    //停止飞行
+//                    PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
+//                    //飞行结束后再获取末向量。因为此时isFlying还没设为false
+//                    if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
+//                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel);
+//                        setEndVec(player.getPersistentData(), endVec);
+//                        double leftTick = endVec.length() * maxRecordTick;
+//                        setLeftTick(player.getPersistentData(), ((int) leftTick));
+//                    }
+//                    ssPlayer.setFlying(false);
+//                    //重置飞行前摇时间
+//                    ssPlayer.setAnticipationTick(0);
+//                    return;
+//                }
+//
+//                //进行前摇判断，按住空格0.5s后才起飞（不然就跳不了了..）
+//                if(ssPlayer.getAnticipationTick() == 0){
+//                    ssPlayer.setAnticipationTick(Config.MAX_ANTICIPATION_TICK.get().intValue());
+//                    return;
+//                }
+//                if(ssPlayer.getAnticipationTick() > 1){
+//                    ssPlayer.setAnticipationTick(ssPlayer.getAnticipationTick()-1);
+//                    return;
+//                }
+//                //设置飞行状态并设置免疫下次摔落伤害
+//                PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket(flySpeedLevel));
+//                ssPlayer.setFlying(true);
+////                event.getPlayerPatch().playAnimationSynchronized(ModAnimations.FLY_ON_SWORD_ADVANCED, 0);
+//
+//            });
+//
+//        });
 
 //        //取消免疫摔落伤害
 //        listener.addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
@@ -147,13 +148,22 @@ public class SwordSoaringSkill extends Skill {
      */
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
-
+        if(!player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).isPresent()){
+            return;
+        }
+        PlayerPatch<?> patch = ((PlayerPatch<?>) player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).orElse(null));
+        if(patch.getSkill(ModSkills.SWORD_SOARING) == null || patch.getSkill(ModSkills.SWORD_SOARING).isEmpty() || !patch.isBattleMode()){
+            return;
+        }
         player.getCapability(SSCapabilityProvider.SS_PLAYER).ifPresent(ssPlayer -> {
 
             if(ssPlayer.isFlying()){
+                //更新方向向量队列
+                updateViewVec(player.getPersistentData(), player.getViewVector(0));
 
-                //速度切换
                 if(player.isLocalPlayer()){
+
+                    //速度切换
                     if(ModKeyMappings.CHANGE_SPEED.isRelease()){
                         if(ModKeyMappings.CHANGE_SPEED.isEvenNumber()){
                             flySpeedLevel = 2.0f;
@@ -187,19 +197,17 @@ public class SwordSoaringSkill extends Skill {
                 resetHeight(player,ssPlayer);
 
                 //消耗耐力
-                player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch)->{
-                    if(entityPatch instanceof ServerPlayerPatch playerPatch){
-                        if(!player.isCreative()){
-                            int enchantmentLevel = player.getMainHandItem().getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get());
-                            float scale = switch (enchantmentLevel) {
-                                case 1 -> 0.75f;
-                                case 2 -> 0.5f;
-                                default -> 1;
-                            };
-                            playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * flySpeedLevel);
-                        }
+                if(patch instanceof ServerPlayerPatch playerPatch){
+                    if(!player.isCreative()){
+                        int enchantmentLevel = player.getMainHandItem().getEnchantmentLevel(ModEnchantments.SWORD_SOARING.get());
+                        float scale = switch (enchantmentLevel) {
+                            case 1 -> 0.75f;
+                            case 2 -> 0.5f;
+                            default -> 1;
+                        };
+                        playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * flySpeedLevel);
                     }
-                });
+                }
             } else if(Config.ENABLE_INERTIA.get()){
                 double endVecLength = getEndVec(player.getPersistentData()).length();
                 //惯性缓冲
@@ -212,10 +220,45 @@ public class SwordSoaringSkill extends Skill {
                     player.setDeltaMovement(getEndVec(player.getPersistentData()).lerp(Vec3.ZERO, (max - leftTick) / max));
                 }
             }
-        });
 
-        //更新方向向量队列
-        updateViewVec(player.getPersistentData(), player.getViewVector(0));
+            //起飞判断
+            //NOTE 必须后置判断，否则惯性无效
+            if(player.isLocalPlayer()){
+                boolean jumpPressed = ModKeyMappings.TAKE_OFF.isDown();
+                ItemStack sword = player.getMainHandItem();
+                //最后一个条件是防止飞行的时候切物品会导致永久飞行不掉落。必须是剑或者被视为剑的物品才可以“御”。player.isInWater没吊用。。
+                if (!jumpPressed || player.getVehicle() != null || patch.getOriginal().getAbilities().flying || !patch.isBattleMode()
+                        || patch.getStamina() <= 0.1f || player.isInLava() || player.isUnderWater() || !(SwordSoaring.isValidSword(sword) || ssPlayer.hasSwordEntity())) {
+                    //停止飞行
+                    PacketRelay.sendToServer(PacketHandler.INSTANCE, new StopFlyPacket());
+                    //飞行结束后再获取末向量。因为此时isFlying还没设为false
+                    if(Config.ENABLE_INERTIA.get() && ssPlayer.isFlying()){
+                        Vec3 endVec = getViewVec(player.getPersistentData(),1).scale(Config.FLY_SPEED_SCALE.get() * flySpeedLevel);
+                        setEndVec(player.getPersistentData(), endVec);
+                        double leftTick = endVec.length() * maxRecordTick;
+                        setLeftTick(player.getPersistentData(), ((int) leftTick));
+                    }
+                    ssPlayer.setFlying(false);
+                    //重置飞行前摇时间
+                    ssPlayer.setAnticipationTick(0);
+                    return;
+                }
+
+                //进行前摇判断，按住空格0.5s后才起飞（不然就跳不了了..）
+                if(ssPlayer.getAnticipationTick() == 0){
+                    ssPlayer.setAnticipationTick(Config.MAX_ANTICIPATION_TICK.get().intValue());
+                    return;
+                }
+                if(ssPlayer.getAnticipationTick() > 1){
+                    ssPlayer.setAnticipationTick(ssPlayer.getAnticipationTick()-1);
+                    return;
+                }
+                //设置飞行状态并设置免疫下次摔落伤害
+                PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartFlyPacket(flySpeedLevel));
+                ssPlayer.setFlying(true);
+            }
+
+        });
 
     }
 
@@ -232,6 +275,15 @@ public class SwordSoaringSkill extends Skill {
         }else {
             ssPlayer.flyHeight = -1;
         }
+    }
+
+    /**
+     * 解决跳跃延迟的关键！
+     * 感谢SettingDust大大
+     */
+    @Override
+    public boolean canExecute(PlayerPatch<?> executer) {
+        return false;
     }
 
     @Override

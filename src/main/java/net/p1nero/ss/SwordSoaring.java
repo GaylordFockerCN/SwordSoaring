@@ -92,7 +92,7 @@ public class SwordSoaring {
             Config.notSwordItems = Config.ITEMS_CAN_NOT_FLY.get().stream()
                     .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
                     .collect(Collectors.toSet());
-            Config.swordItems.removeAll(Config.notSwordItems);
+//            Config.swordItems.removeAll(Config.notSwordItems);
         }
         if(Config.notSwordItems.contains(sword.getItem())){
             return false;

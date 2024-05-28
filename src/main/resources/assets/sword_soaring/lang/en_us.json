@@ -1,4 +1,8 @@
 {
+  "key.sword_soaring.sword_soaring": "Sword Soaring",
+  "key.sword_soaring.change_speed": "Change Flying Speed",
+  "key.sword_soaring.take_off": "Take Off",
+
   "item_group.sword_soaring.weapon": "Sword Soaring Weapons",
   "tip.sword_soaring.learn": "You've learned someone's secrets, now you can fly with your sword!",
   "tip.sword_soaring.stamina_consume": "Stamina consume : %s / tick",
@@ -23,6 +27,5 @@
   "config.sword_soaring.fly_speed_scale": "the ratio of flying speed to view vector",
   "config.sword_soaring.stamina_consume_per_tick": "the stamina consumed per tick when flying",
   "config.sword_soaring.max_anticipation_tick": "ticks of pre taking off",
-  "enchantment.sword_soaring.sword_soaring": "Enhance Sword Soaring Stamina",
-  "key.sword_soaring.change_speed": "Change Flying Speed"
+  "enchantment.sword_soaring.sword_soaring": "Enhance Sword Soaring Stamina"
 }
