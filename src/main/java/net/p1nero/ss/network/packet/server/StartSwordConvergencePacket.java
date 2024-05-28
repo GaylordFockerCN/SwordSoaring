@@ -40,7 +40,7 @@ public record StartSwordConvergencePacket(boolean shouldRelease) implements Base
 
     @Override
     public void execute(@Nullable Player player) {
-        if (player != null && player.getServer() != null) {
+        if (player != null && player.getServer() != null && player.isCreative()) {
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                 if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
                     SkillDataManager dataManager = serverPlayerPatch.getSkill(ModSkills.SWORD_CONVERGENCE).getDataManager();
@@ -66,9 +66,9 @@ public record StartSwordConvergencePacket(boolean shouldRelease) implements Base
 //                        dataManager.setDataSync(COOL_DOWN, Config.SWORD_CONVERGENCE_COOLDOWN.get().intValue(), serverPlayerPatch.getOriginal());
                         if(serverPlayerPatch.getTarget() != null){
                             SwordConvergenceEntity.dir = serverPlayerPatch.getTarget().getPosition(1.0f).subtract(player.getPosition(1.0f)).normalize();
-                            SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(SwordConvergenceEntity.dir.scale(5));
+                            SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(SwordConvergenceEntity.dir.scale(7));
                         } else {
-                            SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(player.getViewVector(1.0f).normalize().scale(5));
+                            SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(player.getViewVector(1.0f).normalize().scale(7));
                             SwordConvergenceEntity.dir = player.getViewVector(1.0f);
                         }
                         SwordConvergenceEntity.isShooting = true;

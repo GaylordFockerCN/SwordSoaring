@@ -1,6 +1,7 @@
 package net.p1nero.ss.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.math.Axis;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -16,12 +17,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2d;
+import yesman.epicfight.api.utils.math.Vec2f;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.item.LongswordItem;
@@ -42,6 +42,7 @@ public class SwordConvergenceEntity extends AbstractArrow implements AbstractSwo
     public static boolean isShooting;//统一发射
     private Vec3 target0 = Vec3.ZERO;//从土里钻出来要聚集的地方
     private int shootingTick = 0, shootingCountDown = Integer.MAX_VALUE;
+    private final double dis = 3 + random.nextInt(7), height = 3 + random.nextDouble();
     private boolean isFinalTargetPosPassed = false;
     private static final EntityDataAccessor<ItemStack> ITEM_STACK = SynchedEntityData.defineId(SwordConvergenceEntity.class, EntityDataSerializers.ITEM_STACK);
 
@@ -97,14 +98,30 @@ public class SwordConvergenceEntity extends AbstractArrow implements AbstractSwo
             if(target0 == Vec3.ZERO && getOwner() != null){
                 target0 = getOwner().getPosition(1.0f);
             }
-            if(getPosition(1.0f).distanceTo(target0) > 3 + random.nextInt(7)){
-                if(getY() < target0.y){
-                    setDeltaMovement(0,0.5,0);
-                }else {
-                    setDeltaMovement(target0.subtract(getPosition(1.0f)).normalize().add(0,offsetY * 5,0).scale(0.5f));
+
+            //计算玩家视角和剑方向的夹角，如果在身后则抬高
+            Vec2 ownerPosVec2 = Vec2.ZERO, ownerViewVec2 = Vec2.ZERO;
+            if(getOwner() != null){
+                ownerPosVec2 = new Vec2((float)(getX() - getOwner().getX()), (float)(getZ() - getOwner().getZ()));
+                ownerViewVec2 = new Vec2(((float) getOwner().getViewVector(1.0f).x), ((float) getOwner().getViewVector(1.0f).z));
+            }
+            double dotProduct = ownerPosVec2.dot(ownerViewVec2);
+            double cosTheta = dotProduct / (ownerPosVec2.length() * ownerViewVec2.length());
+            double angleInRadians = Math.acos(cosTheta);
+
+            //如果还没到玩家身边则飞向玩家
+            if(getPosition(1.0f).distanceTo(target0) > dis){
+                setDeltaMovement(target0.subtract(getPosition(1.0f)).normalize().add(0,offsetY * 5,0).scale(0.5f));
+            } else {
+                //如果到了但是在身后就抬高一点。夹角大于九十则视为在身后。
+                //如果到指定位置了就停下并矫正角度（注意还没到不要矫正）。
+                if(angleInRadians > Math.PI / 2 && getY() < target0.y + height){
+                    setDeltaMovement(0,0.1,0);
+                } else if(getY() > target0.y + height + 1){
+                    setDeltaMovement(0,-0.1,0);
+                } else {
+                    setDeltaMovement(Vec3.ZERO);
                 }
-            }else {
-                setDeltaMovement(Vec3.ZERO);
                 if(getOwner()!=null){
                     setXRot(-getOwner().getXRot());
                     setYRot(-getOwner().getYRot());
@@ -133,7 +150,7 @@ public class SwordConvergenceEntity extends AbstractArrow implements AbstractSwo
                     level().playSound(null, getOnPos(), EpicFightSounds.ENTITY_MOVE.get(), SoundSource.BLOCKS, 1f, 1f);
                 }
                 if(finalTargetPos == Vec3.ZERO && getOwner() != null){
-                    finalTargetPos = getOwner().getViewVector(1.0f);
+                    finalTargetPos = getOwner().getViewVector(1.0f).scale(5.0F);
                 }
                 setDeltaMovement(finalTargetPos.subtract(getPosition(1.0f)).normalize().add(offsetXZ, offsetY,offsetXZ));
             }else {

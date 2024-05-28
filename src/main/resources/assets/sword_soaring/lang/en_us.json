@@ -21,8 +21,8 @@
   "skill.sword_soaring.yaksha_mask.tooltip": "Within 10 seconds after executing weapon innate skill, you gain the ability to perform a high jump, enabling the use of §l§4Meteor Slam Plus§r.\n\n§l§4Meteor Slam Plus§r : Removes the limitation based on weapon type and player yaw. But imposes a cap on jump height. Each attack consumes 3 stamina. If you installed WOM, playing different plunging animation, each attack consumes 4 stamina causing more damage.",
   "skill.sword_soaring.stellar_restoration": "Stellar Restoration",
   "skill.sword_soaring.stellar_restoration.tooltip": "Press alt to consume 5 stamina and throw a sword forward, long press to aim. Then press again to teleport to the sword's position and do a sweeping attack.\n\n(Cooldown: 7.5s)",
-  "skill.sword_soaring.sword_convergence": "Sword Convergence",
-  "skill.sword_soaring.sword_convergence.tooltip": "",
+  "skill.sword_soaring.sword_convergence": "Swords, descend!",
+  "skill.sword_soaring.sword_convergence.tooltip": "§l§4ONLY IN CREATIVE§r\n\nHold the lock-on key to summon swords from all directions, release to shoot. Summon 1 sword per tick, release 20 sword per tick.",
 
   "config.sword_soaring.fly_speed_scale": "the ratio of flying speed to view vector",
   "config.sword_soaring.stamina_consume_per_tick": "the stamina consumed per tick when flying",

@@ -63,6 +63,7 @@ public class ModAnimations {
     public static StaticAnimation LOONG_ROAR_IDLE;
     public static StaticAnimation LOONG_ROAR_HEAVY;
     public static StaticAnimation LOONG_ROAR_HEAVY_ALL;
+    public static StaticAnimation STELLAR_SWEEP;
 
     @SubscribeEvent
     public static void registerAnimations(AnimationRegistryEvent event) {
@@ -200,6 +201,11 @@ public class ModAnimations {
                         AnimationEvent.create((entityPatch, animation, params) -> {
                             entityPatch.reserveAnimation(LOONG_ROAR_HEAVY);
                         }, AnimationEvent.Side.SERVER));
+
+        STELLAR_SWEEP = (new BasicAttackAnimation(0.05F, 0.165F, 1.2F, 0.4F, ModColliders.LOONG_ROAR_RANGE, biped.toolR, "biped/loong_roar/stellar_sweep", biped))
+                .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.8F)
+                .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
+                .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0);
 
     }
 

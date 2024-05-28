@@ -51,7 +51,10 @@ public class SwordConvergence extends Skill {
 
     public static void onPlayerTick(TickEvent.PlayerTickEvent event){
         Player player = event.player;
-
+        //太超模，仅限创造
+        if(!player.isCreative()){
+            return;
+        }
         if(!player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).isPresent() || !SwordSoaring.isValidSword(player.getMainHandItem())){
             return;
         }
@@ -92,9 +95,9 @@ public class SwordConvergence extends Skill {
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartSwordConvergencePacket(true));
                 if(patch.getTarget() != null){
                     SwordConvergenceEntity.dir = patch.getTarget().getPosition(1.0f).subtract(player.getPosition(1.0f)).normalize();
-                    SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(SwordConvergenceEntity.dir.scale(5));
+                    SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(SwordConvergenceEntity.dir.scale(7));
                 } else {
-                    SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(player.getViewVector(1.0f).normalize().scale(5));
+                    SwordConvergenceEntity.finalTargetPos = player.getPosition(1.0f).add(player.getViewVector(1.0f).normalize().scale(7));
                     SwordConvergenceEntity.dir = player.getViewVector(1.0f);
                 }
                 SwordConvergenceEntity.isShooting = true;
@@ -184,7 +187,7 @@ public class SwordConvergence extends Skill {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
         poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
-        guiGraphics.blit(ModSkills.STELLAR_RESTORATION.getSkillTexture(), (int)x, (int)y, 24, 24, 0, 0, 1, 1, 1, 1);
+        guiGraphics.blit(ModSkills.SWORD_CONVERGENCE.getSkillTexture(), (int)x, (int)y, 24, 24, 0, 0, 1, 1, 1, 1);
         guiGraphics.drawString(gui.font, String.format("%.1f", (container.getDataManager().getDataValue(COOL_DOWN) / 40.0f)), x + 3, y + 6, 16777215, true);
         poseStack.popPose();
     }

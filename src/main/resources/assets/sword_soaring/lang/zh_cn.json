@@ -22,7 +22,7 @@
   "skill.sword_soaring.stellar_restoration": "星斗归位",
   "skill.sword_soaring.stellar_restoration.tooltip": "按下alt消耗5点耐力并向前方丢出一把剑，长按可以瞄准。再次按下瞬移到剑的位置并释放横扫攻击。\n\n冷却时间：7.5秒",
   "skill.sword_soaring.sword_convergence": "万剑归宗",
-  "skill.sword_soaring.sword_convergence.tooltip": "",
+  "skill.sword_soaring.sword_convergence.tooltip": "§l§4仅限创造模式使用§r\n\n按住锁敌键从四面八方召唤剑，松开释放。每tick召唤1根剑，松开后每tick释放20根剑。",
 
   "config.sword_soaring.fly_speed_scale": "飞行速度和朝向向量的比例",
   "config.sword_soaring.stamina_consume_per_tick": "飞行时每刻耐力消耗",

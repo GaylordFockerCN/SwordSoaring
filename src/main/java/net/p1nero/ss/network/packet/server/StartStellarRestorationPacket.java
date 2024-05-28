@@ -48,7 +48,8 @@ public record StartStellarRestorationPacket(boolean end) implements BasePacket {
                             if(sword != null){
                                 player.teleportTo(sword.getX(), sword.getY(), sword.getZ());
                                 sword.discard();
-                                caster.playAnimationSynchronized(Animations.SWEEPING_EDGE,0);
+//                                caster.playAnimationSynchronized(Animations.SWEEPING_EDGE,0);
+                                caster.playAnimationSynchronized(ModAnimations.STELLAR_SWEEP,0);
                                 ssPlayer.stayInAirTick = 20;
                             }
                         } else {
