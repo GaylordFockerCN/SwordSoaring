@@ -1,4 +1,4 @@
-package net.p1nero.ss.particle;
+package net.p1nero.ss.client.particle;
 
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;

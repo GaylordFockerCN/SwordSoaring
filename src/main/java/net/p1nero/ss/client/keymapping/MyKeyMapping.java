@@ -1,4 +1,4 @@
-package net.p1nero.ss.keymapping;
+package net.p1nero.ss.client.keymapping;
 
 import net.minecraft.client.KeyMapping;
 

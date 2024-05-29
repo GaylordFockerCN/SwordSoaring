@@ -1,6 +1,5 @@
 package net.p1nero.ss.epicfight.skill;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,8 +12,7 @@ import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.enchantment.ModEnchantments;
-import net.p1nero.ss.epicfight.animation.ModAnimations;
-import net.p1nero.ss.keymapping.ModKeyMappings;
+import net.p1nero.ss.client.keymapping.ModKeyMappings;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.network.PacketRelay;
 import net.p1nero.ss.network.packet.server.StartFlyPacket;
