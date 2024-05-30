@@ -11,8 +11,10 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -32,11 +34,14 @@ import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.client.particle.ModParticles;
 import org.slf4j.Logger;
+import yesman.epicfight.client.particle.TrailParticle;
 import yesman.epicfight.config.ConfigManager;
 import yesman.epicfight.data.loot.function.SetSkillFunction;
 import yesman.epicfight.world.item.EpicFightItems;
 
 import java.util.stream.Collectors;
+
+import static net.minecraftforge.eventbus.api.EventPriority.*;
 
 @Mod(SwordSoaring.MOD_ID)
 public class SwordSoaring {
@@ -109,6 +114,11 @@ public class SwordSoaring {
             EntityRenderers.register(ModEntities.STELLAR_SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.SMOOTH_DIR_SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.CONVERGENCE_SWORD.get(), SwordEntityRenderer::new);
+        }
+
+        @SubscribeEvent(priority = LOWEST)
+        public static void onParticleRegistry(final RegisterParticleProvidersEvent event) {
+            event.registerSpriteSet(ModParticles.GOLD_TRAIL.get(), TrailParticle.Provider::new);
         }
 
     }
