@@ -18,14 +18,14 @@ public class ModSkills {
     public static Skill SWORD_CONVERGENCE;
     public static Skill LOONG_ROAR_CHARGED_ATTACK;
     public static void registerSkills() {
-        SkillManager.register(SwordSoaringSkill::new, Skill.createMoverBuilder().setResource(Skill.Resource.COOLDOWN), SwordSoaring.MOD_ID, "sword_soaring");
+        SkillManager.register(SwordSoaringSkill::new, Skill.createMoverBuilder().setResource(Skill.Resource.NONE), SwordSoaring.MOD_ID, "sword_soaring");
         SkillManager.register(RainCutter::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.IDENTITY), SwordSoaring.MOD_ID, "rain_cutter");
         SkillManager.register(RainScreen::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.GUARD), SwordSoaring.MOD_ID, "rain_screen");
         SkillManager.register(YakshaMask::new, YakshaMask.createYakshaMaskBuilder(), SwordSoaring.MOD_ID, "yaksha_mask");
         SkillManager.register(StellarRestoration::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.DODGE), SwordSoaring.MOD_ID, "stellar_restoration");
         SkillManager.register(SwordConvergence::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.IDENTITY), SwordSoaring.MOD_ID, "sword_convergence");
 
-        SkillManager.register(LoongRoarChargedAttack::new, WeaponInnateSkill.createWeaponInnateBuilder(), SwordSoaring.MOD_ID, "loong_roar_charged_attack");
+        SkillManager.register(LoongRoarChargedAttack::new, WeaponInnateSkill.createWeaponInnateBuilder().setResource(Skill.Resource.NONE), SwordSoaring.MOD_ID, "loong_roar_charged_attack");
 
     }
 

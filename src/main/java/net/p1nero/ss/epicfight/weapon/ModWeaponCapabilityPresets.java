@@ -35,7 +35,6 @@ public class ModWeaponCapabilityPresets {
                     ModAnimations.LOONG_ROAR_AUTO5,
                     ModAnimations.LOONG_ROAR_AUTO5,
                     ModAnimations.LOONG_ROAR_AUTO3)
-            .newStyleCombo(CapabilityItem.Styles.MOUNT, Animations.SPEAR_MOUNT_ATTACK)
             .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> ModSkills.LOONG_ROAR_CHARGED_ATTACK)
             .comboCancel((style) -> false)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
@@ -43,19 +42,19 @@ public class ModWeaponCapabilityPresets {
                     ModAnimations.LOONG_ROAR_IDLE)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                     LivingMotions.WALK,
-                    Animations.BIPED_HOLD_SPEAR)
+                    Animations.BIPED_HOLD_LONGSWORD)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                     LivingMotions.CHASE,
-                    WOMAnimations.STAFF_RUN)
+                    Animations.BIPED_RUN_LONGSWORD)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                     LivingMotions.RUN,
-                    WOMAnimations.STAFF_RUN)
+                    Animations.BIPED_RUN_LONGSWORD)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                     LivingMotions.SWIM,
-                    Animations.BIPED_HOLD_SPEAR)
+                    Animations.BIPED_HOLD_LONGSWORD)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                     LivingMotions.BLOCK,
-                    Animations.SPEAR_GUARD);
+                    Animations.LONGSWORD_GUARD);
 
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
