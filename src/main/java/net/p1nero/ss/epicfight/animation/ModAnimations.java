@@ -154,6 +154,7 @@ public class ModAnimations {
         //匣里龙吟
         LOONG_ROAR_IDLE = new StaticAnimation(true, "biped/loong_roar/idle", biped);
         LOONG_ROAR_AUTO1 = (new BasicAttackAnimation(0.05F, 0.25F, 1.2F, 0.25F, null, biped.toolR, "biped/loong_roar/attack_1", biped))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.6F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.2F).addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F);
         LOONG_ROAR_AUTO2 = (new BasicAttackAnimation(0.05F, 0.167F, 1.2F, 0.25F, null, biped.toolR, "biped/loong_roar/attack_2", biped))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.2F).addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F);
@@ -166,6 +167,7 @@ public class ModAnimations {
         LOONG_ROAR_AUTO4 = (new BasicMultipleAttackAnimation(0.05F, "biped/loong_roar/attack_4", biped,
                 new AttackAnimation.Phase(0.0F, 0.1F, 0.35F, 0.4F, 0.4F, biped.toolR, ModColliders.LOONG_ROAR_RANGE),
                 new AttackAnimation.Phase(0.4F, 0.4F, 0.5F, 0.65F, 0.65F, biped.toolR, ModColliders.LOONG_ROAR_RANGE)))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.7F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 2.4F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.setter(2.5F))
@@ -180,6 +182,7 @@ public class ModAnimations {
                     entity.level().addParticle(ParticleTypes.EXPLOSION, x, y, z, random.nextDouble() * 0.005, 0.0, 0.0);
                 }, AnimationEvent.Side.CLIENT));
         LOONG_ROAR_AUTO5 = (new BasicAttackAnimation(0.05F, 0.167F, 1.2F, 0.95F, null, biped.toolR, "biped/loong_roar/attack_5", biped))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.2F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 2.4F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
                 .addProperty(AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
@@ -190,6 +193,7 @@ public class ModAnimations {
                 }, AnimationEvent.Side.CLIENT));
 
         LOONG_ROAR_HEAVY = (new BasicAttackAnimation(0.05F, 0.165F, 1.2F, 0.4F, ModColliders.LOONG_ROAR_RANGE, biped.toolR, "biped/loong_roar/charged_attack", biped))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.5F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.8F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0);
@@ -200,9 +204,13 @@ public class ModAnimations {
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS,
                         AnimationEvent.create((entityPatch, animation, params) -> {
                             entityPatch.reserveAnimation(LOONG_ROAR_HEAVY);
+                            if(entityPatch instanceof ServerPlayerPatch patch){
+                                patch.consumeStamina(2.0f);
+                            }
                         }, AnimationEvent.Side.SERVER));
 
         STELLAR_SWEEP = (new BasicAttackAnimation(0.05F, 0.165F, 1.2F, 0.4F, ModColliders.LOONG_ROAR_RANGE, biped.toolR, "biped/loong_roar/stellar_sweep", biped))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(4.0F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.8F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0);

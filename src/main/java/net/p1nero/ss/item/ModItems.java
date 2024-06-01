@@ -9,6 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, SwordSoaring.MOD_ID);
-    public static final RegistryObject<Item> LOONG_ROAR = ITEMS.register("loong_roar", () -> new ModWeaponItem(Tiers.NETHERITE, 0, -2, (new Item.Properties()).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> LOONG_ROAR = ITEMS.register("loong_roar", () -> new ModWeaponItem(Tiers.NETHERITE, 2, -2, (new Item.Properties()).rarity(Rarity.EPIC)));
 
 }
