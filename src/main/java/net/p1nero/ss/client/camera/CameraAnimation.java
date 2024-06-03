@@ -55,8 +55,27 @@ public class CameraAnimation {
         return load(resourceLocation, 1f);
     }
 
-    public static CameraAnimation create(double x, double y, double z){
-        return null;
+    /**
+     * Crazy...感觉不如数据包，但是我觉得留条路也好。
+     */
+    public static CameraAnimation create(float[] timePosX, float[] timePosY, float[] timePosZ, float[] timeRotX, float[] timeRotY, float[] timeFov,
+                                         float[] x, float[] y, float[] z, float[] rx, float[] ry, float[] fov){
+        if (timePosX.length == timePosY.length &&
+                timePosY.length == timePosZ.length &&
+                timePosZ.length == timeRotX.length &&
+                timeRotX.length == timeRotY.length &&
+                timeRotY.length == timeFov.length &&
+                timeFov.length == x.length &&
+                x.length == y.length &&
+                y.length == z.length &&
+                z.length == rx.length &&
+                rx.length == ry.length &&
+                ry.length == fov.length) {
+            SwordSoaring.LOGGER.error("floatSheets of unequal length");
+            throw new RuntimeException("floatSheets of unequal length");
+        }
+
+        return new CameraAnimation(FloatSheet.create(timePosX, x), FloatSheet.create(timePosY, y), FloatSheet.create(timePosZ, z), FloatSheet.create(timeRotX, rx), FloatSheet.create(timeRotY, ry), FloatSheet.create(timeFov, fov));
     }
 
     public static CameraAnimation load(ResourceLocation resourceLocation, float timeScale){
@@ -215,6 +234,13 @@ public class CameraAnimation {
                     return floatSheet[idx];
                 }
             }
+        }
+
+        public static FloatSheet create(float[] timeSheet, float[] floatSheet) {
+            FloatSheet floatSheet1 = new FloatSheet();
+            floatSheet1.timeSheet = timeSheet;
+            floatSheet1.floatSheet = floatSheet;
+            return floatSheet1;
         }
 
         public void getFromJson(JsonObject json, String valueKey) {

@@ -13,6 +13,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.p1nero.ss.Config;
 import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
+import net.p1nero.ss.client.camera.CameraAnimationManager;
+import net.p1nero.ss.client.camera.CameraAnimations;
 import net.p1nero.ss.epicfight.weapon.ModColliders;
 import reascer.wom.animation.attacks.BasicMultipleAttackAnimation;
 import reascer.wom.animation.attacks.SpecialAttackAnimation;
@@ -153,10 +155,10 @@ public class ModAnimations {
 
         //匣里龙吟
         LOONG_ROAR_IDLE = new StaticAnimation(true, "biped/loong_roar/idle", biped);
-        LOONG_ROAR_AUTO1 = (new BasicAttackAnimation(0.05F, 0.25F, 1.2F, 0.25F, null, biped.toolR, "biped/loong_roar/attack_1", biped))
+        LOONG_ROAR_AUTO1 = (new BasicAttackAnimation(0.05F, 0.25F, 0.35F, 0.25F, null, biped.toolR, "biped/loong_roar/attack_1", biped))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.6F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.2F).addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F);
-        LOONG_ROAR_AUTO2 = (new BasicAttackAnimation(0.05F, 0.167F, 1.2F, 0.25F, null, biped.toolR, "biped/loong_roar/attack_2", biped))
+        LOONG_ROAR_AUTO2 = (new BasicAttackAnimation(0.05F, 0.167F, 0.5F, 0.25F, null, biped.toolR, "biped/loong_roar/attack_2", biped))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.2F).addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F);
 
         LOONG_ROAR_AUTO3 = (new BasicAttackAnimation(0.05F, 0.165F, 1.2F, 0.4F, ModColliders.LOONG_ROAR_RANGE, biped.toolR, "biped/loong_roar/attack_3", biped))
@@ -181,7 +183,7 @@ public class ModAnimations {
                     double z = entity.getZ();
                     entity.level().addParticle(ParticleTypes.EXPLOSION, x, y, z, random.nextDouble() * 0.005, 0.0, 0.0);
                 }, AnimationEvent.Side.CLIENT));
-        LOONG_ROAR_AUTO5 = (new BasicAttackAnimation(0.05F, 0.167F, 1.2F, 0.95F, null, biped.toolR, "biped/loong_roar/attack_5", biped))
+        LOONG_ROAR_AUTO5 = (new BasicAttackAnimation(0.05F, 0.167F, 0.35F, 0.95F, null, biped.toolR, "biped/loong_roar/attack_5", biped))
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.2F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 2.4F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
@@ -199,13 +201,16 @@ public class ModAnimations {
                 .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0);
 
         LOONG_ROAR_HEAVY_ALL = (new BasicAttackAnimation(0.05F, 0.125F, 0.3F, 0.8F, null, biped.toolR, "biped/loong_roar/attack_1", biped))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.6F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.2F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS,
                         AnimationEvent.create((entityPatch, animation, params) -> {
-                            entityPatch.reserveAnimation(LOONG_ROAR_HEAVY);
                             if(entityPatch instanceof ServerPlayerPatch patch){
-                                patch.consumeStamina(2.0f);
+                                if(patch.hasStamina(3.0f)){
+                                    entityPatch.reserveAnimation(LOONG_ROAR_HEAVY);
+                                    patch.consumeStamina(3.0f);
+                                }
                             }
                         }, AnimationEvent.Side.SERVER));
 
@@ -213,7 +218,23 @@ public class ModAnimations {
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(4.0F))
                 .addProperty(AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.8F)
                 .addProperty(AttackAnimationProperty.ATTACK_SPEED_FACTOR, 0.5F)
-                .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0);
+                .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(10.0F), 0).addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[] {
+                        AnimationEvent.TimeStampedEvent.create(0f, (ep, anim, objs) -> {
+                            CameraAnimationManager.SetAnim(CameraAnimations.KEQING_BURST, ep.getOriginal(), true);
+                        }, AnimationEvent.Side.CLIENT),
+                        AnimationEvent.TimeStampedEvent.create(0f, (ep, anim, objs) -> {
+                            if(ep instanceof PlayerPatch){
+                                ep.setMaxStunShield(114514.0f);
+                                ep.setStunShield(ep.getMaxStunShield());
+                            }
+                        }, AnimationEvent.Side.SERVER),
+                        AnimationEvent.TimeStampedEvent.create(4f, (ep, anim, objs) -> {
+                            if(ep instanceof PlayerPatch){
+                                ep.setMaxStunShield(0f);
+                                ep.setStunShield(ep.getMaxStunShield());
+                            }
+                        }, AnimationEvent.Side.SERVER)
+                });
 
     }
 

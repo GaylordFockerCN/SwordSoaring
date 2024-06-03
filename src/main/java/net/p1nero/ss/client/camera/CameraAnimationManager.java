@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.p1nero.ss.SwordSoaring;
 
 /**
- * <a href="https://github.com/dfdyz/epicacg-1.18/blob/main/src/main/java/com/dfdyz/epicacg/event/CameraEvents.java">感谢东非大野猪大大开源!</a>
+ * <a href="https://github.com/dfdyz/epicacg-1.18/blob/main/src/main/java/com/dfdyz/epicacg/event/CameraEvents.java">1.18迁移,有几个方法变了。感谢东非大野猪大大开源!</a>
  */
 @OnlyIn(value = Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = SwordSoaring.MOD_ID, value = Dist.CLIENT)
@@ -37,11 +37,12 @@ public class CameraAnimationManager {
     private static CameraAnimation.Pose pose_;
 
     /**
-     * 找到一个类似的Event替代EntityViewRenderEvent
+     * 1.20.1EntityViewRenderEvent.CameraSetup改名成ViewportEvent.ComputeCameraAngles
+     * 找了好久....这哪里联想得到...还得翻源码
      */
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void TransformCam(ViewportEvent event){
+    public static void transformCam(ViewportEvent.ComputeCameraAngles event){
         CameraType cameraType = Minecraft.getInstance().options.getCameraType();
         if(cameraType.isFirstPerson() || cameraType.isMirrored()){
             return;
@@ -87,9 +88,10 @@ public class CameraAnimationManager {
             Vec3 camPos = LerpMinCylindrical(lastRelate,targetRelate,t);
             camPos = ToCartesianCoordinates(camPos).add(Coord);
 
+
             //camPos = CamAnim.Pose.lerpVec3(lastFramePos, targetPos, t);
 
-            float tmp = camera.getXRot() - (yawLock-pose.rotY);
+            float tmp = event.getYaw() - (yawLock-pose.rotY);
             tmp = tmp%360f;
 
             if(tmp > 0){
@@ -98,16 +100,17 @@ public class CameraAnimationManager {
             }
 
             float _rot_y =  yawLock-pose.rotY + tmp*t;
-            float _rot_x = lerpBetween(pose.rotX, camera.getYRot(), t);
+            float _rot_x = lerpBetween(pose.rotX, event.getPitch(), t);
 
+            //p1nero: 1.20.1这俩变私有了，只能暴力AT...
             camera.setRotation(_rot_y, _rot_x);
             camera.setPosition(camPos);
             Minecraft.getInstance().options.fov().set(((int) lerpBetween(pose.fov, fovO, t)));
 
             //camera.
             //event.move
-//            event.setYaw(_rot_y);
-//            event.setPitch(_rot_x);
+            event.setYaw(_rot_y);
+            event.setPitch(_rot_x);
         }
         else {
             pose = currentAnim.getPose((tick + (float) partialTicks) / 20f);
@@ -122,16 +125,18 @@ public class CameraAnimationManager {
             //System.out.println(pose);
 
             //cameraAccessor.invokeMove(p.x,p.y,p.z);
+            camera.setRotation(yawLock-pose.rotY, pose.rotX);
             camera.setPosition(camPos);
-            Minecraft.getInstance().options.fov().set(((int) pose.fov));
-            camera.setAnglesInternal(yawLock-pose.rotY, pose.rotX);
+            Minecraft.getInstance().options.fov().set((int)pose.fov);
+            event.setYaw(yawLock-pose.rotY);
+            event.setPitch(pose.rotX);
             //event.move
         }
     }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void Tick(TickEvent.ClientTickEvent event){
+    public static void onTick(TickEvent.ClientTickEvent event){
         if(Minecraft.getInstance().isPaused()) return;
 
         if(event.phase == TickEvent.Phase.START){

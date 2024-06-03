@@ -25,6 +25,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.p1nero.ss.client.camera.CameraAnimations;
 import net.p1nero.ss.enchantment.ModEnchantments;
 import net.p1nero.ss.entity.ModEntities;
 import net.p1nero.ss.entity.SwordEntityRenderer;
@@ -108,6 +109,8 @@ public class SwordSoaring {
     public static class ClientModEvents{
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event){
+            CameraAnimations.loadAnimations();
+
             EntityRenderers.register(ModEntities.SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.RAIN_SCREEN_SWORD.get(), SwordEntityRenderer::new);
             EntityRenderers.register(ModEntities.RAIN_CUTTER_SWORD.get(), SwordEntityRenderer::new);
@@ -120,6 +123,11 @@ public class SwordSoaring {
         public static void onParticleRegistry(final RegisterParticleProvidersEvent event) {
             event.registerSpriteSet(ModParticles.GOLD_TRAIL.get(), TrailParticle.Provider::new);
         }
+
+        @SubscribeEvent(priority = LOWEST)
+        public static void onRenderEntity(final RegisterParticleProvidersEvent event) {
+//            event.registerSpriteSet(ModParticles.GOLD_TRAIL.get(), TrailParticle.Provider::new);
+        }   
 
     }
 
