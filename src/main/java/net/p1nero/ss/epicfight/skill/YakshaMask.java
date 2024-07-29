@@ -161,7 +161,7 @@ public class YakshaMask extends Skill {
                 Vec3 vec32 = vec3.add(vec31.x * 50.0, vec31.y * 50.0, vec31.z * 50.0);
                 HitResult hitResult = player.level().clip(new ClipContext(vec3, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, container.getExecuter().getOriginal()));
                 if (hitResult.getType() != HitResult.Type.MISS) {
-                    event.getPlayerPatch().consumeStamina(3f);
+                    event.getPlayerPatch().consumeForSkill(this, Resource.STAMINA, 3);
                     Vec3 to = hitResult.getLocation();
                     Vec3 from = player.position();
                     double distance = to.distanceTo(from);
@@ -177,7 +177,7 @@ public class YakshaMask extends Skill {
                     vec32 = vec3.add(vec31.x * 50.0, vec31.y * 50.0, vec31.z * 50.0);
                     hitResult = player.level().clip(new ClipContext(vec3, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, container.getExecuter().getOriginal()));
                     if (hitResult.getType() != HitResult.Type.MISS) {
-                        event.getPlayerPatch().consumeStamina(3f);
+                        event.getPlayerPatch().consumeForSkill(this, Resource.STAMINA, 3);
                         Vec3 to = hitResult.getLocation();
                         Vec3 from = player.position();
                         double distance = to.distanceTo(from);

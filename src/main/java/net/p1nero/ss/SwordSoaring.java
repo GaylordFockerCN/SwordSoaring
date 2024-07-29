@@ -60,7 +60,6 @@ public class SwordSoaring {
         ModEnchantments.ENCHANTMENTS.register(bus);
         ModParticles.PARTICLES.register(bus);
         //我可以用SubscribeEvent的，但是之前这样写就懒得改了
-        fg_bus.addListener(ModSkills::BuildSkills);
         fg_bus.addListener(RainScreen::onPlayerTick);
         fg_bus.addListener(RainCutter::onPlayerTick);
         fg_bus.addListener(SwordSoaringSkill::onPlayerTick);
@@ -73,7 +72,6 @@ public class SwordSoaring {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         PacketHandler.register();
-        ModSkills.registerSkills();
     }
 
     /**

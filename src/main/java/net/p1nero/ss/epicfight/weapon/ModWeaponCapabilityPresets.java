@@ -42,7 +42,7 @@ public class ModWeaponCapabilityPresets {
                     ModAnimations.LOONG_ROAR_IDLE)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                     LivingMotions.WALK,
-                    ModAnimations.LOONG_ROAR_HOLD)
+                    Animations.BIPED_WALK_LONGSWORD)
             .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                     LivingMotions.CHASE,
                     Animations.BIPED_RUN_LONGSWORD)

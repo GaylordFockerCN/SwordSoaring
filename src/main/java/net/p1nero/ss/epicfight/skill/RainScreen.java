@@ -110,7 +110,7 @@ public class RainScreen extends Skill {
                 for(int i : swordID){
                     Entity sword = serverPlayer.serverLevel().getEntity(i);
                     if(sword != null){
-                        event.getPlayerPatch().consumeStaminaAlways(3);
+                        event.getPlayerPatch().consumeForSkill(this, Resource.STAMINA, 3);
                         serverPlayer.heal(2f);
 //                        serverPlayer.serverLevel().addParticle(ParticleTypes.HAPPY_VILLAGER, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),0,0,0);
 //                        serverPlayer.serverLevel().playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1, 1);
@@ -137,9 +137,7 @@ public class RainScreen extends Skill {
 
         listener.addEventListener(PlayerEventListener.EventType.SKILL_CONSUME_EVENT, EVENT_UUID, (event) -> {
             if (event.getSkill() instanceof RainScreen && !container.getExecuter().getOriginal().isCreative() && container.getStack() > 0) {
-                if (event.shouldConsume()) {
-                    this.setStackSynchronize((ServerPlayerPatch)container.getExecuter(), container.getStack() - 1);
-                }
+                this.setStackSynchronize((ServerPlayerPatch)container.getExecuter(), container.getStack() - 1);
 
                 event.setResourceType(Resource.NONE);
             }

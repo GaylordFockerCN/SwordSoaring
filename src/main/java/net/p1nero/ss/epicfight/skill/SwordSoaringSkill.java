@@ -203,7 +203,7 @@ public class SwordSoaringSkill extends Skill {
                             case 2 -> 0.5f;
                             default -> 1;
                         };
-                        playerPatch.consumeStamina(Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * flySpeedLevel);
+                        playerPatch.consumeForSkill(ModSkills.SWORD_SOARING, Resource.STAMINA, Config.STAMINA_CONSUME_PER_TICK.get().floatValue() * scale * flySpeedLevel);
                     }
                 }
             } else if(Config.ENABLE_INERTIA.get()){

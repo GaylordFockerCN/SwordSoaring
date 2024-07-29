@@ -10,6 +10,7 @@ import net.p1nero.ss.epicfight.animation.ModAnimations;
 import net.p1nero.ss.epicfight.skill.ModSkills;
 import net.p1nero.ss.network.packet.BasePacket;
 import yesman.epicfight.gameasset.Animations;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
@@ -56,7 +57,7 @@ public record StartStellarRestorationPacket(boolean end) implements BasePacket {
                             //发射出剑
                             if(player instanceof ServerPlayer serverPlayer && caster.hasStamina(4)){
                                 if(!player.isCreative()){
-                                    caster.consumeStamina(5);
+                                    caster.consumeForSkill(ModSkills.STELLAR_RESTORATION, Skill.Resource.STAMINA, 5);
                                 }
                                 summonSword(serverPlayer, ssPlayer);
                                 caster.playAnimationSynchronized(ModAnimations.STELLAR_RESTORATION_PRE,0);

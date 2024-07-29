@@ -15,6 +15,7 @@ import net.p1nero.ss.epicfight.skill.SwordSoaringSkill;
 import net.p1nero.ss.network.packet.BasePacket;
 import org.slf4j.spi.MDCAdapter;
 import yesman.epicfight.gameasset.EpicFightSounds;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillDataKeys;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -56,7 +57,7 @@ public record StartSwordConvergencePacket(boolean shouldRelease) implements Base
                         int totalSword = dataManager.getDataValue(TOTAL_SWORD_CNT);
                         SwordConvergence.summonSwords(serverPlayerPatch.getOriginal(), totalSword, 4 + totalSword/20);
                         if(!serverPlayerPatch.getOriginal().isCreative()){
-                            serverPlayerPatch.consumeStamina(0.01f);
+                            serverPlayerPatch.consumeForSkill(ModSkills.SWORD_CONVERGENCE, Skill.Resource.STAMINA, 0.01f);
                         }
                         dataManager.setData(TOTAL_SWORD_CNT, totalSword + 1);
                     } else {

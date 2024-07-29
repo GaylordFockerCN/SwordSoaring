@@ -7,11 +7,13 @@ import net.p1nero.ss.SwordSoaring;
 import net.p1nero.ss.capability.SSCapabilityProvider;
 import net.p1nero.ss.capability.SSPlayer;
 import net.p1nero.ss.epicfight.animation.ModAnimations;
+import net.p1nero.ss.epicfight.skill.ModSkills;
 import net.p1nero.ss.network.packet.BasePacket;
 import yesman.epicfight.api.utils.LevelUtil;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
@@ -57,11 +59,11 @@ public record StartYakshaJumpPacket(int tick) implements BasePacket {
 
                     if(SwordSoaring.isWOMLoaded()){
                         if(!player.isCreative()){
-                            caster.consumeStamina(6);
+                            caster.consumeForSkill(ModSkills.YAKSHA_MASK, Skill.Resource.STAMINA, 6);
                         }
                         caster.playAnimationSynchronized(ModAnimations.AGONY_PLUNGE_FORWARD, 0.0F);
                     }else {
-                        caster.consumeStamina(2f);
+                        caster.consumeForSkill(ModSkills.YAKSHA_MASK, Skill.Resource.STAMINA, 2);
                         caster.playAnimationSynchronized(Animations.BIPED_DEMOLITION_LEAP, 0.0F);
                     }
 
