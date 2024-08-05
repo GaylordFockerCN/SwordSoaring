@@ -138,6 +138,9 @@ public class SwordSoaring {
         @SubscribeEvent
         public static void modifyVanillaLootPools(final LootTableLoadEvent event) {
 
+            if(!Config.ENABLE_LOOT.get()){
+                return;
+            }
             int modifier = ConfigManager.SKILL_BOOK_CHEST_LOOT_MODIFYER.get();
             int dropChance = 100 + modifier;
             int antiDropChance = 100 - modifier;
@@ -146,7 +149,7 @@ public class SwordSoaring {
             String[] skills = new String[]{
                     "sword_soaring:sword_soaring",
                     "sword_soaring:rain_cutter",
-                    "sword_soaring:yaksha_mask",
+//                    "sword_soaring:yaksha_mask",
                     "sword_soaring:stellar_restoration",
                     "sword_soaring:rain_screen"
             };
@@ -154,7 +157,7 @@ public class SwordSoaring {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 skills
-                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
+                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier* 0.3F)))
                         .build());
             }
 
@@ -162,7 +165,7 @@ public class SwordSoaring {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 skills
-                        ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier))
+                        ))).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier* 0.3F))
                         .build());
             }
 
@@ -170,7 +173,7 @@ public class SwordSoaring {
                 event.getTable().addPool(LootPool.lootPool().setRolls(UniformGenerator.between(1.0F, 2.0F))
                         .add(LootItem.lootTableItem(EpicFightItems.SKILLBOOK.get()).apply(SetSkillFunction.builder(
                                 skills
-                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier)))
+                        )).when(LootItemRandomChanceCondition.randomChance(dropChanceModifier* 0.3F)))
                         .build());
             }
 

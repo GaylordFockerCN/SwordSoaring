@@ -46,6 +46,7 @@ public class SwordConvergence extends Skill {
 
     @Override
     public void onInitiate(SkillContainer container) {
+
         SkillDataUtil.registerSkillData(container, IS_PRESSING, TOTAL_SWORD_CNT, COOL_DOWN);
     }
 

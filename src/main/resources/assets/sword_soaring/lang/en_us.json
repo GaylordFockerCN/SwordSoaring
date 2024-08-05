@@ -3,7 +3,7 @@
   "key.sword_soaring.change_speed": "Change Flying Speed",
   "key.sword_soaring.take_off": "Take Off",
 
-  "item_group.sword_soaring.weapon": "Sword Soaring Weapons",
+  "item_group.sword_soaring.weapon": "Sword Soaring",
   "tip.sword_soaring.learn": "You've learned someone's secrets, now you can fly with your sword!",
   "tip.sword_soaring.stamina_consume": "Stamina consume : %s / tick",
   "tip.sword_soaring.speed_level": "Current Speed Level : ",

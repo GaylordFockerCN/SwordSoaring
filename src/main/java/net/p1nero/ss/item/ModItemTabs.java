@@ -14,22 +14,19 @@ public class ModItemTabs {
 
     public static final DeferredRegister<CreativeModeTab> ITEM_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SwordSoaring.MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> WEAPON = ITEM_TABS.register("weapon",
+    public static final RegistryObject<CreativeModeTab> COMMON = ITEM_TABS.register("weapon",
             () -> CreativeModeTab.builder()
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .withTabsAfter(new ResourceLocation(SwordSoaring.MOD_ID, "spawn_egg"))
                     .title(Component.translatable("item_group.sword_soaring.weapon"))
-                    .displayItems(new CreativeModeTab.DisplayItemsGenerator() {
-                        @Override
-                        public void accept(CreativeModeTab.ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
+                    .displayItems((itemDisplayParameters, output) -> {
 
-                        }
                     })
                     .icon(() -> new ItemStack(ModItems.LOONG_ROAR.get()))
                     .displayItems((parameters, tabData) -> {
 
-                        tabData.accept(ModItems.LOONG_ROAR.get());
-                        tabData.accept(ModItems.SHATTERED_STAR.get());
+//                        tabData.accept(ModItems.LOONG_ROAR.get());
+//                        tabData.accept(ModItems.SHATTERED_STAR.get());
 
                     }).build());
 
