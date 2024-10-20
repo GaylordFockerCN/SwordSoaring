@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SwordEntity extends Entity implements AbstractSwordEntity{
-    protected Player rider;
+    protected LivingEntity rider;
 
     private static final EntityDataAccessor<Optional<UUID>> RIDER_UUID = SynchedEntityData.defineId(SwordEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<ItemStack> ITEM_STACK = SynchedEntityData.defineId(SwordEntity.class, EntityDataSerializers.ITEM_STACK);
@@ -56,7 +57,7 @@ public class SwordEntity extends Entity implements AbstractSwordEntity{
         this.getEntityData().set(ITEM_STACK, itemStack);
     }
 
-    public void setRider(Player rider) {
+    public void setRider(LivingEntity rider) {
         this.rider = rider;
         this.getEntityData().set(RIDER_UUID, Optional.of(rider.getUUID()));
     }
@@ -93,7 +94,7 @@ public class SwordEntity extends Entity implements AbstractSwordEntity{
             List<Entity> entities = level().getEntities(rider, rider.getBoundingBox());
             for (Entity entity : entities){
                 if(entity.getBoundingBoxForCulling().contains(getPosition(1)))
-                    entity.hurt(damageSources().playerAttack(rider), ((float) rider.getDeltaMovement().length() * 10));
+                    entity.hurt(damageSources().mobAttack(rider), ((float) rider.getDeltaMovement().length() * 10));
             }
         }
 

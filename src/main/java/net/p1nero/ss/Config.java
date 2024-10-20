@@ -40,7 +40,7 @@ public class Config
     static final ForgeConfigSpec SPEC;
 
     static {
-        ENABLE_LOOT = createBool("enable_loot", true);
+        ENABLE_LOOT = createBool("enable_loot", false);
         BUILDER.push("Skill Cooldown");
         RAIN_SCREEN_COOLDOWN = createDouble("the cooldown ticks of Rain Screen skill", "rain_screen_cooldown", 862);
         RAIN_CUTTER_COOLDOWN = createDouble("the cooldown ticks of Rain Cutter skill", "rain_cutter_cooldown", 816);

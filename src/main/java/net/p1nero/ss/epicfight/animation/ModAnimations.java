@@ -65,6 +65,8 @@ public class ModAnimations {
     private static void build() {
         HumanoidArmature biped = Armatures.BIPED;
 
+
+
         RAIN_SCREEN = (new ActionAnimation(0.05F, 0.7F, "biped/rain_screen", biped))
                 .addStateRemoveOld(EntityState.MOVEMENT_LOCKED, false).newTimePair(0.0F, 2.0F)
                 .addStateRemoveOld(EntityState.INACTION, true)

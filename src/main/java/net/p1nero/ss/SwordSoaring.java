@@ -35,6 +35,7 @@ import net.p1nero.ss.item.ModItems;
 import net.p1nero.ss.network.PacketHandler;
 import net.p1nero.ss.client.particle.ModParticles;
 import org.slf4j.Logger;
+import yesman.epicfight.api.forgeevent.EntityPatchRegistryEvent;
 import yesman.epicfight.client.particle.TrailParticle;
 import yesman.epicfight.config.ConfigManager;
 import yesman.epicfight.data.loot.function.SetSkillFunction;
@@ -131,6 +132,10 @@ public class SwordSoaring {
 
     @Mod.EventBusSubscriber(modid = MOD_ID)
     public static class ModEvents{
+
+        public static void bindEntityPatch(EntityPatchRegistryEvent event){
+
+        }
 
         /**
          * 把技能书加到箱子里

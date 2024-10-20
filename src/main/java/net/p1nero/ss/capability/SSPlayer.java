@@ -14,7 +14,9 @@ import java.util.Set;
  * 懒得换成DataKey了呜呜将就一下吧
  */
 public class SSPlayer {
-
+    public int swordConvCooldown;
+    public boolean isPressing;
+    public int totalSwordCnt;
     private boolean isHiding;
     public boolean isPlayingAnim;
     private boolean isFlying;

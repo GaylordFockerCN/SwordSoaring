@@ -6,6 +6,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -53,7 +54,7 @@ public class RainScreenSwordEntity extends SwordEntity{
     }
 
     @Override
-    public void setRider(Player rider) {
+    public void setRider(LivingEntity rider) {
         this.rider = rider;
         this.getEntityData().set(RIDER_UUID, Optional.of(rider.getUUID()));
     }

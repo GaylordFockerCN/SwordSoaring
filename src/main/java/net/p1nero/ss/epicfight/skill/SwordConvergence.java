@@ -36,26 +36,26 @@ import java.util.UUID;
  */
 public class SwordConvergence extends Skill {
 
-    public static final SkillDataKey<Boolean> IS_PRESSING = SkillDataKey.createBooleanKey(false, false, SwordConvergence.class);
-    public static final SkillDataKey<Integer> TOTAL_SWORD_CNT = SkillDataKey.createIntKey(0,false, SwordConvergence.class);
-    public static final SkillDataKey<Integer> COOL_DOWN = SkillDataKey.createIntKey(0,false, SwordConvergence.class);
-    private static final UUID EVENT_UUID = UUID.fromString("051a9bb2-7541-11ee-b962-0242ac114519");
+//    public static final SkillDataKey<Boolean> IS_PRESSING = SkillDataKey.createBooleanKey(false, false, SwordConvergence.class);
+//    public static final SkillDataKey<Integer> TOTAL_SWORD_CNT = SkillDataKey.createIntKey(0,false, SwordConvergence.class);
+//    public static final SkillDataKey<Integer> COOL_DOWN = SkillDataKey.createIntKey(0,false, SwordConvergence.class);
+    private static final UUID EVENT_UUID = UUID.fromString("000a9bb2-7541-11ee-b962-0242ac114520");
     public SwordConvergence(Builder<? extends Skill> builder) {
         super(builder);
     }
 
     @Override
     public void onInitiate(SkillContainer container) {
-
-        SkillDataUtil.registerSkillData(container, IS_PRESSING, TOTAL_SWORD_CNT, COOL_DOWN);
+//        SkillDataUtil.registerSkillData(container, IS_PRESSING, TOTAL_SWORD_CNT, COOL_DOWN);
     }
 
     public static void onPlayerTick(TickEvent.PlayerTickEvent event){
         Player player = event.player;
+        SSPlayer ssPlayer = player.getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer());
         //太超模，仅限创造
-        if(!player.isCreative()){
-            return;
-        }
+//        if(!player.isCreative()){
+//            return;
+//        }
         if(!player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).isPresent() || !SwordSoaring.isValidSword(player.getMainHandItem())){
             return;
         }
@@ -66,10 +66,13 @@ public class SwordConvergence extends Skill {
             return;
         }
         SkillDataManager dataManager = patch.getSkill(ModSkills.SWORD_CONVERGENCE).getDataManager();
+//        if(!dataManager.hasData(COOL_DOWN) || !dataManager.hasData(IS_PRESSING) || !dataManager.hasData(TOTAL_SWORD_CNT)){
+//            return;
+//        }
+//        int cooldown = dataManager.getDataValue(COOL_DOWN);
 
-        int cooldown = dataManager.getDataValue(COOL_DOWN);
-        if(cooldown > 0){
-            dataManager.setData(COOL_DOWN, cooldown-1);
+        if(ssPlayer.swordConvCooldown > 0){
+            ssPlayer.swordConvCooldown = ssPlayer.swordConvCooldown - 1;
             return;
         } else {
             SwordConvergenceEntity.isShooting = false;
@@ -82,17 +85,19 @@ public class SwordConvergence extends Skill {
                 player.setYBodyRot(player.getYHeadRot());//不这样的话头动身不动
                 player.setDeltaMovement(Vec3.ZERO);
 
-                dataManager.setData(IS_PRESSING, true);
+                ssPlayer.isPressing = true;
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartSwordConvergencePacket(false));
-                int totalSword = dataManager.getDataValue(TOTAL_SWORD_CNT);
-                dataManager.setData(TOTAL_SWORD_CNT, totalSword + 1);
-            }else if(dataManager.getDataValue(IS_PRESSING)){
-
+//                int totalSword = dataManager.getDataValue(TOTAL_SWORD_CNT);
+//                dataManager.setData(TOTAL_SWORD_CNT, totalSword + 1);
+                ssPlayer.totalSwordCnt = ssPlayer.totalSwordCnt + 1;
+            }else if(ssPlayer.isPressing){
                 patch.playAnimationSynchronized(ModAnimations.STELLAR_RESTORATION_PRE,0);
-
-                dataManager.setData(IS_PRESSING, false);
-                dataManager.setData(COOL_DOWN, Config.SWORD_CONVERGENCE_COOLDOWN.get().intValue()+dataManager.getDataValue(TOTAL_SWORD_CNT));
-                dataManager.setData(TOTAL_SWORD_CNT, 0);
+                ssPlayer.isPressing = false;
+                ssPlayer.swordConvCooldown = Config.SWORD_CONVERGENCE_COOLDOWN.get().intValue() + ssPlayer.swordConvCooldown;
+                ssPlayer.totalSwordCnt = 0;
+//                dataManager.setData(IS_PRESSING, false);
+//                dataManager.setData(COOL_DOWN, Config.SWORD_CONVERGENCE_COOLDOWN.get().intValue()+dataManager.getDataValue(TOTAL_SWORD_CNT));
+//                dataManager.setData(TOTAL_SWORD_CNT, 0);
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new StartSwordConvergencePacket(true));
                 if(patch.getTarget() != null){
                     SwordConvergenceEntity.dir = patch.getTarget().getPosition(1.0f).subtract(player.getPosition(1.0f)).normalize();
@@ -169,27 +174,25 @@ public class SwordConvergence extends Skill {
     @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
-        SkillDataUtil.removeSkillData(container, IS_PRESSING, TOTAL_SWORD_CNT, COOL_DOWN);
-        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.CLIENT_ITEM_USE_EVENT, EVENT_UUID);
-        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SERVER_ITEM_USE_EVENT, EVENT_UUID);
-        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SERVER_ITEM_STOP_EVENT, EVENT_UUID);
+//        SkillDataUtil.removeSkillData(container, IS_PRESSING, TOTAL_SWORD_CNT, COOL_DOWN);
     }
 
     @Override
     public boolean shouldDraw(SkillContainer container) {
-        return container.getDataManager().getDataValue(COOL_DOWN) > 0;
+//        return container.getDataManager().getDataValue(COOL_DOWN) > 0;
+        return container.getExecuter().getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).swordConvCooldown > 0;
     }
 
     @Override
     public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics, float x, float y) {
-        if(!container.getDataManager().hasData(COOL_DOWN)){
-            return;
-        }
+//        if(!container.getDataManager().hasData(COOL_DOWN)){
+//            return;
+//        }
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
         poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
         guiGraphics.blit(ModSkills.SWORD_CONVERGENCE.getSkillTexture(), (int)x, (int)y, 24, 24, 0, 0, 1, 1, 1, 1);
-        guiGraphics.drawString(gui.font, String.format("%.1f", (container.getDataManager().getDataValue(COOL_DOWN) / 40.0f)), x + 3, y + 6, 16777215, true);
+        guiGraphics.drawString(gui.font, String.format("%.1f", (container.getExecuter().getOriginal().getCapability(SSCapabilityProvider.SS_PLAYER).orElse(new SSPlayer()).swordConvCooldown / 40.0f)), x + 3, y + 6, 16777215, true);
         poseStack.popPose();
     }
 }
